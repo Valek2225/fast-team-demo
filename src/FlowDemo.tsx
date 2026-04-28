@@ -616,10 +616,6 @@ function ScreenLobby({
           ))}
         </div>
 
-        <h3 className="lobby-section-title">Алкоголь</h3>
-        <div className="lobby-alcohol">
-          <div className="lobby-alcohol__tile">🍷 ВинЛаб</div>
-        </div>
       </div>
 
       <div className="lobby-bottom">
