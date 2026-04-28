@@ -890,3 +890,71 @@ body {
 .category-header__tag--marketing {
   color: var(--warning);
 }
+
+.data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.data-actions__btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--stroke-strong);
+  background: var(--bg-soft);
+  color: var(--text);
+  transition: background 120ms, border-color 120ms;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.data-actions__btn:hover {
+  background: var(--bg-elevated);
+  border-color: var(--text-tertiary);
+}
+
+.data-actions__btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0a0a0a;
+}
+
+.data-actions__btn--primary:hover {
+  background: rgba(255, 221, 45, 0.85);
+  color: #0a0a0a;
+}
+
+.data-actions__btn--ghost {
+  background: transparent;
+}
+
+.data-actions__btn input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.data-row__key {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  white-space: normal;
+}
+
+.data-row__label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}

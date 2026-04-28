@@ -1,0 +1,65 @@
+{
+  "_about": "Шаблон входных данных для финплана Т-Город. Заполните значения и загрузите файл на сайте в разделе Данные. Все денежные значения — в рублях, все доли — числом от 0 до 1 (например, 0.4 означает 40%).",
+
+  "audience": {
+    "_about": "Размер базы и распределение по платформам. Большинство значений берутся из аналитики Т-Банка.",
+    "tBankMAU": 25000000,
+    "_tBankMAU": "Активные пользователи Т-Банка за месяц (MAU). Источник: внутренняя аналитика. Плюс-минус миллион погоды не делает.",
+    "targetAgeShare": 0.4,
+    "_targetAgeShare": "Доля целевой аудитории 14–35 лет в общей базе. Берётся из сегментации CRM. Типичный диапазон 0.35–0.45.",
+    "iosShare": 0.4,
+    "_iosShare": "Доля iOS-устройств в активной базе. По данным Mediascope 2025: 35–45% в РФ. Меняется медленно.",
+    "androidShare": 0.6,
+    "_androidShare": "Доля Android-устройств. Должна суммироваться с iosShare в 1.0."
+  },
+
+  "conversion": {
+    "_about": "Параметры превращения посетителя в покупателя. Самые чувствительные параметры всей модели.",
+    "expectedActivationRate": 0.05,
+    "_expectedActivationRate": "Доля целевой аудитории, которая станет активным пользователем Т-Города за год 1. Реалистичный таргет 0.04–0.07 (Bench Самокат, Купер).",
+    "ordersPerUserPerMonth": 2,
+    "_ordersPerUserPerMonth": "Среднее количество заказов на одного активного пользователя в месяц. Самокат показывает 2.4, Купер 1.8.",
+    "avgOrderValueRub": 2000,
+    "_avgOrderValueRub": "Средний чек заказа в рублях. Медиана e-grocery 2025: 1800–2500 ₽.",
+    "platformMarginRate": 0.10,
+    "_platformMarginRate": "Маржа платформы — какой процент от каждого заказа остаётся компании после всех расходов. Бенчмарк РФ: 0.07–0.13."
+  },
+
+  "dropoffs": {
+    "_about": "Проценты отпадений на разных шагах воронки. Это почти константы, подтверждённые исследованиями. Меняйте только если есть свежие A/B-тесты.",
+    "iosAddToHome_14_18": 0.32,
+    "_iosAddToHome_14_18": "Drop-off Add to Home Screen на iOS у 14–18 лет. Бенчмарк PWA-каналов в РФ.",
+    "iosAddToHome_19_25": 0.45,
+    "_iosAddToHome_19_25": "Drop-off Add to Home на iOS у 19–25 лет.",
+    "iosAddToHome_26_35": 0.58,
+    "_iosAddToHome_26_35": "Drop-off Add to Home на iOS у 26–35 лет.",
+    "androidWebApkAvg": 0.15,
+    "_androidWebApkAvg": "Средний drop-off WebAPK на Android Chrome (auto-prompt).",
+    "pushCtrMedian": 0.09,
+    "_pushCtrMedian": "Медианный CTR push-уведомлений. Источник: OneSignal Industry Benchmarks 2024.",
+    "iosShortcutsManual": 0.92,
+    "_iosShortcutsManual": "Drop-off ручной настройки iOS Shortcuts. Большинство пользователей не доходит."
+  },
+
+  "costs": {
+    "_about": "Зарплаты, инфраструктура, маркетинг. Самая объёмная часть — заполняется HR/финансистом.",
+    "pwaTeamMonthlyRub": 2500000,
+    "_pwaTeamMonthlyRub": "Месячный фонд оплаты PWA-команды (5 человек: PM + 2 FE + BE + design). Сюда уже включены налоги и страховые.",
+    "androidTeamMonthlyRub": 1200000,
+    "_androidTeamMonthlyRub": "Месячный фонд оплаты доп. Android-команды для нативного виджета (4 человека: 2 mobile + QA + design).",
+    "infraMonthlyRub": 150000,
+    "_infraMonthlyRub": "Хостинг + CDN (Yandex Cloud, Selectel). Включая трафик медиа маскота.",
+    "pushInfraMonthlyRub": 80000,
+    "_pushInfraMonthlyRub": "Push-инфраструктура: APNS / FCM / web push сервис. До 30 млн отправок в месяц.",
+    "analyticsMonthlyRub": 200000,
+    "_analyticsMonthlyRub": "Аналитика: Amplitude, Mixpanel или собственная система событий.",
+    "smsActivationMonthlyRub": 50000,
+    "_smsActivationMonthlyRub": "Активационные SMS / email рассылки на новых пользователей.",
+    "mascotDesignOneTimeRub": 1500000,
+    "_mascotDesignOneTimeRub": "Разовая стоимость дизайна и анимаций маскота (Lottie/Rive + статичные стикеры).",
+    "courierVisitRub": 2000,
+    "_courierVisitRub": "Стоимость одного выезда самозанятого «помощника» для установки PWA. Достависта: 600–900 ₽; самозанятый: 1500–2500 ₽.",
+    "courierIosRequestShare": 0.05,
+    "_courierIosRequestShare": "Доля iOS-юзеров, которые запросят курьера. В сценарии «PWA + курьер для всех iOS» — самый чувствительный параметр."
+  }
+}

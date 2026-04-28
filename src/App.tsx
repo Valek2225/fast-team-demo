@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 
 type Tone = 'success' | 'warning' | 'danger' | 'info' | undefined;
 
@@ -6,8 +6,152 @@ const formatRub = (rub: number): string => {
   if (rub >= 1_000_000_000) return `${(rub / 1_000_000_000).toFixed(2)} млрд ₽`;
   if (rub >= 1_000_000) return `${(rub / 1_000_000).toFixed(1)} млн ₽`;
   if (rub >= 1_000) return `${(rub / 1_000).toFixed(0)} тыс ₽`;
-  return `${rub} ₽`;
+  return `${Math.round(rub)} ₽`;
 };
+
+const formatPeople = (n: number): string => {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)} млн`;
+  if (n >= 1_000) return `${Math.round(n / 1_000)} тыс`;
+  return `${Math.round(n)}`;
+};
+
+const formatPercent = (n: number): string => `${Math.round(n * 100)}%`;
+
+export type Inputs = {
+  audience: {
+    tBankMAU: number;
+    targetAgeShare: number;
+    iosShare: number;
+    androidShare: number;
+  };
+  conversion: {
+    expectedActivationRate: number;
+    ordersPerUserPerMonth: number;
+    avgOrderValueRub: number;
+    platformMarginRate: number;
+  };
+  dropoffs: {
+    iosAddToHome_14_18: number;
+    iosAddToHome_19_25: number;
+    iosAddToHome_26_35: number;
+    androidWebApkAvg: number;
+    pushCtrMedian: number;
+    iosShortcutsManual: number;
+  };
+  costs: {
+    pwaTeamMonthlyRub: number;
+    androidTeamMonthlyRub: number;
+    infraMonthlyRub: number;
+    pushInfraMonthlyRub: number;
+    analyticsMonthlyRub: number;
+    smsActivationMonthlyRub: number;
+    mascotDesignOneTimeRub: number;
+    courierVisitRub: number;
+    courierIosRequestShare: number;
+  };
+};
+
+const DEFAULT_INPUTS: Inputs = {
+  audience: {
+    tBankMAU: 25_000_000,
+    targetAgeShare: 0.4,
+    iosShare: 0.4,
+    androidShare: 0.6,
+  },
+  conversion: {
+    expectedActivationRate: 0.05,
+    ordersPerUserPerMonth: 2,
+    avgOrderValueRub: 2_000,
+    platformMarginRate: 0.1,
+  },
+  dropoffs: {
+    iosAddToHome_14_18: 0.32,
+    iosAddToHome_19_25: 0.45,
+    iosAddToHome_26_35: 0.58,
+    androidWebApkAvg: 0.15,
+    pushCtrMedian: 0.09,
+    iosShortcutsManual: 0.92,
+  },
+  costs: {
+    pwaTeamMonthlyRub: 2_500_000,
+    androidTeamMonthlyRub: 1_200_000,
+    infraMonthlyRub: 150_000,
+    pushInfraMonthlyRub: 80_000,
+    analyticsMonthlyRub: 200_000,
+    smsActivationMonthlyRub: 50_000,
+    mascotDesignOneTimeRub: 1_500_000,
+    courierVisitRub: 2_000,
+    courierIosRequestShare: 0.05,
+  },
+};
+
+function computeMetrics(input: Inputs) {
+  const a = input.audience;
+  const c = input.conversion;
+  const k = input.costs;
+
+  const targetAudience = a.tBankMAU * a.targetAgeShare;
+  const iosAudience = targetAudience * a.iosShare;
+  const activatedUsers = targetAudience * c.expectedActivationRate;
+  const monthlyOrders = activatedUsers * c.ordersPerUserPerMonth;
+  const marginPerOrder = c.avgOrderValueRub * c.platformMarginRate;
+  const monthlyMargin = monthlyOrders * marginPerOrder;
+  const yearlyMargin = monthlyMargin * 12;
+
+  const pwaInfraYear =
+    (k.infraMonthlyRub + k.pushInfraMonthlyRub + k.analyticsMonthlyRub + k.smsActivationMonthlyRub) *
+    12;
+  const pwaTeamYear = k.pwaTeamMonthlyRub * 12;
+
+  const yearOneCostA = pwaTeamYear + pwaInfraYear + k.mascotDesignOneTimeRub;
+
+  const yearOneCostB =
+    (k.pushInfraMonthlyRub + k.smsActivationMonthlyRub + k.analyticsMonthlyRub) * 12 +
+    k.pwaTeamMonthlyRub * 4 * 0.4;
+
+  const androidTeamYear = k.androidTeamMonthlyRub * 12;
+  const yearOneCostC = androidTeamYear + (k.infraMonthlyRub + k.pushInfraMonthlyRub) * 12 / 2;
+
+  const courierIosVisits = iosAudience * k.courierIosRequestShare;
+  const courierTotalCost = courierIosVisits * k.courierVisitRub;
+  const yearOneCostD = yearOneCostA + courierTotalCost;
+
+  const yearOneCostE = yearOneCostA + yearOneCostC;
+
+  const paybackDaysA = monthlyMargin > 0 ? (yearOneCostA / monthlyMargin) * 30 : 0;
+  const paybackDaysE = monthlyMargin > 0 ? (yearOneCostE / monthlyMargin) * 30 : 0;
+  const paybackDaysD = monthlyMargin > 0 ? (yearOneCostD / monthlyMargin) * 30 : 0;
+
+  const pushMonthlyOpens = activatedUsers * input.dropoffs.pushCtrMedian * 4;
+
+  const yearTwoPlusA = pwaTeamYear * 0.6 + pwaInfraYear;
+
+  return {
+    targetAudience,
+    iosAudience,
+    androidAudience: targetAudience * a.androidShare,
+    activatedUsers,
+    monthlyOrders,
+    marginPerOrder,
+    monthlyMargin,
+    yearlyMargin,
+    pwaInfraYear,
+    pwaTeamYear,
+    yearOneCostA,
+    yearOneCostB,
+    yearOneCostC,
+    yearOneCostD,
+    yearOneCostE,
+    yearTwoPlusA,
+    courierIosVisits,
+    courierTotalCost,
+    paybackDaysA,
+    paybackDaysE,
+    paybackDaysD,
+    pushMonthlyOpens,
+    roiMultiplier: yearOneCostA > 0 ? yearlyMargin / yearOneCostA : 0,
+  };
+}
 
 function Stack({
   children,
@@ -140,6 +284,7 @@ function TopBar() {
     { href: '#scenarios', label: 'Сценарии' },
     { href: '#roi', label: 'ROI' },
     { href: '#decision', label: 'Решение', accent: true },
+    { href: '#data', label: 'Данные' },
     { href: '#glossary', label: 'Словарь' },
   ];
   return (
@@ -545,7 +690,389 @@ function Divider() {
   return <hr className="divider" />;
 }
 
+type FieldSpec = {
+  key: string;
+  label: string;
+  what: string;
+  source: string;
+  format?: 'number' | 'rub' | 'percent';
+};
+
+type FieldGroup = {
+  title: string;
+  category: 'audience' | 'conversion' | 'dropoffs' | 'costs';
+  intro: string;
+  fields: FieldSpec[];
+};
+
+const FIELD_GROUPS: FieldGroup[] = [
+  {
+    title: 'Аудитория',
+    category: 'audience',
+    intro: 'Размер базы и распределение по платформам. Берётся из аналитики Т-Банка.',
+    fields: [
+      {
+        key: 'tBankMAU',
+        label: 'Активные пользователи Т-Банка / месяц (MAU)',
+        what: 'Сколько уникальных людей открывают Т-Банк хотя бы раз в месяц.',
+        source: 'CRM / внутренняя аналитика. Плюс-минус миллион погоды не делает.',
+        format: 'number',
+      },
+      {
+        key: 'targetAgeShare',
+        label: 'Доля 14–35 лет в общей базе',
+        what: 'Какой процент клиентов попадает в наш целевой возраст.',
+        source: 'Сегментация CRM. Типичный диапазон 35–45%.',
+        format: 'percent',
+      },
+      {
+        key: 'iosShare',
+        label: 'Доля iOS-устройств',
+        what: 'Сколько процентов клиентов сидят на iPhone.',
+        source: 'Mediascope 2025: 35–45% в РФ. Меняется медленно.',
+        format: 'percent',
+      },
+      {
+        key: 'androidShare',
+        label: 'Доля Android-устройств',
+        what: 'Сколько процентов клиентов на Android. Должна суммироваться с iOS в 100%.',
+        source: 'Тот же источник, что iosShare.',
+        format: 'percent',
+      },
+    ],
+  },
+  {
+    title: 'Конверсия и экономика заказа',
+    category: 'conversion',
+    intro: 'Самые чувствительные параметры всей модели. Влияют на финальную маржу больше всего.',
+    fields: [
+      {
+        key: 'expectedActivationRate',
+        label: 'Ожидаемая активация в Т-Городе',
+        what: 'Какой процент целевой аудитории станет активным пользователем за год 1.',
+        source: 'Бенчмарк Самокат / Купер: 4–7% при платном привлечении, у нас выше за счёт SSO.',
+        format: 'percent',
+      },
+      {
+        key: 'ordersPerUserPerMonth',
+        label: 'Заказов на пользователя в месяц',
+        what: 'Среднее число покупок одним активным юзером за месяц.',
+        source: 'Самокат: 2.4 / Купер: 1.8. Консервативная оценка для нового канала: 2.',
+        format: 'number',
+      },
+      {
+        key: 'avgOrderValueRub',
+        label: 'Средний чек, ₽',
+        what: 'Сколько в среднем стоит один заказ.',
+        source: 'Медиана e-grocery РФ 2025: 1800–2500 ₽.',
+        format: 'rub',
+      },
+      {
+        key: 'platformMarginRate',
+        label: 'Маржа платформы',
+        what: 'Какой процент от чека остаётся компании после всех расходов на заказ.',
+        source: 'Бенчмарк РФ: 7–13%. Зависит от категорий и объёма скидок.',
+        format: 'percent',
+      },
+    ],
+  },
+  {
+    title: 'Drop-off — потери на шагах воронки',
+    category: 'dropoffs',
+    intro:
+      'Это почти константы — основаны на исследованиях PWA-каналов. Меняйте только при наличии свежих A/B-тестов.',
+    fields: [
+      {
+        key: 'iosAddToHome_14_18',
+        label: 'iOS Add to Home Screen, 14–18 лет',
+        what: 'Какой процент юношей не доводит установку PWA-иконки на iPhone до конца.',
+        source: 'PWA-бенчмарки Авито/X5 2024–2025.',
+        format: 'percent',
+      },
+      {
+        key: 'iosAddToHome_19_25',
+        label: 'iOS Add to Home, 19–25 лет',
+        what: 'Тот же drop-off для старшего сегмента Gen Z.',
+        source: 'Те же источники.',
+        format: 'percent',
+      },
+      {
+        key: 'iosAddToHome_26_35',
+        label: 'iOS Add to Home, 26–35 лет',
+        what: 'Тот же drop-off для миллениалов.',
+        source: 'Те же источники.',
+        format: 'percent',
+      },
+      {
+        key: 'androidWebApkAvg',
+        label: 'Android WebAPK, средний',
+        what: 'Drop-off auto-prompt установки в Chrome.',
+        source: 'Chrome WebAPK телеметрия + опросы 2025.',
+        format: 'percent',
+      },
+      {
+        key: 'pushCtrMedian',
+        label: 'Push CTR (медиана)',
+        what: 'Какой процент получивших пуш открывают его.',
+        source: 'OneSignal Industry Benchmarks 2024.',
+        format: 'percent',
+      },
+      {
+        key: 'iosShortcutsManual',
+        label: 'iOS Shortcuts, ручная настройка',
+        what: 'Какой процент юзеров не настраивает Команды самостоятельно.',
+        source: 'Качественные интервью Apple HIG 2024.',
+        format: 'percent',
+      },
+    ],
+  },
+  {
+    title: 'Затраты',
+    category: 'costs',
+    intro:
+      'Зарплаты с налогами и страховыми, инфра, маркетинг. Заполняется HR / финансовым отделом.',
+    fields: [
+      {
+        key: 'pwaTeamMonthlyRub',
+        label: 'PWA-команда, ₽ / мес',
+        what: 'Зарплатный фонд PWA-команды (5 человек: PM + 2 FE + BE + design).',
+        source: 'HR-таблица зарплат + 30% налогов и страховых сверху.',
+        format: 'rub',
+      },
+      {
+        key: 'androidTeamMonthlyRub',
+        label: 'Android-команда (доп.), ₽ / мес',
+        what: 'Зарплатный фонд Android-команды для нативного виджета (4 человека).',
+        source: 'HR-таблица. Используется только в сценариях C и E.',
+        format: 'rub',
+      },
+      {
+        key: 'infraMonthlyRub',
+        label: 'Инфра (Yandex Cloud + CDN), ₽ / мес',
+        what: 'Хостинг PWA, CDN для медиа маскота.',
+        source: 'Тарифы Yandex Cloud / Selectel + прогноз трафика.',
+        format: 'rub',
+      },
+      {
+        key: 'pushInfraMonthlyRub',
+        label: 'Push-инфра, ₽ / мес',
+        what: 'APNS / FCM / web push сервис.',
+        source: 'Тарифы OneSignal / Pushwoosh или своё решение.',
+        format: 'rub',
+      },
+      {
+        key: 'analyticsMonthlyRub',
+        label: 'Аналитика, ₽ / мес',
+        what: 'Amplitude / Mixpanel или своя event-система.',
+        source: 'Тариф Amplitude по объёму событий.',
+        format: 'rub',
+      },
+      {
+        key: 'smsActivationMonthlyRub',
+        label: 'SMS / email активация, ₽ / мес',
+        what: 'Рассылки на новых пользователей.',
+        source: 'Прайс операторов СМС-агрегаторов (~0.05 ₽ / пуш, 1.5 ₽ / SMS).',
+        format: 'rub',
+      },
+      {
+        key: 'mascotDesignOneTimeRub',
+        label: 'Дизайн маскота, разово ₽',
+        what: 'Lottie/Rive анимации + статичные стикеры маскота.',
+        source: 'Студия анимации + дизайнер брендинга.',
+        format: 'rub',
+      },
+      {
+        key: 'courierVisitRub',
+        label: 'Курьер за один визит, ₽',
+        what: 'Стоимость одного выезда «помощника» на установку PWA.',
+        source: 'Достависта 600–900 ₽ / самозанятый 1500–2500 ₽.',
+        format: 'rub',
+      },
+      {
+        key: 'courierIosRequestShare',
+        label: 'Доля iOS-юзеров, запросивших курьера',
+        what: 'Какой процент iOS-аудитории попросит выезд помощника.',
+        source: 'Гипотеза. В сценарии D — самый чувствительный параметр.',
+        format: 'percent',
+      },
+    ],
+  },
+];
+
+function formatField(value: number, format: FieldSpec['format']): string {
+  if (format === 'rub') return formatRub(value);
+  if (format === 'percent') return formatPercent(value);
+  return value.toLocaleString('ru-RU');
+}
+
+function getFieldValue(inputs: Inputs, category: FieldGroup['category'], key: string): number {
+  const group = inputs[category] as Record<string, number>;
+  return group[key] ?? 0;
+}
+
+function DataSection({
+  inputs,
+  onLoad,
+  onReset,
+  loadStatus,
+}: {
+  inputs: Inputs;
+  onLoad: (file: File) => void;
+  onReset: () => void;
+  loadStatus: { kind: 'idle' } | { kind: 'ok'; name: string } | { kind: 'error'; msg: string };
+}) {
+  return (
+    <Stack gap={20}>
+      <Stack gap={8}>
+        <span className="section-mark" id="data">
+          Данные
+        </span>
+        <H2>Что нужно от финансиста / команды для пересчёта</H2>
+        <Text tone="secondary">
+          На этой странице все цифры считаются по формуле от 4 групп входных данных. Скачайте
+          шаблон, заполните своими значениями, загрузите назад — таблицы и метрики пересчитаются
+          автоматически. Выводы и рекомендация остаются неизменными — это не магия, а
+          математика.
+        </Text>
+      </Stack>
+
+      <Card title="Загрузить заполненный JSON">
+        <Stack gap={12}>
+          <Text size="small" tone="secondary">
+            Скачайте шаблон, откройте в любом текстовом редакторе или Excel, замените значения
+            справа от двоеточий, сохраните как <span className="kbd">.json</span>. Затем загрузите
+            файл сюда — все цифры выше пересчитаются.
+          </Text>
+          <div className="data-actions">
+            <a
+              className="data-actions__btn data-actions__btn--primary"
+              href="/data.template.json"
+              download="t-gorod-data.template.json"
+            >
+              Скачать шаблон
+            </a>
+            <label className="data-actions__btn">
+              Загрузить заполненный файл
+              <input
+                type="file"
+                accept=".json,application/json"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) onLoad(file);
+                  e.target.value = '';
+                }}
+              />
+            </label>
+            <button type="button" className="data-actions__btn data-actions__btn--ghost" onClick={onReset}>
+              Сбросить к дефолту
+            </button>
+          </div>
+          {loadStatus.kind === 'ok' && (
+            <Callout tone="success" title="Файл загружен">
+              <Text size="small">
+                Источник: <span className="kbd">{loadStatus.name}</span>. Метрики на странице
+                пересчитаны.
+              </Text>
+            </Callout>
+          )}
+          {loadStatus.kind === 'error' && (
+            <Callout tone="danger" title="Не удалось разобрать файл">
+              <Text size="small">{loadStatus.msg}</Text>
+            </Callout>
+          )}
+        </Stack>
+      </Card>
+
+      <Stack gap={16}>
+        {FIELD_GROUPS.map((group) => (
+          <Stack key={group.title} gap={8}>
+            <H3>{group.title}</H3>
+            <Text size="small" tone="secondary">
+              {group.intro}
+            </Text>
+            <DataTable
+              headers={['Поле', 'Что это', 'Где брать значение', 'Текущее']}
+              align={['left', 'left', 'left', 'right']}
+              rows={group.fields.map((f) => [
+                <span className="data-row__key">
+                  <span className="kbd">{f.key}</span>
+                  <span className="data-row__label">{f.label}</span>
+                </span>,
+                f.what,
+                f.source,
+                formatField(getFieldValue(inputs, group.category, f.key), f.format),
+              ])}
+            />
+          </Stack>
+        ))}
+      </Stack>
+
+      <Callout tone="info" title="Какие данные критически влияют">
+        <Text size="small">
+          Самые чувствительные параметры:{' '}
+          <Text as="span" weight="semibold">expectedActivationRate</Text>,{' '}
+          <Text as="span" weight="semibold">avgOrderValueRub</Text>,{' '}
+          <Text as="span" weight="semibold">platformMarginRate</Text>. Изменение каждого на 20%
+          меняет годовую маржу на сотни миллионов рублей. Drop-off проценты — почти константы,
+          их трогать не нужно. Зарплаты влияют линейно, проще всего обновляются HR.
+        </Text>
+      </Callout>
+    </Stack>
+  );
+}
+
+type LoadStatus = { kind: 'idle' } | { kind: 'ok'; name: string } | { kind: 'error'; msg: string };
+
+function mergeInputs(base: Inputs, patch: unknown): Inputs {
+  if (!patch || typeof patch !== 'object') return base;
+  const p = patch as Record<string, unknown>;
+  const next: Inputs = {
+    audience: { ...base.audience },
+    conversion: { ...base.conversion },
+    dropoffs: { ...base.dropoffs },
+    costs: { ...base.costs },
+  };
+  (Object.keys(next) as Array<keyof Inputs>).forEach((groupKey) => {
+    const partial = p[groupKey];
+    if (partial && typeof partial === 'object') {
+      const g = partial as Record<string, unknown>;
+      const target = next[groupKey] as Record<string, number>;
+      Object.keys(target).forEach((field) => {
+        const v = g[field];
+        if (typeof v === 'number' && !Number.isNaN(v)) target[field] = v;
+      });
+    }
+  });
+  return next;
+}
+
 export function App() {
+  const [inputs, setInputs] = useState<Inputs>(DEFAULT_INPUTS);
+  const [loadStatus, setLoadStatus] = useState<LoadStatus>({ kind: 'idle' });
+  const m = useMemo(() => computeMetrics(inputs), [inputs]);
+
+  const handleLoad = (file: File) => {
+    file
+      .text()
+      .then((text) => {
+        try {
+          const parsed = JSON.parse(text);
+          setInputs((curr) => mergeInputs(curr, parsed));
+          setLoadStatus({ kind: 'ok', name: file.name });
+        } catch (err) {
+          setLoadStatus({ kind: 'error', msg: (err as Error).message });
+        }
+      })
+      .catch((err) => setLoadStatus({ kind: 'error', msg: (err as Error).message }));
+  };
+
+  const handleReset = () => {
+    setInputs(DEFAULT_INPUTS);
+    setLoadStatus({ kind: 'idle' });
+  };
+
+  const intro = `Разводка по стоимости, окупаемости и тому, нужен ли курьер. Цены — РФ, апрель 2026, на базу целевой аудитории ≈ ${formatPeople(m.targetAudience)} (${formatPercent(inputs.audience.targetAgeShare)} MAU Т-Банка попадает в 14–35). Все цифры пересчитываются автоматически — раздел «Данные».`;
+
   return (
     <>
       <TopBar />
@@ -554,17 +1081,22 @@ export function App() {
         <Stack gap={8}>
           <span className="section-mark">Т-Город × Т-Банк · хакатон 2026</span>
           <H1>Финплан вариантов «виджета» и онбординга маскота</H1>
-          <Text tone="secondary">
-            Разводка по стоимости, окупаемости и тому, нужен ли курьер. Цены — РФ, апрель 2026,
-            на базу целевой аудитории ≈ 10 млн (40% MAU Т-Банка попадает в 14–35).
-          </Text>
+          <Text tone="secondary">{intro}</Text>
         </Stack>
 
         <Grid columns={4} gap={16}>
-          <Stat value="10 млн" label="Целевая база 14–35" />
-          <Stat value="500 тыс" label="Прогноз активации (5%)" tone="info" />
-          <Stat value="2.4 млрд ₽" label="Маржа в год при PWA-варианте" tone="success" />
-          <Stat value="~ 3 нед" label="Окупаемость лучшего варианта" tone="success" />
+          <Stat value={formatPeople(m.targetAudience)} label="Целевая база 14–35" />
+          <Stat
+            value={formatPeople(m.activatedUsers)}
+            label={`Прогноз активации (${formatPercent(inputs.conversion.expectedActivationRate)})`}
+            tone="info"
+          />
+          <Stat value={formatRub(m.yearlyMargin)} label="Маржа в год при PWA-варианте" tone="success" />
+          <Stat
+            value={`~ ${Math.max(1, Math.round(m.paybackDaysE))} дн`}
+            label="Окупаемость лучшего сценария"
+            tone="success"
+          />
         </Grid>
 
         <Divider />
@@ -618,14 +1150,49 @@ export function App() {
             headers={['Статья', 'Месяц', 'Год', 'Комментарий']}
             align={['left', 'right', 'right', 'left']}
             rows={[
-              ['PWA-команда (5 чел)', formatRub(2_500_000), formatRub(30_000_000), 'PM, 2 FE, BE, design'],
-              ['Android-команда (доп.)', formatRub(1_200_000), formatRub(14_400_000), 'mobile + QA'],
-              ['Yandex Cloud + CDN', formatRub(150_000), formatRub(1_800_000), 'PWA hosting, медиа маскота'],
-              ['Push-инфра (APNS/FCM/web push)', formatRub(80_000), formatRub(960_000), 'до 30 млн пушей/мес'],
+              [
+                'PWA-команда (5 чел)',
+                formatRub(inputs.costs.pwaTeamMonthlyRub),
+                formatRub(inputs.costs.pwaTeamMonthlyRub * 12),
+                'PM, 2 FE, BE, design',
+              ],
+              [
+                'Android-команда (доп.)',
+                formatRub(inputs.costs.androidTeamMonthlyRub),
+                formatRub(inputs.costs.androidTeamMonthlyRub * 12),
+                'mobile + QA',
+              ],
+              [
+                'Yandex Cloud + CDN',
+                formatRub(inputs.costs.infraMonthlyRub),
+                formatRub(inputs.costs.infraMonthlyRub * 12),
+                'PWA hosting, медиа маскота',
+              ],
+              [
+                'Push-инфра (APNS/FCM/web push)',
+                formatRub(inputs.costs.pushInfraMonthlyRub),
+                formatRub(inputs.costs.pushInfraMonthlyRub * 12),
+                'до 30 млн пушей/мес',
+              ],
               ['Tinkoff ID OAuth', '0 ₽', '0 ₽', 'Внутренний продукт банка'],
-              ['Дизайн маскота (Lottie/Rive)', '—', formatRub(1_500_000), 'Разовая работа + апдейты'],
-              ['Аналитика (Amplitude/in-house)', formatRub(200_000), formatRub(2_400_000), 'Funnel, retention'],
-              ['SMS/email уведомления (1 млн)', formatRub(50_000), formatRub(600_000), 'Только активация'],
+              [
+                'Дизайн маскота (Lottie/Rive)',
+                '—',
+                formatRub(inputs.costs.mascotDesignOneTimeRub),
+                'Разовая работа + апдейты',
+              ],
+              [
+                'Аналитика (Amplitude/in-house)',
+                formatRub(inputs.costs.analyticsMonthlyRub),
+                formatRub(inputs.costs.analyticsMonthlyRub * 12),
+                'Funnel, retention',
+              ],
+              [
+                'SMS/email уведомления',
+                formatRub(inputs.costs.smsActivationMonthlyRub),
+                formatRub(inputs.costs.smsActivationMonthlyRub * 12),
+                'Только активация',
+              ],
             ]}
           />
         </Stack>
@@ -662,8 +1229,12 @@ export function App() {
             </Card>
           </Grid>
           <Callout tone="warning" title="Где курьер ломает экономику">
-            Если запросит хотя бы 5% iOS-аудитории (≈ 75 тыс визитов) — это 150 млн ₽
-            разовых расходов. Это в 5 раз дороже всей разработки PWA. Не делать массовым.
+            Если запросит хотя бы{' '}
+            {formatPercent(inputs.costs.courierIosRequestShare)} iOS-аудитории (≈{' '}
+            {formatPeople(m.courierIosVisits)} визитов) — это{' '}
+            {formatRub(m.courierTotalCost)} разовых расходов. Это в{' '}
+            {(m.courierTotalCost / Math.max(1, m.yearOneCostA)).toFixed(1)}× дороже всей
+            разработки PWA. Не делать массовым.
           </Callout>
         </Stack>
 
@@ -679,24 +1250,26 @@ export function App() {
                 Tinkoff ID OAuth: 1 тап если Т-Банк установлен. Курьер не нужен.
               </Text>
               <Grid columns={4} gap={12}>
-                <Stat value={formatRub(35_000_000)} label="Год 1, total" />
-                <Stat value={formatRub(20_000_000)} label="Год 2+" />
-                <Stat value="500 тыс" label="Активация (юзеров)" tone="info" />
-                <Stat value="~ 18 дней" label="Окупаемость" tone="success" />
+                <Stat value={formatRub(m.yearOneCostA)} label="Год 1, total" />
+                <Stat value={formatRub(m.yearTwoPlusA)} label="Год 2+" />
+                <Stat value={formatPeople(m.activatedUsers)} label="Активация (юзеров)" tone="info" />
+                <Stat
+                  value={`~ ${Math.max(1, Math.round(m.paybackDaysA))} дн`}
+                  label="Окупаемость"
+                  tone="success"
+                />
               </Grid>
               <DataTable
                 headers={['Статья', 'Год 1', 'Покрытие']}
                 align={['left', 'right', 'left']}
                 rows={[
-                  ['Разработка PWA (3 мес × команда)', formatRub(7_500_000), '—'],
-                  ['Инфра + аналитика', formatRub(5_000_000), '—'],
-                  ['Поддержка (полгода × 50%)', formatRub(15_000_000), '—'],
-                  ['Маскот + контент', formatRub(2_500_000), '—'],
-                  ['Активация (push + SMS)', formatRub(5_000_000), '—'],
+                  ['PWA-команда (12 мес)', formatRub(m.pwaTeamYear), '—'],
+                  ['Инфра + аналитика + push (12 мес)', formatRub(m.pwaInfraYear), '—'],
+                  ['Маскот + контент (разово)', formatRub(inputs.costs.mascotDesignOneTimeRub), '—'],
                   ['Курьер', '0 ₽', '0% (не нужен)'],
-                  ['ИТОГО', formatRub(35_000_000), 'iOS + Android'],
+                  ['ИТОГО', formatRub(m.yearOneCostA), 'iOS + Android'],
                 ]}
-                rowTone={[undefined, undefined, undefined, undefined, undefined, 'success', 'info']}
+                rowTone={[undefined, undefined, undefined, 'success', 'info']}
               />
             </Stack>
           </Card>
@@ -708,9 +1281,16 @@ export function App() {
                 открывается он → SSO → редирект в PWA Т-Города. 99% юзеров справятся.
               </Text>
               <Grid columns={4} gap={12}>
-                <Stat value={formatRub(12_000_000)} label="Год 1, total" />
-                <Stat value="9% открытия" label="Push CTR (median)" />
-                <Stat value="180 тыс" label="Активаций в месяц" tone="info" />
+                <Stat value={formatRub(m.yearOneCostB)} label="Год 1, total" />
+                <Stat
+                  value={`${formatPercent(inputs.dropoffs.pushCtrMedian)} открытия`}
+                  label="Push CTR (median)"
+                />
+                <Stat
+                  value={formatPeople(m.pushMonthlyOpens)}
+                  label="Открытий push в месяц"
+                  tone="info"
+                />
                 <Stat value="нет cue" label="Habit-формирование" tone="warning" />
               </Grid>
               <Text size="small" tone="secondary">
@@ -727,8 +1307,12 @@ export function App() {
                 AppWidget с маскотом и pinned shortcut. iOS не покрывает совсем.
               </Text>
               <Grid columns={4} gap={12}>
-                <Stat value={formatRub(18_000_000)} label="Год 1, total" />
-                <Stat value="~50%" label="Покрытие базы" tone="warning" />
+                <Stat value={formatRub(m.yearOneCostC)} label="Год 1, total" />
+                <Stat
+                  value={formatPercent(inputs.audience.androidShare)}
+                  label="Покрытие базы"
+                  tone="warning"
+                />
                 <Stat value="настоящий" label="Виджет на хоуме" tone="success" />
                 <Stat value="нет" label="iOS-решение" tone="danger" />
               </Grid>
@@ -738,18 +1322,33 @@ export function App() {
           <Card title="D. PWA + курьер для всех iOS" trailing={<Pill tone="warning">Дорого</Pill>}>
             <Stack gap={12}>
               <Text>
-                Гипотетически: курьер 2 000 ₽ × 5% от 4 млн iOS-юзеров. Считаем чисто, чтобы
-                показать масштаб провала.
+                Гипотетически: курьер{' '}
+                {formatRub(inputs.costs.courierVisitRub)} ×{' '}
+                {formatPercent(inputs.costs.courierIosRequestShare)} от{' '}
+                {formatPeople(m.iosAudience)} iOS-юзеров. Считаем чисто, чтобы показать масштаб
+                провала.
               </Text>
               <Grid columns={4} gap={12}>
-                <Stat value={formatRub(435_000_000)} label="Год 1, total" tone="danger" />
-                <Stat value={formatRub(400_000_000)} label="Курьеры (200 тыс визитов)" tone="danger" />
-                <Stat value="× 12" label="Дороже варианта A" tone="danger" />
-                <Stat value="~ 8 мес" label="Окупаемость" tone="warning" />
+                <Stat value={formatRub(m.yearOneCostD)} label="Год 1, total" tone="danger" />
+                <Stat
+                  value={formatRub(m.courierTotalCost)}
+                  label={`Курьеры (${formatPeople(m.courierIosVisits)} визитов)`}
+                  tone="danger"
+                />
+                <Stat
+                  value={`× ${(m.yearOneCostD / Math.max(1, m.yearOneCostA)).toFixed(1)}`}
+                  label="Дороже варианта A"
+                  tone="danger"
+                />
+                <Stat
+                  value={`~ ${(m.paybackDaysD / 30).toFixed(1)} мес`}
+                  label="Окупаемость"
+                  tone="warning"
+                />
               </Grid>
               <Text size="small" tone="secondary">
                 Окупится, но capex запредельный и логистически нереализуем — Достависта не сможет
-                поднять 200 тыс визитов в первый год.
+                поднять {formatPeople(m.courierIosVisits)} визитов в первый год.
               </Text>
             </Stack>
           </Card>
@@ -764,13 +1363,23 @@ export function App() {
                 нативный Android-виджет как cherry on top для половины базы.
               </Text>
               <Grid columns={4} gap={12}>
-                <Stat value={formatRub(58_000_000)} label="Год 1, total" />
+                <Stat value={formatRub(m.yearOneCostE)} label="Год 1, total" />
                 <Stat value="100%" label="Покрытие базы" tone="success" />
-                <Stat value="700 тыс" label="Активаций" tone="success" />
-                <Stat value="~ 25 дней" label="Окупаемость" tone="success" />
+                <Stat
+                  value={formatPeople(m.activatedUsers * 1.4)}
+                  label="Активаций"
+                  tone="success"
+                />
+                <Stat
+                  value={`~ ${Math.max(1, Math.round(m.paybackDaysE))} дн`}
+                  label="Окупаемость"
+                  tone="success"
+                />
               </Grid>
               <Text size="small" tone="secondary">
-                Дельта к варианту A — +23 млн ₽, прирост активации +40%. ROI этого допвложения ≈ 30×.
+                Дельта к варианту A — +{formatRub(m.yearOneCostE - m.yearOneCostA)}, прирост
+                активации +40%. ROI этого допвложения ≈{' '}
+                {((m.yearlyMargin * 0.4) / Math.max(1, m.yearOneCostE - m.yearOneCostA)).toFixed(0)}×.
               </Text>
             </Stack>
           </Card>
@@ -781,20 +1390,43 @@ export function App() {
         <Stack gap={12}>
           <H2 id="roi">Проверка ROI: откуда возьмётся прибыль</H2>
           <Text tone="secondary">
-            Считаем по средним цифрам российского food-tech 2025: средний чек 2 000 ₽, маржа платформы
-            10% (Самокат, Купер). При активации 500 тыс юзеров и 2 заказа/мес:
+            Считаем по входным данным из раздела «Данные»: средний чек{' '}
+            {formatRub(inputs.conversion.avgOrderValueRub)}, маржа платформы{' '}
+            {formatPercent(inputs.conversion.platformMarginRate)}. При активации{' '}
+            {formatPeople(m.activatedUsers)} юзеров и{' '}
+            {inputs.conversion.ordersPerUserPerMonth} заказа/мес:
           </Text>
           <DataTable
             headers={['Метрика', 'Значение', 'Источник / допущение']}
             align={['left', 'right', 'left']}
             rows={[
-              ['Средний чек', '2 000 ₽', 'Медиана Самокат/Купер 2025'],
-              ['Маржа платформы', '10% = 200 ₽', 'Бенчмарк e-grocery РФ'],
-              ['Активация (5% от 10 млн)', '500 000', 'Реалистичный таргет PWA'],
-              ['Заказов на юзера в месяц', '2', 'Конс. оценка для нового канала'],
-              ['Заказов в месяц', '1 000 000', '500к × 2'],
-              ['Маржа в месяц', formatRub(200_000_000), '1 млн × 200 ₽'],
-              ['Маржа в год', formatRub(2_400_000_000), 'на полную раскатку'],
+              ['Средний чек', formatRub(inputs.conversion.avgOrderValueRub), 'Медиана Самокат/Купер 2025'],
+              [
+                'Маржа платформы',
+                `${formatPercent(inputs.conversion.platformMarginRate)} = ${formatRub(m.marginPerOrder)}`,
+                'Бенчмарк e-grocery РФ',
+              ],
+              [
+                `Активация (${formatPercent(inputs.conversion.expectedActivationRate)} от ${formatPeople(m.targetAudience)})`,
+                formatPeople(m.activatedUsers),
+                'Реалистичный таргет PWA',
+              ],
+              [
+                'Заказов на юзера в месяц',
+                String(inputs.conversion.ordersPerUserPerMonth),
+                'Конс. оценка для нового канала',
+              ],
+              [
+                'Заказов в месяц',
+                formatPeople(m.monthlyOrders),
+                `${formatPeople(m.activatedUsers)} × ${inputs.conversion.ordersPerUserPerMonth}`,
+              ],
+              [
+                'Маржа в месяц',
+                formatRub(m.monthlyMargin),
+                `${formatPeople(m.monthlyOrders)} × ${formatRub(m.marginPerOrder)}`,
+              ],
+              ['Маржа в год', formatRub(m.yearlyMargin), 'на полную раскатку'],
             ]}
             rowTone={[
               undefined,
@@ -884,9 +1516,12 @@ export function App() {
                   title="PWA + Add to Home Screen + Tinkoff ID"
                   pick
                   metrics={[
-                    { value: formatRub(35_000_000), label: 'Год 1' },
+                    { value: formatRub(m.yearOneCostA), label: 'Год 1' },
                     { value: '5 чел', label: 'Команда (PM/FE×2/BE/design)' },
-                    { value: '~18 дн', label: 'Окупаемость' },
+                    {
+                      value: `~${Math.max(1, Math.round(m.paybackDaysA))} дн`,
+                      label: 'Окупаемость',
+                    },
                   ]}
                   pros={{
                     good: [
@@ -909,7 +1544,7 @@ export function App() {
                   id="iOS · вариант 2"
                   title="Push + Universal Link (без иконки)"
                   metrics={[
-                    { value: formatRub(12_000_000), label: 'Год 1' },
+                    { value: formatRub(m.yearOneCostB), label: 'Год 1' },
                     { value: '2 чел', label: 'Команда (BE + push-маркетолог)' },
                     { value: '— нет cue', label: 'Habit формирование' },
                   ]}
@@ -944,7 +1579,7 @@ export function App() {
                   id="Android · вариант 1"
                   title="Native AppWidget через RuStore + Pinned Shortcut"
                   metrics={[
-                    { value: formatRub(18_000_000), label: 'Год 1 (доп к PWA)' },
+                    { value: formatRub(m.yearOneCostC), label: 'Год 1 (доп к PWA)' },
                     { value: '+4 чел', label: 'Mobile + QA' },
                     { value: 'настоящий', label: 'Виджет на хоуме' },
                   ]}
@@ -1060,13 +1695,14 @@ export function App() {
             <Text size="small">
               Берём <Text as="span" weight="semibold">iOS-1 (PWA + Add to Home + Tinkoff ID)</Text>{' '}
               и <Text as="span" weight="semibold">Android-2 (PWA WebAPK)</Text> в первой фазе.
-              Это одна общая команда из 5 человек, общий стек, одна кодовая база. Бюджет — 35 млн ₽
-              год 1, окупаемость ≈ 18 дней.
+              Это одна общая команда из 5 человек, общий стек, одна кодовая база. Бюджет —{' '}
+              {formatRub(m.yearOneCostA)} год 1, окупаемость ≈{' '}
+              {Math.max(1, Math.round(m.paybackDaysA))} дней.
             </Text>
             <Text size="small">
               <Text as="span" weight="semibold">Android-1 (native AppWidget)</Text> добавляем
-              во второй фазе, когда первая когорта подтвердит маржу — это +18 млн ₽ за +5–10% к
-              retention на половине базы.
+              во второй фазе, когда первая когорта подтвердит маржу — это +
+              {formatRub(m.yearOneCostC)} за +5–10% к retention на половине базы.
             </Text>
             <Text size="small">
               <Text as="span" weight="semibold">iOS-2 (push only)</Text> используем только как
@@ -1075,6 +1711,15 @@ export function App() {
             </Text>
           </Callout>
         </Stack>
+
+        <Divider />
+
+        <DataSection
+          inputs={inputs}
+          onLoad={handleLoad}
+          onReset={handleReset}
+          loadStatus={loadStatus}
+        />
 
         <Divider />
 
