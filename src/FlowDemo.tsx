@@ -756,7 +756,7 @@ function ScreenFullList({
         <span className="lobby-bottom__total">{CART_TOTAL} ₽</span>
       </div>
 
-      {step === 'fullList' && (
+      {step === 'fullList' && currentStreak === 0 && (
         <div className="full-list__hunt-hint">
           <span className="full-list__hunt-hint-fox">
             <FoxFace size={26} />
@@ -928,6 +928,8 @@ export function FlowDemo() {
   // Слежение в полной ленте: IntersectionObserver на карточке Толи в её скролл-контейнере
   useEffect(() => {
     if (step !== 'fullList') return;
+    // Подсказка и автодоводка до Толи нужны только при первом прохождении.
+    if (currentStreak > 0) return;
     const root = fullListScrollRef.current;
     const target = tolyaCardRef.current;
     if (!root || !target) return;
@@ -961,7 +963,7 @@ export function FlowDemo() {
       observer.disconnect();
       clearTimeout(fallback);
     };
-  }, [step]);
+  }, [step, currentStreak]);
 
   const stepContent = useMemo(() => {
     switch (step) {
