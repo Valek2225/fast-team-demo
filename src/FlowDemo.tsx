@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { IphoneStatusBarGraphic } from './IphoneStatusBarGraphic';
 
 type Step =
   | 'cart'
@@ -145,29 +146,8 @@ function ReceiptIcon() {
 
 function StatusBar({ tBank = false }: { tBank?: boolean }) {
   return (
-    <div className="iphone__statusbar iphone__statusbar--flow">
-      <span className="iphone__time">22:14</span>
-      {tBank ? (
-        <div className="iphone__notch-wrap">
-          <div className="iphone__tbank-pill">Т-БАНК</div>
-        </div>
-      ) : (
-        <div className="iphone__notch-wrap">
-          <div className="iphone__dynamic-island" />
-        </div>
-      )}
-      <div className="iphone__icons">
-        <span className="iphone__signal" aria-hidden>
-          <i />
-          <i />
-          <i />
-          <i />
-        </span>
-        <span className="iphone__wifi" aria-hidden />
-        <span className="iphone__battery" aria-hidden>
-          <span className="iphone__battery-fill" />
-        </span>
-      </div>
+    <div className="iphone__statusbar iphone__statusbar--flow iphone__statusbar--kit">
+      <IphoneStatusBarGraphic tBank={tBank} />
     </div>
   );
 }

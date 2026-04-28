@@ -1510,6 +1510,28 @@ body {
   background: transparent;
 }
 
+/* Единый статус-бар из UI-kit (SVG): без отступов, высота по контенту */
+.iphone__statusbar.iphone__statusbar--kit {
+  display: block;
+  height: auto;
+  padding: 0;
+}
+
+.iphone-statusbar-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.iphone-statusbar-tbank-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .iphone__time {
   font-size: 14px;
   font-weight: 600;
@@ -2461,6 +2483,10 @@ body {
 
 .iphone__statusbar--flow {
   height: 48px;
+}
+
+.iphone__statusbar--flow.iphone__statusbar--kit {
+  height: auto;
 }
 
 /* ============================================================
