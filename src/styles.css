@@ -1530,18 +1530,19 @@ body {
   height: auto;
 }
 
+/* Высота по ощущению как у жёлтой шторки (иконки/циферблат не «мельче» центра) */
 .iphone-statusbar-svg--time {
-  height: 22px;
+  height: 30px;
   width: auto;
 }
 
 .iphone-statusbar-svg--icons {
-  height: 22px;
+  height: 30px;
   width: auto;
 }
 
 .iphone-statusbar-svg--island {
-  height: 28px;
+  height: 30px;
   width: auto;
 }
 
