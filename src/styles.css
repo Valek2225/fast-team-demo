@@ -1510,12 +1510,11 @@ body {
   background: transparent;
 }
 
-/* UI-kit: две SVG по краям + центр (шторка Т‑Банка или остров), как в прежней сетке */
+/* UI-kit: две SVG по краям + центр; падинг не переопределяем — от .iphone__statusbar */
 .iphone__statusbar.iphone__statusbar--kit {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0;
 }
 
 .iphone-statusbar-kit__side {
