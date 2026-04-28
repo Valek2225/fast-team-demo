@@ -339,6 +339,7 @@ function TopBar() {
     { href: '#scenarios', label: 'Сценарии' },
     { href: '#roi', label: 'ROI' },
     { href: '#decision', label: 'Решение', accent: true },
+    { href: '#metrics', label: 'Метрики' },
     { href: '#data', label: 'Данные' },
     { href: '#glossary', label: 'Словарь' },
   ];
@@ -743,6 +744,228 @@ function Text({
 
 function Divider() {
   return <hr className="divider" />;
+}
+
+type MetricCase = {
+  brand: string;
+  mascot: string;
+  industry: string;
+  whatTheyDo: string;
+  northStar: { name: string; description: string };
+  counterMetrics: { name: string; description: string }[];
+  takeawayForUs: string;
+};
+
+const METRIC_CASES: MetricCase[] = [
+  {
+    brand: 'Duolingo',
+    mascot: 'Сова Duo',
+    industry: 'Изучение языков',
+    whatTheyDo:
+      'Маскот ведёт стрик и шлёт «грустные» пуши при пропуске. Основной user flow построен вокруг ежедневной 5-минутной задачи. Streak — главный visual cue в приложении.',
+    northStar: {
+      name: 'DAU (Daily Active Users)',
+      description:
+        'Сколько уникальных юзеров заходят каждый день. У Duolingo на 2024 — 40 млн DAU. Эта метрика напрямую коррелирует с длиной стрика: пользователи со стриком ≥7 дней активны в 3.2× чаще.',
+    },
+    counterMetrics: [
+      {
+        name: 'Push opt-out rate',
+        description:
+          'Какой процент юзеров отключает уведомления Duolingo. Если выше 15% — это red flag: маскот-«guilt-trip» переборщил.',
+      },
+      {
+        name: '«Чувствуете ли вы, что приложение давит?»',
+        description:
+          'Внутренний quarterly survey. Когда мем-«пристыжающий» Duo стал слишком жёстким, они это поймали и смягчили tone of voice пушей.',
+      },
+      {
+        name: 'Streak loss recovery rate',
+        description:
+          'Сколько процентов вернулись после потери стрика. Низкий показатель = streak-механика выгнала больше, чем удержала.',
+      },
+    ],
+    takeawayForUs:
+      'Стрик-механика отлично работает для retention, но требует «защитных клапанов»: грейс-период, мягкий тон пушей, мониторинг survey по «давлению маскота». В Т-Городе это критично — мы не должны ассоциироваться с тревогой.',
+  },
+  {
+    brand: 'Snapchat',
+    mascot: 'Snapstreaks (огоньки 🔥)',
+    industry: 'Соцсеть / общение',
+    whatTheyDo:
+      'Stripped-down маскот — это сама механика стрика между друзьями: огонёк держится, пока обмениваетесь снэпами каждый день. Не персонаж, а статус.',
+    northStar: {
+      name: 'Sessions per day',
+      description:
+        'Сколько раз пользователь открывает приложение в день. Юзеры со streak ≥3 дней открывают Snapchat 4× чаще остальных. Это наше доказательство, что streak = главный driver частоты.',
+    },
+    counterMetrics: [
+      {
+        name: 'Streak break sentiment (NPS)',
+        description:
+          'NPS-опрос среди тех, кто только что потерял streak. Снэпчат намеренно мониторит этот сегмент — если NPS падает ниже -20, продукт работает на токсичность.',
+      },
+      {
+        name: 'Reciprocity ratio',
+        description:
+          'Доля стриков, где обе стороны рады, что переписываются. Если падает — streak становится «обязаловкой».',
+      },
+    ],
+    takeawayForUs:
+      'Streak без маскота тоже работает (огоньки сами стали крючком). Для Т-Города значит, что Лис Толя — это «лицо» стрика, но сама стрик-механика должна быть оголтело простой: 1 заказ в день = огонёк жив.',
+  },
+  {
+    brand: 'Headspace',
+    mascot: 'Дружелюбные оранжевые круги + Andy (голос)',
+    industry: 'Медитация / wellness',
+    whatTheyDo:
+      'Маскот — голос Andy + плоские оранжевые иллюстрации. Онбординг — 3 дня бесплатных сессий, на 4-й день мягкий nudge к подписке. Метрики строятся вокруг «успешно завершённой сессии».',
+    northStar: {
+      name: 'Completed sessions per user per week',
+      description:
+        'Не «открытий», а именно «завершил медитацию». 3+ завершённых сессии в неделю = «activated user». При этой метрике D90 retention 65% (vs 12% у тех, кто только открыл).',
+    },
+    counterMetrics: [
+      {
+        name: 'Self-reported stress level',
+        description:
+          'Опрос «насколько вы спокойны?» до и после месяца использования. Если уровень стресса не снижается — продукт не работает, как бы DAU ни рос.',
+      },
+      {
+        name: 'Subscription churn / refund rate',
+        description:
+          'Доля юзеров, кто отписался в первые 30 дней. Главный сигнал, что онбординг продал не то, что продукт даёт.',
+      },
+    ],
+    takeawayForUs:
+      'Метрика «завершил действие» (а не «открыл») — гораздо честнее. Для Т-Города это «сделал заказ», а не «зашёл в каталог». Также заводим self-report — это чувство, что Т-Город «заботится», а не «прессует».',
+  },
+  {
+    brand: 'Tinkoff Junior',
+    mascot: 'Заяц',
+    industry: 'Финансы для подростков',
+    whatTheyDo:
+      'Заяц-маскот в Junior-карте Тинькофф ведёт ребёнка через задачи (накопить, потратить, сэкономить). Параллельно отчёт уходит родителю — это создаёт двойной контур.',
+    northStar: {
+      name: 'Active teen-parent pairs',
+      description:
+        'Сколько пар «подросток + родитель» активно пользуются. Пара одна метрика мониторит обоих — одиночные юзеры здесь не работают.',
+    },
+    counterMetrics: [
+      {
+        name: 'Parental NPS / app uninstall rate',
+        description:
+          'Если дети покупают через Junior импульсивно, родители удаляют приложение. Главный риск двусторонних продуктов с детским face.',
+      },
+      {
+        name: 'Подростковый CSAT по маскоту',
+        description:
+          'Подросткам быстро становится «детский» маскот стыдным. Junior мониторит, до какого возраста заяц «работает».',
+      },
+    ],
+    takeawayForUs:
+      'У нас тоже двусторонний продукт: маскот говорит со взрослым 14–35, но в семейных заказах рядом дети. Считаем «семейные пары», а не отдельных пользователей. Контр-метрика — parental complaint rate.',
+  },
+  {
+    brand: 'Mailchimp',
+    mascot: 'Шимпанзе Freddie',
+    industry: 'B2B email-рассылки',
+    whatTheyDo:
+      'Freddie не «насилует» юзера — он шутит при отправке кампании, поздравляет с маленькими успехами. Маскот = micro-rewards, а не давление.',
+    northStar: {
+      name: 'Time to first sent campaign',
+      description:
+        'Сколько времени проходит от регистрации до первой отправленной рассылки. Это «aha moment» — Mailchimp измеряет именно его, не клики.',
+    },
+    counterMetrics: [
+      {
+        name: 'Onboarding completion drop-off',
+        description:
+          'На каком шаге онбординга юзеры бросают. Они режут шаги до тех пор, пока drop-off на каждом шаге < 10%.',
+      },
+      {
+        name: 'Support ticket volume per new user',
+        description:
+          'Сколько обращений в поддержку на каждого нового юзера. Если растёт — онбординг недостаточно понятен.',
+      },
+    ],
+    takeawayForUs:
+      'Маскот не обязан давить. Толя может быть «помощником в успехе» — поздравлять с первым заказом, при стрике >7 дней давать подарок. Метрика времени до первого заказа = aha moment Т-Города.',
+  },
+  {
+    brand: 'Strava',
+    mascot: 'Челленджи + значки (без живого маскота)',
+    industry: 'Беговые / велотрекинг',
+    whatTheyDo:
+      'Нет персонажа, но есть медальки и челленджи (Run Club May, 10km Challenge). Это «безличный маскот» — gamification как лицо продукта. Хорошая база сравнения для Т-Города.',
+    northStar: {
+      name: 'Workouts per active user per week',
+      description:
+        'Сколько тренировок загружает активный юзер в неделю. Базовый KPI — 3+ тренировки/нед = «active», ниже — «churning».',
+    },
+    counterMetrics: [
+      {
+        name: 'Premium cancellation rate',
+        description:
+          'Платный продукт: основной сигнал «недоставленной ценности». Если выше 8%/мес — продукт перестал быть worth-it.',
+      },
+      {
+        name: 'Privacy complaint rate',
+        description:
+          'Strava ловит, когда челленджи становятся «я обязан публиковать». Бережёт пользователя от social pressure.',
+      },
+    ],
+    takeawayForUs:
+      'Челленджи без маскота тоже работают, если правильно поданы. Для Т-Города можно ввести коллекции (собрал 10 разных продуктов недели) — но коллекция не должна заставлять.',
+  },
+];
+
+function MetricCaseCard({ data }: { data: MetricCase }) {
+  return (
+    <article className="metric-case">
+      <div className="metric-case__head">
+        <div className="metric-case__brand">
+          <h3 className="metric-case__title">{data.brand}</h3>
+          <Text size="small" tone="secondary">
+            {data.mascot} · {data.industry}
+          </Text>
+        </div>
+      </div>
+      <div className="metric-case__what">
+        <Text size="small">{data.whatTheyDo}</Text>
+      </div>
+      <div className="metric-case__metric metric-case__metric--star">
+        <span className="metric-case__metric-tag metric-case__metric-tag--star">
+          North star
+        </span>
+        <h4 className="metric-case__metric-name">{data.northStar.name}</h4>
+        <Text size="small" tone="secondary">
+          {data.northStar.description}
+        </Text>
+      </div>
+      <div className="metric-case__metric metric-case__metric--counter">
+        <span className="metric-case__metric-tag metric-case__metric-tag--counter">
+          Контр-метрики
+        </span>
+        <ul className="metric-case__counter-list">
+          {data.counterMetrics.map((cm) => (
+            <li key={cm.name}>
+              <span className="metric-case__counter-name">{cm.name}</span>
+              <Text size="small" tone="secondary">
+                {cm.description}
+              </Text>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="metric-case__takeaway">
+        <span className="metric-case__metric-tag metric-case__metric-tag--takeaway">
+          Что берём в Т-Город
+        </span>
+        <Text size="small">{data.takeawayForUs}</Text>
+      </div>
+    </article>
+  );
 }
 
 type FieldSpec = {
@@ -1919,6 +2142,120 @@ export function App() {
               <Text as="span" weight="semibold">iOS-2 (push only)</Text> используем только как
               4-недельный пилот для тестирования гипотезы или как канал активации поверх iOS-1, но
               никогда как основное решение — без иконки на хоум-экране клиенты не закрепляются.
+            </Text>
+          </Callout>
+        </Stack>
+
+        <Divider />
+
+        <Stack gap={20}>
+          <Stack gap={8}>
+            <span className="section-mark" id="metrics">
+              Метрики
+            </span>
+            <H2>Какие метрики и контр-метрики брать у конкурентов с маскотами</H2>
+            <Text tone="secondary">
+              Когда оценивать success онбординга и удержания — не изобретаем велосипед, смотрим,
+              какие KPI используют продукты с маскотами и стрик-механиками. Для каждого кейса:
+              что они делают, главная north-star метрика, контр-метрики (чтобы не сломать UX), и
+              что переносим в Т-Город.
+            </Text>
+          </Stack>
+
+          <div className="metric-cases">
+            {METRIC_CASES.map((c) => (
+              <MetricCaseCard key={c.brand} data={c} />
+            ))}
+          </div>
+
+          <Stack gap={12}>
+            <H3>Свод: KPI-набор для Т-Города и Лиса Толи</H3>
+            <Text size="small" tone="secondary">
+              Из 6 кейсов выше выкристаллизовался такой набор. Главное правило: на каждую growth
+              метрику — обязательная контр-метрика, чтобы не разогнать DAU ценой токсичности.
+            </Text>
+            <DataTable
+              headers={['Стадия', 'Метрика роста', 'Контр-метрика', 'Целевое значение']}
+              align={['left', 'left', 'left', 'right']}
+              rows={[
+                [
+                  'Привлечение',
+                  'CAC через Tinkoff ID канал',
+                  'CAC vs LTV ratio (≥3×)',
+                  '50–80 ₽ / юзер',
+                ],
+                [
+                  'Активация',
+                  'Time to first order (от регистрации до первой покупки)',
+                  'Onboarding drop-off на каждом шаге',
+                  '< 30 минут',
+                ],
+                [
+                  'Активация',
+                  '% юзеров, сделавших 1 заказ за 7 дней',
+                  'Refund rate первого заказа',
+                  '≥ 35%',
+                ],
+                [
+                  'Удержание',
+                  'D7 retention (вернулись через неделю)',
+                  'Push opt-out rate',
+                  '≥ 25% при opt-out < 12%',
+                ],
+                [
+                  'Удержание',
+                  'D30 retention',
+                  '«Чувствую, что Толя давит» (quarterly survey)',
+                  '≥ 18% при negative ≤ 10%',
+                ],
+                [
+                  'Удержание',
+                  'Streak length distribution (% юзеров со streak ≥7)',
+                  'Streak break NPS (отзывы тех, кто потерял огонь)',
+                  '≥ 40% при NPS > 0',
+                ],
+                [
+                  'Engagement',
+                  'Заказов на активного юзера / месяц',
+                  'Session length > 5 мин (для grocery — too long)',
+                  '≥ 2.0 при session ≤ 4 мин',
+                ],
+                [
+                  'Качество',
+                  'Mascot interaction rate (% сессий с тапом по Толе)',
+                  'Mascot fatigue (CSAT по «маскот стал назойливым»)',
+                  '≥ 60% при CSAT ≥ 4.0',
+                ],
+                [
+                  'Семья',
+                  'Семейные пары (родитель + ребёнок одного аккаунта)',
+                  'Parental complaint rate (письма в поддержку про детей)',
+                  '≥ 25% при complaint ≤ 0.5%',
+                ],
+              ]}
+              rowTone={[
+                undefined,
+                'info',
+                'info',
+                'success',
+                'success',
+                'success',
+                'warning',
+                'warning',
+                'warning',
+              ]}
+            />
+          </Stack>
+
+          <Callout tone="warning" title="Главный анти-паттерн: погоня только за DAU">
+            <Text size="small">
+              Самая частая ошибка — оптимизировать только DAU без контр-метрик. Duolingo через это
+              прошёл и получил мем про «токсичную сову». В Т-Городе делать строго парами:{' '}
+              <Text as="span" weight="semibold">
+                каждая метрика роста = одна контр-метрика
+              </Text>
+              . Если хотя бы одна контр-метрика красная (push opt-out выше 12%, NPS ниже 0,
+              parental complaint выше 0.5%) — рост заморожен, чиним UX, потом качаем дальше.
             </Text>
           </Callout>
         </Stack>

@@ -987,3 +987,125 @@ body {
   color: var(--text-tertiary);
   background: var(--bg-soft);
 }
+
+.metric-cases {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .metric-cases {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metric-case {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-lg);
+}
+
+.metric-case__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.metric-case__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metric-case__title {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.metric-case__what {
+  padding-bottom: 6px;
+}
+
+.metric-case__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--bg-soft);
+}
+
+.metric-case__metric--star {
+  border-left: 2px solid var(--accent);
+}
+
+.metric-case__metric--counter {
+  border-left: 2px solid var(--danger);
+}
+
+.metric-case__metric-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.metric-case__metric-tag--star {
+  color: var(--accent);
+}
+
+.metric-case__metric-tag--counter {
+  color: var(--danger);
+}
+
+.metric-case__metric-tag--takeaway {
+  color: var(--success);
+}
+
+.metric-case__metric-name {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.metric-case__counter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.metric-case__counter-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.metric-case__counter-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.metric-case__takeaway {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--success-soft);
+  border-left: 2px solid var(--success);
+}
