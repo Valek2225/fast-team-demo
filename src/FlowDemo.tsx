@@ -209,7 +209,7 @@ const CART_TOTAL = 622;
 
 function ScreenCart({ onCheckout }: { onCheckout: () => void }) {
   return (
-    <div className="iphone__screen iphone__screen--cart">
+    <div className="iphone__screen iphone__screen--cart iphone__screen--locked">
       <div className="m-app m-app--lobby">
         <div className="lobby-top">
           <button className="lobby-top__close">Закрыть</button>
@@ -275,7 +275,7 @@ function ScreenCart({ onCheckout }: { onCheckout: () => void }) {
 
 function ScreenOrderConfirmed({ onUnpack }: { onUnpack: () => void }) {
   return (
-    <div className="iphone__screen iphone__screen--order">
+    <div className="iphone__screen iphone__screen--order iphone__screen--locked">
       <div className="m-app">
         <div className="m-app__topnav">
           <button className="m-app__back" aria-label="Назад">
@@ -339,7 +339,7 @@ function ScreenOrderConfirmed({ onUnpack }: { onUnpack: () => void }) {
 
 function ScreenMascotIntro({ onCatch }: { onCatch: () => void }) {
   return (
-    <div className="iphone__screen iphone__screen--mascot">
+    <div className="iphone__screen iphone__screen--mascot iphone__screen--locked">
       <div className="m-app m-app--mascot">
         <div className="m-app__topnav">
           <button className="m-app__back" aria-label="Закрыть">
@@ -460,8 +460,16 @@ function ScreenLobby({
   carouselRef,
 }: LobbyProps) {
   const moreActive = step === 'lobbyHint';
+  // Пока ждём авто-скролл к «Подобрали для вас» и тап по «Все» — блокируем скролл экрана,
+  // чтобы не сбить анимацию и не увести фокус с CTA.
+  const scrollLocked =
+    step === 'lobbyArrival' || step === 'lobbyAutoScroll' || step === 'lobbyHint';
   return (
-    <div className="iphone__screen iphone__screen--lobby">
+    <div
+      className={`iphone__screen iphone__screen--lobby${
+        scrollLocked ? ' iphone__screen--locked' : ''
+      }`}
+    >
       <div className="lobby-content">
         <div className="lobby-top">
           <button className="lobby-top__close">Закрыть</button>
@@ -950,6 +958,12 @@ export function FlowDemo() {
             <strong>Авто-скролл к «Подобрали для вас» в Main Lobby.</strong> Система мягко
             подводит юзера до ленты и подсказывает: «Толя оставил для тебя предложение —
             нажми Все». Кнопка «Все» пульсирует.
+          </li>
+          <li>
+            <strong>Блокировка скролла на «обязательных» шагах.</strong> На экранах с главным
+            действием (корзина → оформить, заказ → распаковать, знакомство → поймать) и в лобби на
+            шагах 4–6 вертикальный скролл выключен — нельзя сбить авто-скролл и случайно увести
+            фокус с кнопки «Все».
           </li>
           <li>
             <strong>Полная вертикальная лента, 3 колонки.</strong> Товар Толи — на 11-й позиции

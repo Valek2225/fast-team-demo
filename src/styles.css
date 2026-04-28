@@ -3331,6 +3331,8 @@ body {
 
 .iphone__screen--locked {
   overflow: hidden !important;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 .full-list {
