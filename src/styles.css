@@ -2531,6 +2531,30 @@ body {
   cursor: pointer;
 }
 
+/* Плашка 🔥 N шире иконки чека — не выглядит «обрезанной». */
+.lobby-top__receipt--wide {
+  width: auto;
+  min-width: 44px;
+  height: 32px;
+  padding: 0 2px;
+}
+
+.lobby-top__streak-pill {
+  min-width: 50px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 210, 74, 0.45);
+  background: rgba(40, 24, 8, 0.92);
+  color: #ffe184;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 .lobby-search {
   display: flex;
   align-items: center;
@@ -3390,8 +3414,8 @@ body {
 .full-list__tolya-pill {
   min-width: 62px;
   height: 32px;
-  padding: 0 12px 0 10px;
-  margin-right: 2px;
+  padding: 0 10px;
+  margin-right: 0;
   border-radius: 16px;
   border: 1px solid rgba(255, 210, 74, 0.45);
   background: rgba(40, 24, 8, 0.92);
@@ -3401,6 +3425,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
+  text-align: center;
   cursor: pointer;
 }
 
@@ -3831,25 +3857,35 @@ body {
 
 .tolya-menu {
   position: absolute;
-  inset: 48px 0 38px;
+  inset: 0;
   z-index: 62;
   display: flex;
-  align-items: flex-end;
-  justify-content: stretch;
-  padding: 0;
-  background: rgba(0, 0, 0, 0.42);
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  padding: 52px 7px calc(7px + env(safe-area-inset-bottom, 0px));
+  pointer-events: auto;
   animation: dim-fade-in 0.2s ease;
 }
 
+.tolya-menu__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.42);
+  z-index: 0;
+}
+
 .tolya-menu__card {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  height: 80%;
-  border-radius: 18px 18px 0 0;
+  max-height: min(82%, calc(100% - 56px));
+  border-radius: 20px 20px 34px 34px;
   border: 1px solid rgba(255, 122, 58, 0.38);
   background:
     radial-gradient(110% 70% at 50% 0%, rgba(255, 122, 58, 0.3) 0%, transparent 62%),
     linear-gradient(180deg, #1a120c 0%, #0f0b08 100%);
-  padding: 14px 14px 20px;
+  padding: 14px 12px 18px;
   box-shadow: 0 22px 44px -16px rgba(0, 0, 0, 0.72);
   display: flex;
   flex-direction: column;
@@ -3871,11 +3907,28 @@ body {
 }
 
 .tolya-menu__close {
-  align-self: flex-end;
+  position: absolute;
+  top: 10px;
+  right: 12px;
   border: 0;
   background: transparent;
   color: rgba(255, 255, 255, 0.75);
   font-size: 14px;
+  cursor: pointer;
+}
+
+.tolya-menu__help {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -3903,88 +3956,28 @@ body {
   font-size: 13px;
 }
 
-.tolya-menu__items {
+.tolya-menu__reco {
   width: 100%;
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-}
-
-.tolya-menu__item {
-  flex: 1;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 10px 12px;
-  text-align: left;
-  cursor: pointer;
-}
-
-.tolya-menu__recommend-head {
-  width: 100%;
-  margin-top: 4px;
-}
-
-.tolya-menu__recommend-title {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.tolya-menu__carousel {
-  width: 100%;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 118px;
-  gap: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 4px;
-}
-
-.tolya-menu__carousel::-webkit-scrollbar { display: none; }
-
-.tolya-menu__card-mini {
-  scroll-snap-align: start;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  background: rgba(255, 255, 255, 0.04);
-  padding: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  align-items: stretch;
+  margin-top: 2px;
 }
 
-.tolya-menu__card-mini-media {
-  height: 72px;
-  border-radius: 10px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
+.lobby-section-title--sheet {
+  font-size: 16px;
+  margin: 6px 0 2px;
+  align-self: flex-start;
 }
 
-.tolya-menu__card-mini-price {
-  font-size: 13px;
-  font-weight: 700;
-  color: #fff;
+.lobby-carousel--sheet {
+  padding-bottom: 6px;
 }
 
-.tolya-menu__card-mini-name {
-  font-size: 11px;
-  line-height: 1.25;
-  color: #fff;
-}
-
-.tolya-menu__card-mini-shop {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.6);
+.lobby-card--sheet {
+  flex: 0 0 132px;
 }
 
 /* notes (общий с mobile-demo) */

@@ -451,22 +451,28 @@ const TOLYA_FULL_INDEX = FULL_RECOMMENDS.findIndex((r) => r.fromTolya);
 
 type LobbyProps = {
   step: Step;
+  currentStreak: number;
   onOpenFullList: () => void;
+  onOpenTolyaMenu: () => void;
   recommendsAnchorRef: React.RefObject<HTMLDivElement>;
   carouselRef: React.RefObject<HTMLDivElement>;
 };
 
 function ScreenLobby({
   step,
+  currentStreak,
   onOpenFullList,
+  onOpenTolyaMenu,
   recommendsAnchorRef,
   carouselRef,
 }: LobbyProps) {
   const moreActive = step === 'lobbyHint';
-  // Пока ждём авто-скролл к «Подобрали для вас» и тап по «Все» — блокируем скролл экрана,
-  // чтобы не сбить анимацию и не увести фокус с CTA.
+  // Туториал лобби (авто-скролл → «Все») только при первом входе. Если пользователь уже
+  // получил стрик и вернулся назад — скролл разблокирован.
   const scrollLocked =
-    step === 'lobbyArrival' || step === 'lobbyAutoScroll' || step === 'lobbyHint';
+    step === 'lobbyAutoScroll' ||
+    step === 'lobbyHint' ||
+    (step === 'lobbyArrival' && currentStreak === 0);
   return (
     <div
       className={`iphone__screen iphone__screen--lobby${
@@ -480,8 +486,16 @@ function ScreenLobby({
             <span className="lobby-top__addr-line">деревня Новая Купавна</span>
             <span className="lobby-top__addr-main">Сиреневая улица, 21 ▾</span>
           </div>
-          <button className="lobby-top__receipt" aria-label="Чеки">
-            <ReceiptIcon />
+          <button
+            className={`lobby-top__receipt${currentStreak > 0 ? ' lobby-top__receipt--wide' : ''}`}
+            aria-label={currentStreak > 0 ? 'Открыть меню Толи' : 'Чеки'}
+            onClick={currentStreak > 0 ? onOpenTolyaMenu : undefined}
+          >
+            {currentStreak > 0 ? (
+              <span className="lobby-top__streak-pill">🔥 {currentStreak}</span>
+            ) : (
+              <ReceiptIcon />
+            )}
           </button>
         </div>
 
@@ -641,7 +655,7 @@ function ScreenFullList({
 }: FullListProps) {
   const isFocused = step === 'foundItem' || step === 'crediting' || step === 'claimed';
   const showTolyaBadge = true;
-  const backLocked = step !== 'fullList';
+  const backLocked = step === 'crediting' || step === 'claimed';
 
   return (
     <div
@@ -806,9 +820,13 @@ function TolyaMenu({ streak, onClose }: { streak: number; onClose: () => void })
   const streakLabel = streak === 1 ? 'день' : streak >= 2 && streak <= 4 ? 'дня' : 'дней';
   return (
     <div className="tolya-menu" role="dialog" aria-modal="true">
-      <div className="tolya-menu__card">
+      <div className="tolya-menu__backdrop" onClick={onClose} aria-hidden />
+      <div className="tolya-menu__card" onClick={(e) => e.stopPropagation()}>
         <button className="tolya-menu__close" onClick={onClose} aria-label="Закрыть">
           ✕
+        </button>
+        <button type="button" className="tolya-menu__help" aria-label="Правила стрика" title="Правила стрика">
+          ?
         </button>
         <div className="tolya-menu__fox">
           <FoxFace size={72} />
@@ -817,23 +835,27 @@ function TolyaMenu({ streak, onClose }: { streak: number; onClose: () => void })
         <p className="tolya-menu__sub">
           Текущий стрик: 🔥 {streak} {streakLabel}
         </p>
-        <div className="tolya-menu__items">
-          <button className="tolya-menu__item">Мой стрик</button>
-          <button className="tolya-menu__item">Правила стрика</button>
-        </div>
-
-        <div className="tolya-menu__recommend-head">
-          <h4 className="tolya-menu__recommend-title">Подобрали для вас</h4>
-        </div>
-        <div className="tolya-menu__carousel">
-          {TOLYA_MENU_RECOMMENDS.map((item) => (
-            <div key={item.id} className="tolya-menu__card-mini">
-              <div className="tolya-menu__card-mini-media">{item.emoji}</div>
-              <div className="tolya-menu__card-mini-price">{item.price}</div>
-              <div className="tolya-menu__card-mini-name">{item.name}</div>
-              <div className="tolya-menu__card-mini-shop">{item.shop}</div>
-            </div>
-          ))}
+        <div className="tolya-menu__reco">
+          <h3 className="lobby-section-title lobby-section-title--sheet">Подобрали для вас</h3>
+          <div className="lobby-carousel lobby-carousel--sheet">
+            {TOLYA_MENU_RECOMMENDS.map((item) => (
+              <div key={item.id} className="lobby-card lobby-card--sheet">
+                <div className="lobby-card__media">
+                  <span className="lobby-card__emoji" aria-hidden>
+                    {item.emoji}
+                  </span>
+                </div>
+                <div className="lobby-card__price">{item.price}</div>
+                <div className="lobby-card__name">{item.name}</div>
+                <div className="lobby-card__bottom">
+                  <span className="lobby-card__weight">{item.shop}</span>
+                  <button type="button" className="lobby-card__plus" aria-label="Добавить">
+                    +
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -873,9 +895,10 @@ export function FlowDemo() {
   // Авто-скролл при попадании в лобби
   useEffect(() => {
     if (step !== 'lobbyArrival') return;
+    if (currentStreak > 0) return;
     const t1 = setTimeout(() => goto('lobbyAutoScroll'), 700);
     return () => clearTimeout(t1);
-  }, [step]);
+  }, [step, currentStreak]);
 
   useEffect(() => {
     if (step !== 'lobbyAutoScroll') return;
@@ -904,10 +927,6 @@ export function FlowDemo() {
       setStep((s) => (s === 'claimed' ? 'done' : s));
     }, 2400);
     return () => clearTimeout(t);
-  }, [step]);
-
-  useEffect(() => {
-    if (step !== 'done') setTolyaMenuOpen(false);
   }, [step]);
 
   // Слежение в полной ленте: IntersectionObserver на карточке Толи в её скролл-контейнере
@@ -962,7 +981,9 @@ export function FlowDemo() {
         return (
           <ScreenLobby
             step={step}
+            currentStreak={currentStreak}
             onOpenFullList={() => goto('fullList')}
+            onOpenTolyaMenu={() => setTolyaMenuOpen(true)}
             recommendsAnchorRef={recommendsAnchorRef}
             carouselRef={carouselRef}
           />
@@ -978,7 +999,7 @@ export function FlowDemo() {
             currentStreak={currentStreak}
             scrollRef={fullListScrollRef}
             tolyaCardRef={tolyaCardRef}
-            onBack={() => goto('lobbyHint')}
+            onBack={() => goto('lobbyArrival')}
             onClaim={() => goto('crediting')}
             onOpenTolyaMenu={() => setTolyaMenuOpen(true)}
           />
@@ -986,7 +1007,7 @@ export function FlowDemo() {
       default:
         return null;
     }
-  }, [step]);
+  }, [step, currentStreak]);
 
   // Прогресс
   const stepIdx = STEP_ORDER.indexOf(step);
@@ -1049,7 +1070,10 @@ export function FlowDemo() {
             {step === 'crediting' && <CreditFx />}
             {step === 'claimed' && <ClaimModal />}
             {tolyaMenuOpen &&
-              (step === 'fullList' ||
+              (step === 'lobbyArrival' ||
+                step === 'lobbyAutoScroll' ||
+                step === 'lobbyHint' ||
+                step === 'fullList' ||
                 step === 'foundItem' ||
                 step === 'crediting' ||
                 step === 'claimed' ||
