@@ -1,10 +1,7 @@
 /**
- * Графика статус-бара из iphone_ui_kit/StatusBar.svg.
- * При tBank центральные чёрные «острова» не рендерятся — вместо них слот под шторку Т‑Банка.
+ * Фрагменты графики из iphone_ui_kit/StatusBar.svg — левая (время) и правая (сигнал/wifi/батарея)
+ * части как отдельные SVG, чтобы раскладывались по краям как в прежней вёрстке.
  */
-
-const VB_W = 390;
-const VB_H = 59;
 
 const TIME_PATH =
   'M54.7456 24.4453C52.3003 24.4453 50.5581 26.1172 50.5581 28.4062V28.4219C50.5581 30.5625 52.0737 32.1406 54.2378 32.1406C55.7847 32.1406 56.7691 31.3516 57.1831 30.4609H57.3394C57.3394 30.5469 57.3316 30.6328 57.3316 30.7188C57.2456 32.875 56.4878 34.625 54.6987 34.625C53.7066 34.625 53.0112 34.1094 52.7144 33.3203L52.6909 33.2422H50.7066L50.7222 33.3281C51.0816 35.0547 52.6284 36.2812 54.6987 36.2812C57.5347 36.2812 59.2456 34.0312 59.2456 30.2344V30.2188C59.2456 26.1562 57.1519 24.4453 54.7456 24.4453ZM54.7378 30.5938C53.4566 30.5938 52.5269 29.6562 52.5269 28.3516V28.3359C52.5269 27.0781 53.5191 26.0859 54.7612 26.0859C56.0112 26.0859 56.9878 27.0938 56.9878 28.3828V28.3984C56.9878 29.6719 56.0112 30.5938 54.7378 30.5938ZM62.4725 28.6953C63.1912 28.6953 63.7147 28.1484 63.7147 27.4609C63.7147 26.7656 63.1912 26.2266 62.4725 26.2266C61.7616 26.2266 61.2303 26.7656 61.2303 27.4609C61.2303 28.1484 61.7616 28.6953 62.4725 28.6953ZM62.4725 34.4922C63.1912 34.4922 63.7147 33.9531 63.7147 33.2578C63.7147 32.5625 63.1912 32.0234 62.4725 32.0234C61.7616 32.0234 61.2303 32.5625 61.2303 33.2578C61.2303 33.9531 61.7616 34.4922 62.4725 34.4922ZM71.1681 36H73.0978V33.8359H74.6134V32.1719H73.0978V24.7266H70.2463C68.715 27.0547 67.1134 29.6484 65.6525 32.1875V33.8359H71.1681V36ZM67.5275 32.2188V32.1016C68.6213 30.1875 69.9259 28.1016 71.0822 26.3359H71.1994V32.2188H67.5275ZM78.9653 36H80.9809V24.7266H78.9731L76.0278 26.7969V28.6953L78.8325 26.7109H78.9653V36Z';
@@ -51,6 +48,20 @@ const RIGHT_SIGNAL_BATTERY = (
   </>
 );
 
+export function IphoneStatusBarTimeSvg() {
+  return (
+    <svg
+      className="iphone-statusbar-svg iphone-statusbar-svg--time"
+      viewBox="0 0 140 59"
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden
+    >
+      <path d={TIME_PATH} fill="white" />
+    </svg>
+  );
+}
+
+/** Область острова из исходника — координаты как в StatusBar.svg */
 function DynamicIslandRects() {
   return (
     <>
@@ -61,29 +72,27 @@ function DynamicIslandRects() {
   );
 }
 
-export function IphoneStatusBarGraphic({ tBank = false }: { tBank?: boolean }) {
+export function IphoneStatusBarIslandSvg() {
   return (
     <svg
-      className="iphone-statusbar-svg"
-      viewBox={`0 0 ${VB_W} ${VB_H}`}
-      width="100%"
+      className="iphone-statusbar-svg iphone-statusbar-svg--island"
+      viewBox="130 8 130 42"
       preserveAspectRatio="xMidYMid meet"
       aria-hidden
     >
-      <path d={TIME_PATH} fill="white" />
-      {tBank ? (
-        <foreignObject x="132.5" y="10" width="125" height="37">
-          {/* xmlns нужен для корректной разметки внутри foreignObject (SVG spec) */}
-          <div
-            className="iphone-statusbar-tbank-slot"
-            {...({ xmlns: 'http://www.w3.org/1999/xhtml' } as Record<string, string>)}
-          >
-            <span className="iphone__tbank-pill">Т-БАНК</span>
-          </div>
-        </foreignObject>
-      ) : (
-        <DynamicIslandRects />
-      )}
+      <DynamicIslandRects />
+    </svg>
+  );
+}
+
+export function IphoneStatusBarIconsSvg() {
+  return (
+    <svg
+      className="iphone-statusbar-svg iphone-statusbar-svg--icons"
+      viewBox="278 0 92 59"
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden
+    >
       {RIGHT_SIGNAL_BATTERY}
     </svg>
   );

@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { IphoneStatusBarGraphic } from './IphoneStatusBarGraphic';
+import {
+  IphoneStatusBarIconsSvg,
+  IphoneStatusBarIslandSvg,
+  IphoneStatusBarTimeSvg,
+} from './IphoneStatusBarGraphic';
 
 type Step =
   | 'cart'
@@ -147,7 +151,19 @@ function ReceiptIcon() {
 function StatusBar({ tBank = false }: { tBank?: boolean }) {
   return (
     <div className="iphone__statusbar iphone__statusbar--flow iphone__statusbar--kit">
-      <IphoneStatusBarGraphic tBank={tBank} />
+      <div className="iphone-statusbar-kit__side iphone-statusbar-kit__side--left">
+        <IphoneStatusBarTimeSvg />
+      </div>
+      <div className="iphone__notch-wrap">
+        {tBank ? (
+          <div className="iphone__tbank-pill">Т-БАНК</div>
+        ) : (
+          <IphoneStatusBarIslandSvg />
+        )}
+      </div>
+      <div className="iphone-statusbar-kit__side iphone-statusbar-kit__side--right">
+        <IphoneStatusBarIconsSvg />
+      </div>
     </div>
   );
 }

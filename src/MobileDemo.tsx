@@ -1,10 +1,22 @@
 import React from 'react';
-import { IphoneStatusBarGraphic } from './IphoneStatusBarGraphic';
+import {
+  IphoneStatusBarIconsSvg,
+  IphoneStatusBarIslandSvg,
+  IphoneStatusBarTimeSvg,
+} from './IphoneStatusBarGraphic';
 
 function StatusBar() {
   return (
     <div className="iphone__statusbar iphone__statusbar--kit">
-      <IphoneStatusBarGraphic />
+      <div className="iphone-statusbar-kit__side iphone-statusbar-kit__side--left">
+        <IphoneStatusBarTimeSvg />
+      </div>
+      <div className="iphone__notch-wrap">
+        <IphoneStatusBarIslandSvg />
+      </div>
+      <div className="iphone-statusbar-kit__side iphone-statusbar-kit__side--right">
+        <IphoneStatusBarIconsSvg />
+      </div>
     </div>
   );
 }
