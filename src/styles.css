@@ -2173,7 +2173,7 @@ body {
   border-radius: 4px;
 }
 
-.m-mascot-card__streak {
+.m-mascot-card__series {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.7);
   font-weight: 600;
@@ -2186,13 +2186,13 @@ body {
   text-align: center;
 }
 
-.m-streak-track {
+.m-series-track {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
 }
 
-.m-streak-day {
+.m-series-day {
   height: 38px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.05);
@@ -2205,7 +2205,7 @@ body {
   color: rgba(255, 255, 255, 0.5);
 }
 
-.m-streak-day--active {
+.m-series-day--active {
   background: linear-gradient(180deg, rgba(255, 122, 58, 0.32) 0%, rgba(255, 122, 58, 0.12) 100%);
   border-color: rgba(255, 122, 58, 0.5);
   color: #fff;
@@ -2593,7 +2593,7 @@ body {
   padding: 0 2px;
 }
 
-.lobby-top__streak-pill {
+.lobby-top__series-pill {
   min-width: 50px;
   height: 26px;
   padding: 0 9px;
@@ -3371,7 +3371,7 @@ body {
   text-align: center;
 }
 
-.flow-claimed__streak {
+.flow-claimed__series {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
@@ -3865,7 +3865,7 @@ body {
   }
 }
 
-.claim-modal__streak {
+.claim-modal__series {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
@@ -3873,11 +3873,11 @@ body {
   margin-top: 2px;
 }
 
-.claim-modal .m-streak-day--active {
-  animation: claim-streak-fill 1.1s ease-out 0.12s both;
+.claim-modal .m-series-day--active {
+  animation: claim-series-fill 1.1s ease-out 0.12s both;
 }
 
-@keyframes claim-streak-fill {
+@keyframes claim-series-fill {
   0% {
     transform: scale(0.72);
     box-shadow: 0 0 0 0 rgba(255, 122, 58, 0);

@@ -41,8 +41,8 @@ const STEP_LABEL: Record<Step, string> = {
   lobbyHint: '6 · Жми «Все»',
   fullList: '7 · Полная лента',
   foundItem: '8 · Нашёл Толю',
-  crediting: '9 · Начисляем стрик',
-  claimed: '10 · Стрик +1',
+  crediting: '9 · Начисляем серию',
+  claimed: '10 · Серия +1',
   done: '11 · Готово',
 };
 
@@ -363,24 +363,24 @@ function ScreenMascotIntro({ onCatch }: { onCatch: () => void }) {
           <h1 className="m-mascot-text__title">Привет! Я Лис Толя</h1>
           <p className="m-mascot-text__sub">
             Каждый день буду оставлять для тебя одно классное предложение в твоей ленте «Подобрали
-            для вас». Поймаешь — продлишь стрик. Пропустишь день — я посплю, не обижусь.
+            для вас». Поймаешь — продлишь серию. Пропустишь день — я посплю, не обижусь.
           </p>
         </div>
 
         <div className="m-mascot-card">
           <div className="m-mascot-card__head">
             <span className="m-mascot-card__tag">День 1</span>
-            <span className="m-mascot-card__streak">🔥 0 дней подряд</span>
+            <span className="m-mascot-card__series">🔥 0 дней подряд</span>
           </div>
-          <div className="m-streak-track">
+          <div className="m-series-track">
             {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className={`m-streak-day ${i === 0 ? 'm-streak-day--active' : ''}`}>
-                <span className="m-streak-day__num">{i + 1}</span>
+              <div key={i} className={`m-series-day ${i === 0 ? 'm-series-day--active' : ''}`}>
+                <span className="m-series-day__num">{i + 1}</span>
               </div>
             ))}
           </div>
           <p className="m-mascot-card__hint">
-            Поймай первое предложение в ленте, чтобы запустить стрик.
+            Поймай первое предложение в ленте, чтобы запустить серию.
           </p>
         </div>
 
@@ -447,7 +447,7 @@ const TOLYA_FULL_INDEX = FULL_RECOMMENDS.findIndex((r) => r.fromTolya);
 
 type LobbyProps = {
   step: Step;
-  currentStreak: number;
+  currentSeries: number;
   onOpenFullList: () => void;
   onOpenTolyaMenu: () => void;
   recommendsAnchorRef: React.RefObject<HTMLDivElement>;
@@ -456,7 +456,7 @@ type LobbyProps = {
 
 function ScreenLobby({
   step,
-  currentStreak,
+  currentSeries,
   onOpenFullList,
   onOpenTolyaMenu,
   recommendsAnchorRef,
@@ -464,11 +464,11 @@ function ScreenLobby({
 }: LobbyProps) {
   const moreActive = step === 'lobbyHint';
   // Туториал лобби (авто-скролл → «Все») только при первом входе. Если пользователь уже
-  // получил стрик и вернулся назад — скролл разблокирован.
+  // получил серию и вернулся назад — скролл разблокирован.
   const scrollLocked =
     step === 'lobbyAutoScroll' ||
     step === 'lobbyHint' ||
-    (step === 'lobbyArrival' && currentStreak === 0);
+    (step === 'lobbyArrival' && currentSeries === 0);
   return (
     <div
       className={`iphone__screen iphone__screen--lobby${
@@ -483,12 +483,12 @@ function ScreenLobby({
             <span className="lobby-top__addr-main">Сиреневая улица, 21 ▾</span>
           </div>
           <button
-            className={`lobby-top__receipt${currentStreak > 0 ? ' lobby-top__receipt--wide' : ''}`}
-            aria-label={currentStreak > 0 ? 'Открыть меню Толи' : 'Чеки'}
-            onClick={currentStreak > 0 ? onOpenTolyaMenu : undefined}
+            className={`lobby-top__receipt${currentSeries > 0 ? ' lobby-top__receipt--wide' : ''}`}
+            aria-label={currentSeries > 0 ? 'Открыть меню Толи' : 'Чеки'}
+            onClick={currentSeries > 0 ? onOpenTolyaMenu : undefined}
           >
-            {currentStreak > 0 ? (
-              <span className="lobby-top__streak-pill">🔥 {currentStreak}</span>
+            {currentSeries > 0 ? (
+              <span className="lobby-top__series-pill">🔥 {currentSeries}</span>
             ) : (
               <ReceiptIcon />
             )}
@@ -628,7 +628,7 @@ function ScreenLobby({
 
 type FullListProps = {
   step: Step;
-  currentStreak: number;
+  currentSeries: number;
   scrollRef: React.RefObject<HTMLDivElement>;
   tolyaCardRef: React.RefObject<HTMLDivElement>;
   onBack: () => void;
@@ -638,7 +638,7 @@ type FullListProps = {
 
 function ScreenFullList({
   step,
-  currentStreak,
+  currentSeries,
   scrollRef,
   tolyaCardRef,
   onBack,
@@ -673,7 +673,7 @@ function ScreenFullList({
               onClick={onOpenTolyaMenu}
               aria-label="Открыть меню Толи"
             >
-              🔥 {currentStreak}
+              🔥 {currentSeries}
             </button>
           ) : (
             <button className="full-list__search" aria-label="Поиск">
@@ -752,7 +752,7 @@ function ScreenFullList({
         <span className="lobby-bottom__total">{CART_TOTAL} ₽</span>
       </div>
 
-      {step === 'fullList' && currentStreak === 0 && (
+      {step === 'fullList' && currentSeries === 0 && (
         <div className="full-list__hunt-hint">
           <span className="full-list__hunt-hint-fox">
             <FoxFace size={26} />
@@ -773,16 +773,16 @@ function ClaimModal() {
         <div className="claim-modal__fox">
           <FoxFace size={72} />
         </div>
-        <h3 className="claim-modal__title">🎉 Стрик обновлён!</h3>
+        <h3 className="claim-modal__title">🎉 Серия обновлена!</h3>
         <p className="claim-modal__sub">Встретимся завтра!</p>
-        <p className="claim-modal__status">Стрик продлён</p>
-        <div className="claim-modal__streak">
+        <p className="claim-modal__status">Серия продлена</p>
+        <div className="claim-modal__series">
           {Array.from({ length: 7 }).map((_, i) => (
             <div
               key={i}
-              className={`m-streak-day ${i === 0 ? 'm-streak-day--active' : ''}`}
+              className={`m-series-day ${i === 0 ? 'm-series-day--active' : ''}`}
             >
-              <span className="m-streak-day__num">{i + 1}</span>
+              <span className="m-series-day__num">{i + 1}</span>
             </div>
           ))}
         </div>
@@ -795,7 +795,7 @@ function CreditFx() {
   return (
     <div className="credit-fx-screen" aria-hidden>
       <div className="credit-fx-screen__ring" />
-      <div className="credit-fx-screen__chip">🔥 Огонёк +1</div>
+      <div className="credit-fx-screen__chip">🔥 Серия +1</div>
     </div>
   );
 }
@@ -808,8 +808,8 @@ const TOLYA_MENU_RECOMMENDS = [
   { id: 'tm5', name: 'Кофе от ВкусВилл', shop: 'ВкусВилл', price: '349 ₽', emoji: '☕' },
 ];
 
-function TolyaMenu({ streak, onClose }: { streak: number; onClose: () => void }) {
-  const streakLabel = streak === 1 ? 'день' : streak >= 2 && streak <= 4 ? 'дня' : 'дней';
+function TolyaMenu({ seriesDays, onClose }: { seriesDays: number; onClose: () => void }) {
+  const daysLabel = seriesDays === 1 ? 'день' : seriesDays >= 2 && seriesDays <= 4 ? 'дня' : 'дней';
   return (
     <div className="tolya-menu" role="dialog" aria-modal="true">
       <div className="tolya-menu__backdrop" onClick={onClose} aria-hidden />
@@ -817,7 +817,7 @@ function TolyaMenu({ streak, onClose }: { streak: number; onClose: () => void })
         <button className="tolya-menu__close" onClick={onClose} aria-label="Закрыть">
           ✕
         </button>
-        <button type="button" className="tolya-menu__help" aria-label="Правила стрика" title="Правила стрика">
+        <button type="button" className="tolya-menu__help" aria-label="Правила серии" title="Правила серии">
           ?
         </button>
         <div className="tolya-menu__fox">
@@ -825,7 +825,7 @@ function TolyaMenu({ streak, onClose }: { streak: number; onClose: () => void })
         </div>
         <h3 className="tolya-menu__title">Меню Толи</h3>
         <p className="tolya-menu__sub">
-          Текущий стрик: 🔥 {streak} {streakLabel}
+          Текущая серия: 🔥 {seriesDays} {daysLabel}
         </p>
         <div className="tolya-menu__reco">
           <h3 className="lobby-section-title lobby-section-title--sheet">Подобрали для вас</h3>
@@ -861,7 +861,7 @@ function TolyaMenu({ streak, onClose }: { streak: number; onClose: () => void })
 export function FlowDemo() {
   const [step, setStep] = useState<Step>('cart');
   const [tolyaMenuOpen, setTolyaMenuOpen] = useState(false);
-  const [currentStreak, setCurrentStreak] = useState(0);
+  const [currentSeries, setCurrentSeries] = useState(0);
   const screenRef = useRef<HTMLDivElement | null>(null);
   const recommendsAnchorRef = useRef<HTMLDivElement | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
@@ -871,7 +871,7 @@ export function FlowDemo() {
   const goto = (next: Step) => setStep(next);
   const reset = () => {
     setTolyaMenuOpen(false);
-    setCurrentStreak(0);
+    setCurrentSeries(0);
     setStep('cart');
   };
 
@@ -887,10 +887,10 @@ export function FlowDemo() {
   // Авто-скролл при попадании в лобби
   useEffect(() => {
     if (step !== 'lobbyArrival') return;
-    if (currentStreak > 0) return;
+    if (currentSeries > 0) return;
     const t1 = setTimeout(() => goto('lobbyAutoScroll'), 700);
     return () => clearTimeout(t1);
-  }, [step, currentStreak]);
+  }, [step, currentSeries]);
 
   useEffect(() => {
     if (step !== 'lobbyAutoScroll') return;
@@ -907,7 +907,7 @@ export function FlowDemo() {
   useEffect(() => {
     if (step !== 'crediting') return;
     const t = setTimeout(() => {
-      setCurrentStreak((s) => s + 1);
+      setCurrentSeries((s) => s + 1);
       setStep((s) => (s === 'crediting' ? 'claimed' : s));
     }, 850);
     return () => clearTimeout(t);
@@ -925,7 +925,7 @@ export function FlowDemo() {
   useEffect(() => {
     if (step !== 'fullList') return;
     // Подсказка и автодоводка до Толи нужны только при первом прохождении.
-    if (currentStreak > 0) return;
+    if (currentSeries > 0) return;
     const root = fullListScrollRef.current;
     const target = tolyaCardRef.current;
     if (!root || !target) return;
@@ -959,7 +959,7 @@ export function FlowDemo() {
       observer.disconnect();
       clearTimeout(fallback);
     };
-  }, [step, currentStreak]);
+  }, [step, currentSeries]);
 
   const stepContent = useMemo(() => {
     switch (step) {
@@ -975,7 +975,7 @@ export function FlowDemo() {
         return (
           <ScreenLobby
             step={step}
-            currentStreak={currentStreak}
+            currentSeries={currentSeries}
             onOpenFullList={() => goto('fullList')}
             onOpenTolyaMenu={() => setTolyaMenuOpen(true)}
             recommendsAnchorRef={recommendsAnchorRef}
@@ -990,7 +990,7 @@ export function FlowDemo() {
         return (
           <ScreenFullList
             step={step}
-            currentStreak={currentStreak}
+            currentSeries={currentSeries}
             scrollRef={fullListScrollRef}
             tolyaCardRef={tolyaCardRef}
             onBack={() => goto('lobbyArrival')}
@@ -1001,7 +1001,7 @@ export function FlowDemo() {
       default:
         return null;
     }
-  }, [step, currentStreak]);
+  }, [step, currentSeries]);
 
   // Прогресс
   const stepIdx = STEP_ORDER.indexOf(step);
@@ -1022,7 +1022,7 @@ export function FlowDemo() {
             Один iPhone, один сквозной флоу. Кликаем «Оформить заказ» в корзине → дальше всё ведёт
             себя само: подарок → знакомство с Лисом Толей → попадаем в лобби → авто-скролл к ленте
             «Подобрали для вас» → подсказка «листайте» → ищем товар Толи в карусели → серый
-            оверлей с акцентом → клейм → стрик +1.
+            оверлей с акцентом → клейм → серия +1.
           </p>
         </div>
       </header>
@@ -1076,7 +1076,7 @@ export function FlowDemo() {
                 step === 'crediting' ||
                 step === 'claimed' ||
                 step === 'done') && (
-              <TolyaMenu streak={currentStreak} onClose={() => setTolyaMenuOpen(false)} />
+              <TolyaMenu seriesDays={currentSeries} onClose={() => setTolyaMenuOpen(false)} />
             )}
           </div>
         </div>
@@ -1113,8 +1113,8 @@ export function FlowDemo() {
           </li>
           <li>
             <strong>Анимация начисления и продления.</strong> После тапа по карточке сначала идёт
-            короткая вспышка «🔥 Огонёк +1» на затемнённом фоне, затем появляется тост с
-            плашкой «Стрик продлён» и анимированной ячейкой дня в шкале. Тост закрывается сам,
+            короткая вспышка «🔥 Серия +1» на затемнённом фоне, затем появляется тост с
+            плашкой «Серия продлена» и анимированной ячейкой дня в шкале. Тост закрывается сам,
             после чего оверлей снимается, лента возвращается в обычный вид.
           </li>
         </ul>

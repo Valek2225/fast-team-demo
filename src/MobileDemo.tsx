@@ -250,27 +250,27 @@ function ScreenMascotIntro() {
           <h1 className="m-mascot-text__title">Привет! Я Лис Толя</h1>
           <p className="m-mascot-text__sub">
             Буду каждый день приносить тебе одно классное предложение в ленту «Наш выбор».
-            Поймаешь — продлишь стрик. Пропустишь день — я поспи́, не обижусь.
+            Поймаешь — продлишь серию. Пропустишь день — я поспи́, не обижусь.
           </p>
         </div>
 
         <div className="m-mascot-card">
           <div className="m-mascot-card__head">
             <span className="m-mascot-card__tag">День 1</span>
-            <span className="m-mascot-card__streak">🔥 0 дней подряд</span>
+            <span className="m-mascot-card__series">🔥 0 дней подряд</span>
           </div>
-          <div className="m-streak-track">
+          <div className="m-series-track">
             {Array.from({ length: 7 }).map((_, i) => (
               <div
                 key={i}
-                className={`m-streak-day ${i === 0 ? 'm-streak-day--active' : ''}`}
+                className={`m-series-day ${i === 0 ? 'm-series-day--active' : ''}`}
               >
-                <span className="m-streak-day__num">{i + 1}</span>
+                <span className="m-series-day__num">{i + 1}</span>
               </div>
             ))}
           </div>
           <p className="m-mascot-card__hint">
-            Поймай первое предложение, чтобы запустить стрик.
+            Поймай первое предложение, чтобы запустить серию.
           </p>
         </div>
 
@@ -364,7 +364,7 @@ export function MobileDemo() {
         </IPhone>
         <IPhone
           label="Экран 2"
-          caption="Юзер тапнул «Распаковать подарок» — встречает Лиса Толю и стартует стрик."
+          caption="Юзер тапнул «Распаковать подарок» — встречает Лиса Толю и стартует серию."
         >
           <ScreenMascotIntro />
         </IPhone>
