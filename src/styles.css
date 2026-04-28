@@ -1540,9 +1540,9 @@ body {
   height: auto;
 }
 
-/* Масштаб средний: без «микро» и без перекрытия центра */
+/* В одну линию с иконками (.iphone-statusbar-svg--icons — 12px) */
 .iphone-statusbar-svg--time {
-  height: 26px;
+  height: 12px;
   width: auto;
 }
 
