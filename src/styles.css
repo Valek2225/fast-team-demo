@@ -1515,8 +1515,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* Ближе к краям рамки — время и иконки не «отступают» как из‑за лишнего inset */
-  padding: 0 12px 0 10px;
+  padding: 0;
 }
 
 .iphone-statusbar-kit__side {
@@ -1548,7 +1547,7 @@ body {
 }
 
 .iphone-statusbar-svg--icons {
-  height: 26px;
+  height: 12px;
   width: auto;
   max-width: 100%;
 }
