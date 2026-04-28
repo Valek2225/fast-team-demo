@@ -12,7 +12,7 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    command: 'npx vite --host 127.0.0.1 --port 5180',
+    command: 'npx vite --host 127.0.0.1 --port 5180 --mode test',
     url: 'http://127.0.0.1:5180',
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',

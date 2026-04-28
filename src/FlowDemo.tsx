@@ -1027,7 +1027,11 @@ export function FlowDemo() {
         </div>
       </header>
 
-      <div className="flow-demo__controls flow-demo__controls--hidden">
+      <div
+        className={`flow-demo__controls ${
+          import.meta.env.VITE_SHOW_FLOW_CONTROLS ? '' : 'flow-demo__controls--hidden'
+        }`}
+      >
         <button className="flow-demo__ctrl" onClick={reset} disabled={step === 'cart'}>
           ⟲ Сначала
         </button>

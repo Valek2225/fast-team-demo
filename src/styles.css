@@ -1520,10 +1520,12 @@ body {
 }
 
 .iphone-statusbar-kit__side {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   display: flex;
   align-items: center;
   min-width: 0;
+  /* Не даём боковым блокам заходить под центральную шторку / остров */
+  max-width: calc(50% - 46px);
 }
 
 .iphone-statusbar-kit__side--left {
@@ -1539,19 +1541,20 @@ body {
   height: auto;
 }
 
-/* Высота ближе к шторке Т‑Банка */
+/* Масштаб средний: без «микро» и без перекрытия центра */
 .iphone-statusbar-svg--time {
-  height: 34px;
+  height: 26px;
   width: auto;
 }
 
 .iphone-statusbar-svg--icons {
-  height: 34px;
+  height: 26px;
   width: auto;
+  max-width: 100%;
 }
 
 .iphone-statusbar-svg--island {
-  height: 34px;
+  height: 26px;
   width: auto;
 }
 
@@ -1567,6 +1570,8 @@ body {
   left: 50%;
   top: 8px;
   transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
 }
 
 .iphone__dynamic-island {
