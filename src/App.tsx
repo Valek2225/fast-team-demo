@@ -340,6 +340,7 @@ function TopBar() {
     { href: '#roi', label: 'ROI' },
     { href: '#decision', label: 'Решение', accent: true },
     { href: '#metrics', label: 'Метрики' },
+    { href: '#competitors', label: 'Конкуренты' },
     { href: '#data', label: 'Данные' },
     { href: '#glossary', label: 'Словарь' },
   ];
@@ -746,6 +747,8 @@ function Divider() {
   return <hr className="divider" />;
 }
 
+type Source = { label: string; url: string };
+
 type MetricCase = {
   brand: string;
   mascot: string;
@@ -754,171 +757,461 @@ type MetricCase = {
   northStar: { name: string; description: string };
   counterMetrics: { name: string; description: string }[];
   takeawayForUs: string;
+  sources?: Source[];
+  disclaimer?: string;
 };
 
 const METRIC_CASES: MetricCase[] = [
   {
     brand: 'Duolingo',
-    mascot: 'Сова Duo',
+    mascot: 'Сова Duo (постоянный)',
     industry: 'Изучение языков',
     whatTheyDo:
-      'Маскот ведёт стрик и шлёт «грустные» пуши при пропуске. Основной user flow построен вокруг ежедневной 5-минутной задачи. Streak — главный visual cue в приложении.',
+      'Маскот ведёт стрик и шлёт «настойчивые» пуши при пропуске. User flow построен вокруг ежедневной короткой сессии. Streak — главный visual cue в приложении.',
     northStar: {
-      name: 'DAU (Daily Active Users)',
+      name: 'DAU (Daily Active Users) и DAU/MAU ratio',
       description:
-        'Сколько уникальных юзеров заходят каждый день. У Duolingo на 2024 — 40 млн DAU. Эта метрика напрямую коррелирует с длиной стрика: пользователи со стриком ≥7 дней активны в 3.2× чаще.',
+        'Q4 2024: DAU 40.5 млн (+51% YoY), MAU 116.7 млн, ratio 34.7%. Q4 2025: DAU 52.7 млн, MAU 133.1 млн. Более 10 млн пользователей со streak ≥1 года; треть DAU — с Friend Streak. Цифры из официальных писем акционерам.',
     },
     counterMetrics: [
       {
         name: 'Push opt-out rate',
         description:
-          'Какой процент юзеров отключает уведомления Duolingo. Если выше 15% — это red flag: маскот-«guilt-trip» переборщил.',
+          'Если процент юзеров, отключающих уведомления, растёт — это red flag: «guilt-trip» переборщил. Duolingo сами признают «unhinged» tone и мониторят, не превращается ли он в негатив.',
       },
       {
-        name: '«Чувствуете ли вы, что приложение давит?»',
+        name: 'Decel в DAU growth',
         description:
-          'Внутренний quarterly survey. Когда мем-«пристыжающий» Duo стал слишком жёстким, они это поймали и смягчили tone of voice пушей.',
+          'В письме акционерам за 2025 Duolingo прямо говорит: рост DAU замедлился из-за «увеличенного фокуса на монетизации» — и они смещают фокус назад на teaching better. Это публичное признание контр-метрики.',
       },
       {
         name: 'Streak loss recovery rate',
         description:
-          'Сколько процентов вернулись после потери стрика. Низкий показатель = streak-механика выгнала больше, чем удержала.',
+          'Сколько процентов вернулись после потери стрика. Если низкий — streak-механика выгнала больше, чем удержала. Точное значение Duolingo не раскрывает, но факт мониторинга подтверждён публикациями.',
       },
     ],
     takeawayForUs:
-      'Стрик-механика отлично работает для retention, но требует «защитных клапанов»: грейс-период, мягкий тон пушей, мониторинг survey по «давлению маскота». В Т-Городе это критично — мы не должны ассоциироваться с тревогой.',
+      'Стрик отлично работает, но требует защитных клапанов: грейс-период, мягкий тон пушей, мониторинг соотношения «рост vs ощущение давления». В Т-Городе мы не должны ассоциироваться с тревогой.',
+    sources: [
+      {
+        label: 'Q4 2024 shareholder letter (DAU 40.5M, +51% YoY)',
+        url: 'https://investors.duolingo.com/news-releases/news-release-details/duolingo-finishes-2024-51-daus-growth-more-40-million-daus-and',
+      },
+      {
+        label: 'Q4 2025 shareholder letter (DAU 52.7M, decel-признание)',
+        url: 'https://investors.duolingo.com/financial-information/quarterly-results',
+      },
+    ],
   },
   {
     brand: 'Snapchat',
-    mascot: 'Snapstreaks (огоньки 🔥)',
+    mascot: 'Snapstreaks — огоньки между друзьями',
     industry: 'Соцсеть / общение',
     whatTheyDo:
       'Stripped-down маскот — это сама механика стрика между друзьями: огонёк держится, пока обмениваетесь снэпами каждый день. Не персонаж, а статус.',
     northStar: {
-      name: 'Sessions per day',
+      name: 'Daily engagement (sessions × duration)',
       description:
-        'Сколько раз пользователь открывает приложение в день. Юзеры со streak ≥3 дней открывают Snapchat 4× чаще остальных. Это наше доказательство, что streak = главный driver частоты.',
+        'Snap раскрывает в публичных отчётах общий DAU и engagement, но не разбивает по streak-сегментам. Streaks введены в 2016 году и заявлены менеджментом как один из главных drivers ежедневного открытия.',
     },
     counterMetrics: [
       {
-        name: 'Streak break sentiment (NPS)',
+        name: 'Streak break sentiment',
         description:
-          'NPS-опрос среди тех, кто только что потерял streak. Снэпчат намеренно мониторит этот сегмент — если NPS падает ниже -20, продукт работает на токсичность.',
+          'Качественный мониторинг через support-обращения и реддит/twitter feedback после массовых сбоев streaks (например, баги 2018). Когда платформа теряла огни массово — был всплеск негатива в публичных каналах.',
       },
       {
-        name: 'Reciprocity ratio',
+        name: 'Перегрузка обязательством',
         description:
-          'Доля стриков, где обе стороны рады, что переписываются. Если падает — streak становится «обязаловкой».',
+          'Внутренний риск, который Snap признаёт — streak воспринимается как обязанность, особенно среди подростков. Точные числа не публикуются.',
       },
     ],
     takeawayForUs:
-      'Streak без маскота тоже работает (огоньки сами стали крючком). Для Т-Города значит, что Лис Толя — это «лицо» стрика, но сама стрик-механика должна быть оголтело простой: 1 заказ в день = огонёк жив.',
+      'Streak без маскота тоже работает. Для Т-Города — Лис Толя становится «лицом» стрика, но сама механика должна быть простой: 1 заказ в день = огонёк жив.',
+    disclaimer:
+      'Snap не публикует разбивку метрик по streak-сегментам. Качественные утверждения подкреплены менеджментскими комментариями на earnings calls, но точные числа — оценочные.',
+    sources: [
+      {
+        label: 'Snap Inc. — official Investor Relations',
+        url: 'https://investor.snap.com/financials/quarterly-results',
+      },
+    ],
   },
   {
     brand: 'Headspace',
-    mascot: 'Дружелюбные оранжевые круги + Andy (голос)',
+    mascot: 'Andy (голос-наставник) + оранжевые иллюстрации',
     industry: 'Медитация / wellness',
     whatTheyDo:
-      'Маскот — голос Andy + плоские оранжевые иллюстрации. Онбординг — 3 дня бесплатных сессий, на 4-й день мягкий nudge к подписке. Метрики строятся вокруг «успешно завершённой сессии».',
+      'Маскот — голос Andy Puddicombe + плоские оранжевые иллюстрации. Онбординг — несколько бесплатных сессий, потом мягкий nudge к подписке. Метрика — «успешно завершённая сессия», не «открытие».',
     northStar: {
-      name: 'Completed sessions per user per week',
+      name: 'Completed meditation sessions',
       description:
-        'Не «открытий», а именно «завершил медитацию». 3+ завершённых сессии в неделю = «activated user». При этой метрике D90 retention 65% (vs 12% у тех, кто только открыл).',
+        'Headspace публично заявляет «session completion» как ключевую метрику в кейсах с корпоративными клиентами. Точные D90 retention для активного сегмента не публикуются — но подход «считать завершения, а не открытия» — общеизвестен в продуктовом сообществе.',
     },
     counterMetrics: [
       {
-        name: 'Self-reported stress level',
+        name: 'Self-reported stress / anxiety level',
         description:
-          'Опрос «насколько вы спокойны?» до и после месяца использования. Если уровень стресса не снижается — продукт не работает, как бы DAU ни рос.',
+          'Headspace проводит исследования с университетами (Carnegie Mellon, UCLA), измеряя реальное снижение стресса у пользователей. Если приложение не даёт измеримого эффекта на самочувствие — продукт обесценивается.',
       },
       {
-        name: 'Subscription churn / refund rate',
+        name: 'Trial-to-paid drop-off',
         description:
-          'Доля юзеров, кто отписался в первые 30 дней. Главный сигнал, что онбординг продал не то, что продукт даёт.',
+          'Доля юзеров, кто прошёл бесплатные дни и не подписался — главный сигнал, что онбординг продал не то, что даёт продукт.',
       },
     ],
     takeawayForUs:
-      'Метрика «завершил действие» (а не «открыл») — гораздо честнее. Для Т-Города это «сделал заказ», а не «зашёл в каталог». Также заводим self-report — это чувство, что Т-Город «заботится», а не «прессует».',
+      'Метрика «завершил действие» честнее «открытия». Для Т-Города — это «сделал заказ», не «зашёл в каталог». И self-report «Т-Город заботится», а не «прессует».',
+    disclaimer:
+      'Конкретные retention-числа Headspace в открытом доступе ограничены — они частная компания. Качественный подход подтверждён их публикациями и кейсами.',
+    sources: [
+      {
+        label: 'Headspace Research — публикации с университетами',
+        url: 'https://www.headspace.com/science',
+      },
+    ],
   },
   {
-    brand: 'Tinkoff Junior',
-    mascot: 'Заяц',
+    brand: 'Тинькофф Junior',
+    mascot: 'Кот Тинькофф / детский визуал',
     industry: 'Финансы для подростков',
     whatTheyDo:
-      'Заяц-маскот в Junior-карте Тинькофф ведёт ребёнка через задачи (накопить, потратить, сэкономить). Параллельно отчёт уходит родителю — это создаёт двойной контур.',
+      'Детский продукт Т-Банка с обучающим контуром «ребёнок + родитель». Двусторонняя архитектура: ребёнок видит свою карту и задачи, родитель получает отчёты и может ставить лимиты.',
     northStar: {
       name: 'Active teen-parent pairs',
       description:
-        'Сколько пар «подросток + родитель» активно пользуются. Пара одна метрика мониторит обоих — одиночные юзеры здесь не работают.',
+        'Двусторонний продукт измеряют именно парами: одиночный детский активный юзер без родительского контура — это риск (родитель может удалить).',
     },
     counterMetrics: [
       {
-        name: 'Parental NPS / app uninstall rate',
+        name: 'Parental complaint rate',
         description:
-          'Если дети покупают через Junior импульсивно, родители удаляют приложение. Главный риск двусторонних продуктов с детским face.',
+          'Если жалобы от родителей растут — продукт перестаёт быть «помощником» и становится «манипуляцией для денег». Главный риск family-приложений.',
       },
       {
-        name: 'Подростковый CSAT по маскоту',
+        name: 'Подростковый CSAT по визуалу',
         description:
-          'Подросткам быстро становится «детский» маскот стыдным. Junior мониторит, до какого возраста заяц «работает».',
+          'Подросткам быстро становится «слишком детский» визуал стыдным. Меняют возрастной слой — иначе теряют сегмент 13–15.',
       },
     ],
     takeawayForUs:
-      'У нас тоже двусторонний продукт: маскот говорит со взрослым 14–35, но в семейных заказах рядом дети. Считаем «семейные пары», а не отдельных пользователей. Контр-метрика — parental complaint rate.',
+      'У нас тоже двусторонний продукт — маскот для 14–35, но рядом дети в семейных заказах. Считаем семейные пары, контр-метрика — parental complaint rate.',
+    disclaimer:
+      'Конкретных retention-цифр Junior в открытых источниках мало. Качественный подход подтверждён публикациями Т-Банка о продукте.',
+    sources: [
+      {
+        label: 'Т-Банк — Junior product page',
+        url: 'https://www.tbank.ru/cards/debit-cards/tinkoff-junior/',
+      },
+    ],
   },
   {
     brand: 'Mailchimp',
     mascot: 'Шимпанзе Freddie',
     industry: 'B2B email-рассылки',
     whatTheyDo:
-      'Freddie не «насилует» юзера — он шутит при отправке кампании, поздравляет с маленькими успехами. Маскот = micro-rewards, а не давление.',
+      'Freddie не давит — он шутит при отправке кампании, поздравляет с маленькими успехами. Маскот = micro-rewards, а не guilt-механика. Полная противоположность стилю Duolingo.',
     northStar: {
       name: 'Time to first sent campaign',
       description:
-        'Сколько времени проходит от регистрации до первой отправленной рассылки. Это «aha moment» — Mailchimp измеряет именно его, не клики.',
+        'Aha moment продукта — первая отправленная рассылка. Mailchimp измеряет именно это время, и онбординг режется до тех пор, пока drop-off на каждом шаге не станет минимальным.',
     },
     counterMetrics: [
       {
-        name: 'Onboarding completion drop-off',
+        name: 'Onboarding step drop-off',
         description:
-          'На каком шаге онбординга юзеры бросают. Они режут шаги до тех пор, пока drop-off на каждом шаге < 10%.',
+          'На каждом шаге измеряется отвал — целевой минимум, иначе шаг убирают.',
       },
       {
         name: 'Support ticket volume per new user',
         description:
-          'Сколько обращений в поддержку на каждого нового юзера. Если растёт — онбординг недостаточно понятен.',
+          'Если растёт — онбординг недостаточно понятен и Freddie не помогает.',
       },
     ],
     takeawayForUs:
-      'Маскот не обязан давить. Толя может быть «помощником в успехе» — поздравлять с первым заказом, при стрике >7 дней давать подарок. Метрика времени до первого заказа = aha moment Т-Города.',
+      'Маскот не обязан давить. Толя может быть «помощником в успехе» — поздравлять с первым заказом, при стрике ≥7 давать подарок. Метрика времени до первого заказа — наш aha moment.',
+    disclaimer:
+      'Точные цифры Mailchimp по Freddie не раскрываются. Подход «маскот как поддержка» — общеизвестная позиция бренда.',
+    sources: [
+      {
+        label: 'Mailchimp About — про бренд и Freddie',
+        url: 'https://mailchimp.com/about/',
+      },
+    ],
   },
   {
     brand: 'Strava',
     mascot: 'Челленджи + значки (без живого маскота)',
     industry: 'Беговые / велотрекинг',
     whatTheyDo:
-      'Нет персонажа, но есть медальки и челленджи (Run Club May, 10km Challenge). Это «безличный маскот» — gamification как лицо продукта. Хорошая база сравнения для Т-Города.',
+      'Нет персонажа, но есть медальки и челленджи (Run Club May, 10km Challenge). «Безличный маскот» — gamification сама по себе. Полезное сравнение: что меняется без живого персонажа.',
     northStar: {
-      name: 'Workouts per active user per week',
+      name: 'Workouts uploaded per week',
       description:
-        'Сколько тренировок загружает активный юзер в неделю. Базовый KPI — 3+ тренировки/нед = «active», ниже — «churning».',
+        'Strava публично заявляет частоту загрузок как ключевой engagement-сигнал. Платная подписка отдельно — Premium subscribers и retention.',
     },
     counterMetrics: [
       {
-        name: 'Premium cancellation rate',
+        name: 'Premium churn rate',
         description:
-          'Платный продукт: основной сигнал «недоставленной ценности». Если выше 8%/мес — продукт перестал быть worth-it.',
+          'Платный продукт. Главный сигнал «не довезли ценность». Strava публикует общую динамику Premium, но не churn по сегментам.',
       },
       {
-        name: 'Privacy complaint rate',
+        name: 'Privacy / safety complaints',
         description:
-          'Strava ловит, когда челленджи становятся «я обязан публиковать». Бережёт пользователя от social pressure.',
+          'Strava несколько раз попадала в новости из-за раскрытия локаций (например, military bases через heatmap 2018). С тех пор активно мониторят safety-обращения.',
       },
     ],
     takeawayForUs:
-      'Челленджи без маскота тоже работают, если правильно поданы. Для Т-Города можно ввести коллекции (собрал 10 разных продуктов недели) — но коллекция не должна заставлять.',
+      'Челленджи без маскота тоже работают. Для Т-Города можно ввести коллекции «10 разных продуктов недели» — но коллекция не должна заставлять, иначе превращается в обязаловку.',
+    sources: [
+      {
+        label: 'Strava — Year in Sport (ежегодный отчёт по engagement)',
+        url: 'https://blog.strava.com/press/yearinsport/',
+      },
+    ],
   },
 ];
+
+type CompetitorCase = {
+  brand: string;
+  mascot: string;
+  type: 'permanent' | 'seasonal' | 'minimal';
+  industry: string;
+  region: 'РФ' | 'global';
+  whatTheyDid: string;
+  metrics: { label: string; value: string }[];
+  takeaway: string;
+  sources: Source[];
+  disclaimer?: string;
+};
+
+const TYPE_LABEL: Record<CompetitorCase['type'], string> = {
+  permanent: 'Постоянный',
+  seasonal: 'Сезонный',
+  minimal: 'Без живого маскота',
+};
+
+const COMPETITOR_CASES: CompetitorCase[] = [
+  {
+    brand: 'Самокат',
+    mascot: 'Пандагочи — красная панда (виртуальный питомец)',
+    type: 'seasonal',
+    industry: 'E-grocery / доставка продуктов',
+    region: 'РФ',
+    whatTheyDid:
+      'В феврале 2025 запустили в приложении игру «Пандагочи» — красную панду в стиле тамагочи. Заказы в Самокате превращаются в опыт для виртуальной панды (она ест те же продукты, что вы заказали), пользователь её кормит, наряжает, прокачивает. Игра была сезонной — действовала до 8 апреля 2025. Перед запуском провели два исследования: красная панда обошла енота как «самый ассоциируемый с брендом» персонаж. Совместная разработка с KTS.',
+    metrics: [
+      { label: 'Уникальных пользователей за первые месяцы', value: '> 1 млн' },
+      { label: 'Доля выполнивших ≥1 ежедневное задание', value: '70%' },
+      { label: 'Из них выполнили ≥5 заданий в день', value: '20%' },
+      { label: 'Суммарное экранное время в игре', value: '> 50 лет' },
+      { label: 'Превышение плановых показателей по активности', value: '× 3' },
+    ],
+    takeaway:
+      'Главный кейс для Т-Города из РФ. Подтверждает гипотезу: сезонная маскот-механика с тамагочи-логикой даёт reach 1+ млн и реально двигает частоту заказов. Фиджитал-механика «заказал → панда ест то же» — конкретно работает на retention. Ограничение по сроку (2 месяца) создаёт urgency без вечного давления.',
+    sources: [
+      {
+        label: 'Sostav: кейс с цифрами от команды Самоката и KTS',
+        url: 'https://www.sostav.ru/publication/kejs-samokata-78588.html',
+      },
+      {
+        label: 'ADPASS: Пандагочи — детали механики и результатов',
+        url: 'https://adpass.ru/pandagochi-kak-in-app-gejmifikatsiya-povysila-aktivnost-polzovatelej-v-prilozhenii-samokat/',
+      },
+      {
+        label: 'E-pepper: Питомец для миллионов',
+        url: 'https://e-pepper.ru/news/pitomets-dlya-millionov-kak-tsifrovaya-panda-zavoevala-serdtsa-polzovateley-samokata.html',
+      },
+      {
+        label: 'CookiesGames: разбор геймификации',
+        url: 'https://cookiesgames.ru/blog/how_the_brand_turned_gamification_into_a_loyalty_tool',
+      },
+    ],
+  },
+  {
+    brand: 'Сбер',
+    mascot: 'СберКот — кот, перезапущен в 2023',
+    type: 'permanent',
+    industry: 'Банкинг / финансы',
+    region: 'РФ',
+    whatTheyDid:
+      'Изначально с 2018 — наставник в ВКонтакте про финграмотность. В июне 2023 перезапустили как «цифрового инфлюенсера»: 3D-модель в Unreal Engine, mocap-костюмы для real-time эфиров, голос синтезирован через SaluteSpeech. С 2024 встроили в детское приложение СберKids (6–13 лет) как голосового ассистента на базе GigaChat. С 2025 поселили во все колонки Sber. Параллельно весной 2024 совместно с VK Шаги запустили игру «Котоверсум» (мульти-Вселенная с альт-версиями кота).',
+    metrics: [
+      { label: 'Подписчиков ВКонтакте', value: '14 млн' },
+      { label: 'Обращений в СберKids за 3 месяца', value: '5 млн' },
+      { label: 'Заданных вопросов', value: '12 млн' },
+      { label: 'Доля Android-юзеров СберKids, использующих ассистента', value: '60%' },
+      { label: 'Из них пользуются регулярно', value: '25%' },
+      { label: 'Среднее время диалога с СберКотом', value: '4 мин' },
+      { label: 'Уникальных игроков в «Котоверсум» за 3 мес', value: '> 1 млн' },
+      { label: 'Вовлечённость в рекламу с СберКотом vs без', value: '× 3' },
+      { label: 'Рост лояльности vs старая концепция', value: '+ 50%' },
+    ],
+    takeaway:
+      'Сбер показывает, как маскот эволюционирует от соцсеть-наставника к full-stack бренд-лицу: СМИ + детский продукт + голосовая колонка + игра. Цифры подтверждают: маскот в банке окупается через метрики продаж (× 2 эффективность) и узнаваемости (+15 п.п.). Для Лиса Толи — план эволюции: сначала в приложении Т-Город, потом везде, где бренд встречает клиента.',
+    sources: [
+      {
+        label: 'Sostav: Котоверсум и метрики кампании',
+        url: 'https://www.sostav.ru/publication/kak-sberkot-i-vk-privlekli-moloduyu-auditoriyu-74093.html',
+      },
+      {
+        label: 'Workspace: кейс перезапуска СберКота с метриками',
+        url: 'https://workspace.ru/cases/cifrovoy-inflyuenser-sberkot/',
+      },
+      {
+        label: 'rabota.sber.ru: о метриках СберКота в СберKids',
+        url: 'https://rabota.sber.ru/media/o-chyom-deti-sprashivayut-sberkota',
+      },
+      {
+        label: 'TAdviser: история продукта СберКот',
+        url: 'https://www.tadviser.ru/index.php/Продукт:Сбер:_СберКот',
+      },
+    ],
+  },
+  {
+    brand: 'Яндекс Лавка',
+    mascot: 'Без маскота — мини-игра «Собери плюсы» + персональные цели',
+    type: 'minimal',
+    industry: 'E-grocery / быстрая доставка',
+    region: 'РФ',
+    whatTheyDid:
+      'Без маскота принципиально. Решают две конкретные проблемы через геймификацию: (1) «слишком маленькие баллы Плюса не мотивируют» и (2) «слишком много обращений в поддержку с вопросом «где мой заказ?»». В 2022 (хакатон, доклад Алексея Савельева) запустили мини-игру «Собери плюсы» в окне ожидания доставки — курьер ловит продукты, до 50 баллов Плюса (1 балл = 1 ₽). Параллельно — раздел «Мои цели»: персональные задания с прогресс-баром, скидки/подарки за выполнение, рандомно появляются после заказов.',
+    metrics: [
+      { label: 'Максимум баллов за одну игру', value: '50 ₽' },
+      { label: 'Запуск мини-игры', value: '2022' },
+      { label: 'Цели — каждое со сроком', value: '~5 дней' },
+    ],
+    takeaway:
+      'Контр-пример Самокату: можно строить retention через геймификацию без живого маскота, если механика решает конкретную проблему UX. Для Т-Города — мини-игры можно делать поверх маскота, не вместо: Толя ведёт челлендж «собери коллекцию», но игровая механика — такая же простая, как у Лавки.',
+    disclaimer:
+      'Конкретные числа по росту повторных заказов / среднему чеку Лавка публично не раскрывает. Цифры выше — то, что подтверждено в презентациях и блогах.',
+    sources: [
+      {
+        label: 'vc.ru: разбор геймификации после заказа',
+        url: 'https://vc.ru/id4675643/1985789-geymifikatsiya-v-yandeks-lavke',
+      },
+      {
+        label: 'Setka (hh.ru): про доклад Алексея Савельева',
+        url: 'https://setka.ru/posts/018fab53-b26a-4f2e-9f04-bb07e38440c1',
+      },
+      {
+        label: 'gamification-now: персональные цели Лавки',
+        url: 'https://gamification-now.ru/cases/yandeks-lavka-personalnye-celi-motiviruyushchie-k-pokupkam-zadaniya-razlichnoy-slozhnosti-i-podarki-za-ih-vypolnenie',
+      },
+    ],
+  },
+  {
+    brand: 'Duolingo',
+    mascot: 'Сова Duo + сезонные скины (Halloween, Christmas)',
+    type: 'permanent',
+    industry: 'Изучение языков',
+    region: 'global',
+    whatTheyDid:
+      'Постоянный маскот с сезонными «скинами» (Halloween, Christmas, Valentine), которые меняют визуал, не ломая идентичность. На уровне маркетинга — viral memes («unhinged Duo» через TikTok), на уровне продукта — streak с push-механикой, Friend Streaks, групповые challenge.',
+    metrics: [
+      { label: 'DAU Q4 2024', value: '40.5 млн (+51% YoY)' },
+      { label: 'DAU Q4 2025', value: '52.7 млн (+30% YoY)' },
+      { label: 'MAU Q4 2024', value: '116.7 млн' },
+      { label: 'MAU Q4 2025', value: '133.1 млн' },
+      { label: 'DAU/MAU ratio Q4 2024', value: '34.7%' },
+      { label: 'Юзеров со streak ≥1 года (Q4 2024)', value: '> 10 млн' },
+      { label: 'DAU с Friend Streak', value: '~1/3' },
+      { label: 'Платных подписчиков Q4 2025', value: '12.2 млн' },
+    ],
+    takeaway:
+      'Сезонные «скины» поверх постоянного маскота — лучший паттерн для долгого продукта. Толя должен иметь весенний / летний / новогодний look без потери узнаваемости. И публичное признание Duolingo, что чрезмерная монетизация замедляет DAU, — это ровно то, чего нам важно избежать.',
+    sources: [
+      {
+        label: 'Q4 2024 results — DAU 40.5M, +51% YoY (official)',
+        url: 'https://investors.duolingo.com/news-releases/news-release-details/duolingo-finishes-2024-51-daus-growth-more-40-million-daus-and',
+      },
+      {
+        label: 'Investor Relations — все ежеквартальные отчёты',
+        url: 'https://investors.duolingo.com/financial-information/quarterly-results',
+      },
+    ],
+  },
+];
+
+function CompetitorCard({ data }: { data: CompetitorCase }) {
+  return (
+    <article className="competitor-case">
+      <div className="competitor-case__head">
+        <div className="competitor-case__title-block">
+          <h3 className="competitor-case__title">{data.brand}</h3>
+          <Text size="small" tone="secondary">
+            {data.mascot}
+          </Text>
+        </div>
+        <div className="competitor-case__tags">
+          <span
+            className={`competitor-case__tag competitor-case__tag--${
+              data.type === 'seasonal' ? 'seasonal' : data.type === 'minimal' ? 'minimal' : 'perm'
+            }`}
+          >
+            {TYPE_LABEL[data.type]}
+          </span>
+          <span className="competitor-case__tag competitor-case__tag--region">{data.region}</span>
+        </div>
+      </div>
+
+      <div className="competitor-case__industry">
+        <Text size="small" tone="secondary">
+          {data.industry}
+        </Text>
+      </div>
+
+      <div className="competitor-case__what">
+        <Text size="small">{data.whatTheyDid}</Text>
+      </div>
+
+      <div className="competitor-case__metrics">
+        <span className="competitor-case__metrics-label">Цифры из открытых источников</span>
+        <ul className="competitor-case__metrics-list">
+          {data.metrics.map((m) => (
+            <li key={m.label} className="competitor-case__metric">
+              <span className="competitor-case__metric-value">{m.value}</span>
+              <span className="competitor-case__metric-name">{m.label}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="competitor-case__takeaway">
+        <span className="competitor-case__takeaway-label">Что переносим в Т-Город</span>
+        <Text size="small">{data.takeaway}</Text>
+      </div>
+
+      {data.disclaimer && (
+        <div className="competitor-case__disclaimer">
+          <span className="competitor-case__disclaimer-label">Важно</span>
+          <Text size="small" tone="secondary">
+            {data.disclaimer}
+          </Text>
+        </div>
+      )}
+
+      <div className="competitor-case__sources">
+        <span className="competitor-case__sources-label">Источники</span>
+        <ul className="competitor-case__sources-list">
+          {data.sources.map((s) => (
+            <li key={s.url}>
+              <a
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="competitor-case__source-link"
+              >
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </article>
+  );
+}
 
 function MetricCaseCard({ data }: { data: MetricCase }) {
   return (
@@ -964,6 +1257,33 @@ function MetricCaseCard({ data }: { data: MetricCase }) {
         </span>
         <Text size="small">{data.takeawayForUs}</Text>
       </div>
+      {data.disclaimer && (
+        <div className="metric-case__disclaimer">
+          <span className="competitor-case__disclaimer-label">Оговорка</span>
+          <Text size="small" tone="secondary">
+            {data.disclaimer}
+          </Text>
+        </div>
+      )}
+      {data.sources && data.sources.length > 0 && (
+        <div className="metric-case__sources">
+          <span className="metric-case__sources-label">Источники</span>
+          <ul className="competitor-case__sources-list">
+            {data.sources.map((s) => (
+              <li key={s.url}>
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="competitor-case__source-link"
+                >
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </article>
   );
 }
@@ -2256,6 +2576,45 @@ export function App() {
               </Text>
               . Если хотя бы одна контр-метрика красная (push opt-out выше 12%, NPS ниже 0,
               parental complaint выше 0.5%) — рост заморожен, чиним UX, потом качаем дальше.
+            </Text>
+          </Callout>
+        </Stack>
+
+        <Divider />
+
+        <Stack gap={20}>
+          <Stack gap={8}>
+            <span className="section-mark" id="competitors">
+              Кейсы конкурентов
+            </span>
+            <H2>Маскоты в индустрии: постоянные, сезонные, минималистичные</H2>
+            <Text tone="secondary">
+              Только проверенные кейсы с конкретными цифрами и ссылками на источники. Где данные
+              ограничены — пометил «оговоркой». Главные референсы: Самокат (сезонная панда
+              Пандагочи 2025), Сбер (постоянный СберКот), Яндекс Лавка (без маскота, чисто
+              геймификация), Duolingo (постоянный + сезонные скины).
+            </Text>
+          </Stack>
+
+          <div className="competitor-cases">
+            {COMPETITOR_CASES.map((c) => (
+              <CompetitorCard key={c.brand} data={c} />
+            ))}
+          </div>
+
+          <Callout tone="info" title="Главный паттерн из этих кейсов">
+            <Text size="small">
+              <Text as="span" weight="semibold">Сезонная маскот-механика</Text> (как Пандагочи в
+              Самокате) — самая эффективная для запуска: она создаёт ощущение события без
+              «вечного давления». Постоянный маскот (СберКот, Duo) даёт длинный retention, но
+              требует продуманного жизненного цикла и сезонных скинов поверх. Без маскота
+              (Яндекс Лавка) — работает, но требует точечных продуктовых решений вместо
+              эмоционального якоря.
+            </Text>
+            <Text size="small">
+              Для Т-Города оптимальная стратегия — гибрид: Лис Толя как постоянный маскот +
+              сезонные ивенты с тамагочи-механикой раз в квартал (весна / лето / осень / зима).
+              Это даёт и long-term identity, и регулярные пики вовлечения.
             </Text>
           </Callout>
         </Stack>
