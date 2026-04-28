@@ -9,6 +9,7 @@ type Step =
   | 'lobbyHint'
   | 'fullList'
   | 'foundItem'
+  | 'crediting'
   | 'claimed'
   | 'done';
 
@@ -21,6 +22,7 @@ const STEP_ORDER: Step[] = [
   'lobbyHint',
   'fullList',
   'foundItem',
+  'crediting',
   'claimed',
   'done',
 ];
@@ -34,8 +36,9 @@ const STEP_LABEL: Record<Step, string> = {
   lobbyHint: '6 · Жми «Все»',
   fullList: '7 · Полная лента',
   foundItem: '8 · Нашёл Толю',
-  claimed: '9 · Стрик +1',
-  done: '10 · Готово',
+  crediting: '9 · Начисляем стрик',
+  claimed: '10 · Стрик +1',
+  done: '11 · Готово',
 };
 
 /* ============================================================
@@ -632,7 +635,7 @@ function ScreenFullList({
   onBack,
   onClaim,
 }: FullListProps) {
-  const isFocused = step === 'foundItem' || step === 'claimed';
+  const isFocused = step === 'foundItem' || step === 'crediting' || step === 'claimed';
 
   return (
     <div
@@ -717,6 +720,13 @@ function ScreenFullList({
         </div>
       </div>
 
+      {step === 'crediting' && (
+        <div className="full-list__credit-fx" aria-hidden>
+          <div className="full-list__credit-ring" />
+          <div className="full-list__credit-chip">🔥 Огонёк +1</div>
+        </div>
+      )}
+
       <div className="lobby-bottom">
         <span className="lobby-bottom__shop">ВкусВилл</span>
         <span className="lobby-bottom__total">{CART_TOTAL} ₽</span>
@@ -745,6 +755,7 @@ function ClaimModal() {
         </div>
         <h3 className="claim-modal__title">🎉 Стрик обновлён!</h3>
         <p className="claim-modal__sub">Встретимся завтра!</p>
+        <p className="claim-modal__status">Стрик продлён</p>
         <div className="claim-modal__streak">
           {Array.from({ length: 7 }).map((_, i) => (
             <div
@@ -803,6 +814,14 @@ export function FlowDemo() {
   }, [step]);
 
   // Авто-закрытие claim-модала: повисел и сам улетел.
+  useEffect(() => {
+    if (step !== 'crediting') return;
+    const t = setTimeout(() => {
+      setStep((s) => (s === 'crediting' ? 'claimed' : s));
+    }, 850);
+    return () => clearTimeout(t);
+  }, [step]);
+
   useEffect(() => {
     if (step !== 'claimed') return;
     const t = setTimeout(() => {
@@ -870,6 +889,7 @@ export function FlowDemo() {
         );
       case 'fullList':
       case 'foundItem':
+      case 'crediting':
       case 'claimed':
       case 'done':
         return (
@@ -878,7 +898,7 @@ export function FlowDemo() {
             scrollRef={fullListScrollRef}
             tolyaCardRef={tolyaCardRef}
             onBack={() => goto('lobbyHint')}
-            onClaim={() => goto('claimed')}
+            onClaim={() => goto('crediting')}
           />
         );
       default:
@@ -928,7 +948,7 @@ export function FlowDemo() {
         <button
           className="flow-demo__ctrl"
           onClick={skipNext}
-          disabled={step === 'claimed'}
+          disabled={step === 'claimed' || step === 'crediting'}
         >
           Шаг →
         </button>
@@ -941,7 +961,9 @@ export function FlowDemo() {
             {stepContent}
             <HomeIndicator />
 
-            {(step === 'foundItem' || step === 'claimed') && <div className="iphone__dim" />}
+            {(step === 'foundItem' || step === 'crediting' || step === 'claimed') && (
+              <div className="iphone__dim" />
+            )}
             {step === 'claimed' && <ClaimModal />}
           </div>
         </div>
@@ -977,10 +999,10 @@ export function FlowDemo() {
             карточка.
           </li>
           <li>
-            <strong>Тост «Стрик обновлён».</strong> При тапе на карточку — лёгкий тост в центре
-            iPhone: лис, заголовок «🎉 Стрик обновлён! Встретимся завтра!», streak-трек.
-            Висит ~1.8с и улетает сам — без кнопок и подтверждений. После исчезновения оверлей
-            снимается, лента возвращается в обычный вид.
+            <strong>Анимация начисления и продления.</strong> После тапа по карточке сначала идёт
+            короткая вспышка «🔥 Огонёк +1» на затемнённом фоне, затем появляется тост с
+            плашкой «Стрик продлён» и анимированной ячейкой дня в шкале. Тост закрывается сам,
+            после чего оверлей снимается, лента возвращается в обычный вид.
           </li>
         </ul>
         <p className="flow-demo__note-suffix">
