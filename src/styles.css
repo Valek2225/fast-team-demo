@@ -2496,14 +2496,15 @@ body {
   height: 800px;
 }
 
-/* T-БАНК pill в notch */
+/* T-БАНК pill в notch — компактнее высоты статус-бара (~иконки 26px) */
 .iphone__tbank-pill {
   background: #ffd13d;
   color: #2a1900;
   font-weight: 800;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  padding: 4px 12px;
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  padding: 2px 9px;
   border-radius: 999px;
   white-space: nowrap;
   text-transform: uppercase;
