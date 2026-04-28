@@ -2374,6 +2374,11 @@ body {
   padding: 10px 12px;
 }
 
+/* Временно скрываем шаговые контролы для демо жюри, но оставляем в DOM. */
+.flow-demo__controls--hidden {
+  display: none;
+}
+
 .flow-demo__ctrl {
   border: 1px solid var(--stroke);
   background: var(--bg-soft);

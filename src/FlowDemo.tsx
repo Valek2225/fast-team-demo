@@ -1031,7 +1031,7 @@ export function FlowDemo() {
         </div>
       </header>
 
-      <div className="flow-demo__controls">
+      <div className="flow-demo__controls flow-demo__controls--hidden">
         <button className="flow-demo__ctrl" onClick={reset} disabled={step === 'cart'}>
           ⟲ Сначала
         </button>
