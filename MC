@@ -1,0 +1,125 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Красивый стиль
+sns.set_style("whitegrid")
+plt.rcParams['figure.figsize'] = (16, 10)
+plt.rcParams['font.size'] = 12
+
+class GriphonMonteCarlo:
+    def __init__(self, n_simulations=20000, max_days=90, seed=42):
+        np.random.seed(seed)
+        self.n_simulations = n_simulations
+        self.max_days = max_days
+        self.AOV = 2000.0          # ЮKassa, май 2025
+        self.margin = 0.28
+
+    def simulate(self, initial_p, decay_rate, uplift):
+        results = []
+        for _ in range(self.n_simulations):
+            orders = 0
+            for day in range(self.max_days):
+                p = initial_p - (day * decay_rate)
+                if uplift > 0:
+                    p *= (1 + uplift)
+                p = np.clip(p, 0.008, 0.065)
+                if np.random.rand() < p:
+                    orders += 1
+            revenue = orders * self.AOV
+            profit = revenue * self.margin
+            results.append({
+                'total_orders': orders,
+                'made_2nd': orders >= 2,
+                'made_3rd': orders >= 3,
+                'net_profit': profit
+            })
+        return pd.DataFrame(results)
+
+    def run_full_analysis(self):
+        scenarios = {
+            'Baseline (без Грифона)': (0.027, 0.00018, 0.0),
+            'Консервативный (+15%)': (0.027, 0.00018, 0.15),
+            'Базовый (+20%) — по Пандагочи': (0.027, 0.00018, 0.20),
+            'Оптимистичный (+28%)': (0.027, 0.00018, 0.28)
+        }
+
+        summary = []
+        all_dfs = {}
+
+        print("🚀 Monte Carlo анализ (20 000 симуляций)\n")
+
+        for name, params in scenarios.items():
+            df = self.simulate(*params)
+            all_dfs[name] = df
+
+            mean_orders = df['total_orders'].mean()
+            p2 = df['made_2nd'].mean() * 100
+            p3 = df['made_3rd'].mean() * 100
+            mean_profit = df['net_profit'].mean()
+
+            summary.append({
+                'Сценарий': name,
+                'Среднее заказов (90 дней)': round(mean_orders, 2),
+                '% 2-й заказ': f"{p2:.1f}%",
+                '% 3-й заказ': f"{p3:.1f}%",
+                'Net Profit (90 дней)': f"{mean_profit:,.0f} ₽"
+            })
+
+            print(f"{name}:")
+            print(f"  Среднее заказов: {mean_orders:.2f}")
+            print(f"  2-й заказ: {p2:.1f}% | 3-й заказ: {p3:.1f}%")
+            print(f"  Net Profit: {mean_profit:,.0f} ₽\n")
+
+        # === КРАСИВАЯ ТАБЛИЦА ===
+        summary_df = pd.DataFrame(summary)
+        print("\n" + "="*90)
+        print("ФИНАЛЬНАЯ ТАБЛИЦА ДЛЯ СЛАЙДА 05")
+        print("="*90)
+        print(summary_df.to_string(index=False))
+
+        # === ГРАФИКИ ===
+        fig, axes = plt.subplots(2, 2, figsize=(16, 11))
+
+        names = list(all_dfs.keys())
+
+        # 1. Среднее количество заказов
+        means = [df['total_orders'].mean() for df in all_dfs.values()]
+        axes[0, 0].bar(names, means, color=['#9e9e9e', '#4CAF50', '#2196F3', '#FF9800'])
+        axes[0, 0].set_title('Среднее количество заказов за 90 дней')
+        axes[0, 0].set_ylabel('Заказов')
+        axes[0, 0].tick_params(axis='x', rotation=12)
+
+        # 2. % сделали 2-й заказ
+        p2_values = [df['made_2nd'].mean()*100 for df in all_dfs.values()]
+        axes[0, 1].bar(names, p2_values, color=['#9e9e9e', '#4CAF50', '#2196F3', '#FF9800'])
+        axes[0, 1].set_title('% пользователей, сделавших 2-й заказ')
+        axes[0, 1].set_ylabel('%')
+        axes[0, 1].tick_params(axis='x', rotation=12)
+
+        # 3. Распределение net profit (Baseline vs Базовый)
+        sns.histplot(all_dfs['Baseline (без Грифона)']['net_profit'], kde=True,
+                     ax=axes[1, 0], label='Baseline', color='#9e9e9e', alpha=0.8)
+        sns.histplot(all_dfs['Базовый (+20%) — по Пандагочи']['net_profit'], kde=True,
+                     ax=axes[1, 0], label='С Грифоном (Базовый)', color='#2196F3', alpha=0.8)
+        axes[1, 0].set_title('Распределение net profit')
+        axes[1, 0].set_xlabel('Net Profit (₽)')
+        axes[1, 0].legend()
+
+        # 4. Boxplot net profit
+        data = [df['net_profit'] for df in all_dfs.values()]
+        axes[1, 1].boxplot(data, labels=names, patch_artist=True,
+                          boxprops=dict(facecolor='#f0f0f0'))
+        axes[1, 1].set_title('Boxplot Net Profit по сценариям')
+        axes[1, 1].set_ylabel('Net Profit (₽)')
+        axes[1, 1].tick_params(axis='x', rotation=12)
+
+        plt.tight_layout()
+        plt.savefig('griphon_monte_carlo_results.png', dpi=300, bbox_inches='tight')
+        print("\n✅ Графики сохранены в файл: griphon_monte_carlo_results.png")
+        print("Готово для вставки в питч-дек!")
+
+if __name__ == "__main__":
+    mc = GriphonMonteCarlo()
+    mc.run_full_analysis()
