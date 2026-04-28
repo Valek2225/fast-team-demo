@@ -330,9 +330,14 @@ export function MobileDemo() {
   return (
     <div className="mobile-demo">
       <div className="mobile-demo__top">
-        <a href="/" className="mobile-demo__back">
-          ← Назад к презентации
-        </a>
+        <div className="mobile-demo__top-row">
+          <a href="/" className="mobile-demo__back">
+            ← Назад к презентации
+          </a>
+          <a href="/flow" className="mobile-demo__cta-flow">
+            ▶ Запустить интерактивный flow
+          </a>
+        </div>
         <div className="mobile-demo__intro">
           <span className="mobile-demo__eyebrow">Demo UI · статичный мокап</span>
           <h1 className="mobile-demo__title">Заказ оформлен → знакомство с Лисом Толей</h1>
@@ -340,6 +345,14 @@ export function MobileDemo() {
             Два экрана сразу после первого заказа в Т-Городе. Свёрстано блоками — поверх
             можно подключить Lottie/Rive и реальные данные. Без скриншотов: всё живой
             HTML+CSS, готовый к анимации.
+          </p>
+          <p className="mobile-demo__sub">
+            Хотите сквозной сценарий «корзина → заказ → знакомство → ловим первое предложение
+            в ленте» в одном iPhone — нажмите{' '}
+            <a className="mobile-demo__inline-link" href="/flow">
+              «Запустить интерактивный flow»
+            </a>
+            .
           </p>
         </div>
       </div>
