@@ -703,7 +703,6 @@ function ScreenFullList({
                     +
                   </button>
                 </div>
-                {isTolya && <div className="full-card__tolya-strip">От Толи · день 1</div>}
               </div>
             );
           })}
@@ -714,16 +713,27 @@ function ScreenFullList({
         <span className="lobby-bottom__shop">ВкусВилл</span>
         <span className="lobby-bottom__total">{CART_TOTAL} ₽</span>
       </div>
+
+      {step === 'fullList' && (
+        <div className="full-list__hunt-hint">
+          <span className="full-list__hunt-hint-fox">
+            <FoxFace size={26} />
+          </span>
+          <span className="full-list__hunt-hint-text">
+            Листай вниз, пока не увидишь товар Толи
+          </span>
+        </div>
+      )}
     </div>
   );
 }
 
-function ClaimModal({ onDismiss }: { onDismiss: () => void }) {
+function ClaimModal() {
   return (
     <div className="claim-modal" role="dialog" aria-modal="true">
       <div className="claim-modal__card">
         <div className="claim-modal__fox">
-          <FoxFace size={84} />
+          <FoxFace size={72} />
         </div>
         <h3 className="claim-modal__title">🎉 Стрик обновлён!</h3>
         <p className="claim-modal__sub">Встретимся завтра!</p>
@@ -737,9 +747,6 @@ function ClaimModal({ onDismiss }: { onDismiss: () => void }) {
             </div>
           ))}
         </div>
-        <button className="m-cta m-cta--gold claim-modal__cta" onClick={onDismiss}>
-          <span>Отлично</span>
-        </button>
       </div>
     </div>
   );
@@ -785,6 +792,15 @@ export function FlowDemo() {
     screen.scrollTo({ top, behavior: 'smooth' });
     const t2 = setTimeout(() => goto('lobbyHint'), 1400);
     return () => clearTimeout(t2);
+  }, [step]);
+
+  // Авто-закрытие claim-модала: повисел и сам улетел.
+  useEffect(() => {
+    if (step !== 'claimed') return;
+    const t = setTimeout(() => {
+      setStep((s) => (s === 'claimed' ? 'done' : s));
+    }, 2400);
+    return () => clearTimeout(t);
   }, [step]);
 
   // Слежение в полной ленте: IntersectionObserver на карточке Толи в её скролл-контейнере
@@ -918,7 +934,7 @@ export function FlowDemo() {
             <HomeIndicator />
 
             {(step === 'foundItem' || step === 'claimed') && <div className="iphone__dim" />}
-            {step === 'claimed' && <ClaimModal onDismiss={() => goto('done')} />}
+            {step === 'claimed' && <ClaimModal />}
           </div>
         </div>
       </div>
@@ -947,10 +963,10 @@ export function FlowDemo() {
             карточка.
           </li>
           <li>
-            <strong>Модал «Стрик обновлён».</strong> При тапе на карточку — компактный popup в
-            центре: «🎉 Стрик обновлён! Встретимся завтра!» + кнопка «Отлично». Клик «Отлично»
-            снимает оверлей и возвращает ленту в нормальное состояние — никакого full-screen
-            success.
+            <strong>Тост «Стрик обновлён».</strong> При тапе на карточку — лёгкий тост в центре
+            iPhone: лис, заголовок «🎉 Стрик обновлён! Встретимся завтра!», streak-трек.
+            Висит ~1.8с и улетает сам — без кнопок и подтверждений. После исчезновения оверлей
+            снимается, лента возвращается в обычный вид.
           </li>
         </ul>
         <p className="flow-demo__note-suffix">
