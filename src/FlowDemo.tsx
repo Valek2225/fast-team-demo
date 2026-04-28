@@ -1014,8 +1014,8 @@ export function FlowDemo() {
   return (
     <div className="flow-demo">
       <header className="flow-demo__top">
-        <a href="/mobile" className="flow-demo__back">
-          ← К статичному мокапу
+        <a href="/" className="flow-demo__back">
+          ← К презентации
         </a>
         <div className="flow-demo__intro">
           <span className="flow-demo__eyebrow">Demo flow · интерактивный сценарий</span>

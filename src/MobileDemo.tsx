@@ -334,7 +334,7 @@ export function MobileDemo() {
           <a href="/" className="mobile-demo__back">
             ← Назад к презентации
           </a>
-          <a href="/flow" className="mobile-demo__cta-flow">
+          <a href="/mobile" className="mobile-demo__cta-flow">
             ▶ Запустить интерактивный flow
           </a>
         </div>
@@ -349,7 +349,7 @@ export function MobileDemo() {
           <p className="mobile-demo__sub">
             Хотите сквозной сценарий «корзина → заказ → знакомство → ловим первое предложение
             в ленте» в одном iPhone — нажмите{' '}
-            <a className="mobile-demo__inline-link" href="/flow">
+            <a className="mobile-demo__inline-link" href="/mobile">
               «Запустить интерактивный flow»
             </a>
             .

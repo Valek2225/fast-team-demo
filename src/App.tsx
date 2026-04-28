@@ -343,7 +343,7 @@ function TopBar() {
     { href: '#competitors', label: 'Конкуренты' },
     { href: '#data', label: 'Данные' },
     { href: '#glossary', label: 'Словарь' },
-    { href: '/mobile', label: 'Demo UI', accent: true, external: true },
+    { href: '/mobile', label: 'Demo Flow', accent: true, external: true },
   ];
   return (
     <header className="topbar">
