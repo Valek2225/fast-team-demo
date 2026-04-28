@@ -622,6 +622,7 @@ function ScreenLobby({
 
 type FullListProps = {
   step: Step;
+  currentStreak: number;
   scrollRef: React.RefObject<HTMLDivElement>;
   tolyaCardRef: React.RefObject<HTMLDivElement>;
   onBack: () => void;
@@ -631,6 +632,7 @@ type FullListProps = {
 
 function ScreenFullList({
   step,
+  currentStreak,
   scrollRef,
   tolyaCardRef,
   onBack,
@@ -638,7 +640,7 @@ function ScreenFullList({
   onOpenTolyaMenu,
 }: FullListProps) {
   const isFocused = step === 'foundItem' || step === 'crediting' || step === 'claimed';
-  const showTolyaBadge = step === 'done' || step === 'claimed' || step === 'crediting';
+  const showTolyaBadge = true;
   const backLocked = step !== 'fullList';
 
   return (
@@ -665,7 +667,7 @@ function ScreenFullList({
               onClick={onOpenTolyaMenu}
               aria-label="Открыть меню Толи"
             >
-              🔥 1
+              🔥 {currentStreak}
             </button>
           ) : (
             <button className="full-list__search" aria-label="Поиск">
@@ -792,7 +794,16 @@ function CreditFx() {
   );
 }
 
-function TolyaMenu({ onClose }: { onClose: () => void }) {
+const TOLYA_MENU_RECOMMENDS = [
+  { id: 'tm1', name: 'Сыр Гауда от ВкусВилл', shop: 'ВкусВилл', price: '199 ₽', emoji: '🧀' },
+  { id: 'tm2', name: 'Томаты от Магнит', shop: 'Магнит', price: '159 ₽', emoji: '🍅' },
+  { id: 'tm3', name: 'Авокадо от ВкусВилл', shop: 'ВкусВилл', price: '180 ₽', emoji: '🥑' },
+  { id: 'tm4', name: 'Базилик от Перекрёсток', shop: 'Перекрёсток', price: '89 ₽', emoji: '🌿' },
+  { id: 'tm5', name: 'Кофе от ВкусВилл', shop: 'ВкусВилл', price: '349 ₽', emoji: '☕' },
+];
+
+function TolyaMenu({ streak, onClose }: { streak: number; onClose: () => void }) {
+  const streakLabel = streak === 1 ? 'день' : streak >= 2 && streak <= 4 ? 'дня' : 'дней';
   return (
     <div className="tolya-menu" role="dialog" aria-modal="true">
       <div className="tolya-menu__card">
@@ -803,11 +814,26 @@ function TolyaMenu({ onClose }: { onClose: () => void }) {
           <FoxFace size={72} />
         </div>
         <h3 className="tolya-menu__title">Меню Толи</h3>
-        <p className="tolya-menu__sub">Текущий стрик: 🔥 1 день</p>
+        <p className="tolya-menu__sub">
+          Текущий стрик: 🔥 {streak} {streakLabel}
+        </p>
         <div className="tolya-menu__items">
           <button className="tolya-menu__item">Мой стрик</button>
-          <button className="tolya-menu__item">Предложение дня</button>
           <button className="tolya-menu__item">Правила стрика</button>
+        </div>
+
+        <div className="tolya-menu__recommend-head">
+          <h4 className="tolya-menu__recommend-title">Подобрали для вас</h4>
+        </div>
+        <div className="tolya-menu__carousel">
+          {TOLYA_MENU_RECOMMENDS.map((item) => (
+            <div key={item.id} className="tolya-menu__card-mini">
+              <div className="tolya-menu__card-mini-media">{item.emoji}</div>
+              <div className="tolya-menu__card-mini-price">{item.price}</div>
+              <div className="tolya-menu__card-mini-name">{item.name}</div>
+              <div className="tolya-menu__card-mini-shop">{item.shop}</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -821,6 +847,7 @@ function TolyaMenu({ onClose }: { onClose: () => void }) {
 export function FlowDemo() {
   const [step, setStep] = useState<Step>('cart');
   const [tolyaMenuOpen, setTolyaMenuOpen] = useState(false);
+  const [currentStreak, setCurrentStreak] = useState(0);
   const screenRef = useRef<HTMLDivElement | null>(null);
   const recommendsAnchorRef = useRef<HTMLDivElement | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
@@ -830,6 +857,7 @@ export function FlowDemo() {
   const goto = (next: Step) => setStep(next);
   const reset = () => {
     setTolyaMenuOpen(false);
+    setCurrentStreak(0);
     setStep('cart');
   };
 
@@ -864,6 +892,7 @@ export function FlowDemo() {
   useEffect(() => {
     if (step !== 'crediting') return;
     const t = setTimeout(() => {
+      setCurrentStreak((s) => s + 1);
       setStep((s) => (s === 'crediting' ? 'claimed' : s));
     }, 850);
     return () => clearTimeout(t);
@@ -946,6 +975,7 @@ export function FlowDemo() {
         return (
           <ScreenFullList
             step={step}
+            currentStreak={currentStreak}
             scrollRef={fullListScrollRef}
             tolyaCardRef={tolyaCardRef}
             onBack={() => goto('lobbyHint')}
@@ -1018,7 +1048,14 @@ export function FlowDemo() {
             )}
             {step === 'crediting' && <CreditFx />}
             {step === 'claimed' && <ClaimModal />}
-            {step === 'done' && tolyaMenuOpen && <TolyaMenu onClose={() => setTolyaMenuOpen(false)} />}
+            {tolyaMenuOpen &&
+              (step === 'fullList' ||
+                step === 'foundItem' ||
+                step === 'crediting' ||
+                step === 'claimed' ||
+                step === 'done') && (
+              <TolyaMenu streak={currentStreak} onClose={() => setTolyaMenuOpen(false)} />
+            )}
           </div>
         </div>
       </div>

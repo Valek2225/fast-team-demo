@@ -3344,7 +3344,7 @@ body {
 
 .full-list__topnav {
   display: grid;
-  grid-template-columns: 32px 1fr 32px;
+  grid-template-columns: 32px 1fr auto;
   align-items: center;
   gap: 8px;
   padding: 6px 4px 8px;
@@ -3388,9 +3388,10 @@ body {
 }
 
 .full-list__tolya-pill {
-  min-width: 56px;
+  min-width: 62px;
   height: 32px;
-  padding: 0 10px;
+  padding: 0 12px 0 10px;
+  margin-right: 2px;
   border-radius: 16px;
   border: 1px solid rgba(255, 210, 74, 0.45);
   background: rgba(40, 24, 8, 0.92);
@@ -3833,25 +3834,40 @@ body {
   inset: 48px 0 38px;
   z-index: 62;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
+  align-items: flex-end;
+  justify-content: stretch;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.42);
+  animation: dim-fade-in 0.2s ease;
 }
 
 .tolya-menu__card {
   width: 100%;
-  max-width: 270px;
-  border-radius: 16px;
+  height: 80%;
+  border-radius: 18px 18px 0 0;
   border: 1px solid rgba(255, 122, 58, 0.38);
   background:
     radial-gradient(110% 70% at 50% 0%, rgba(255, 122, 58, 0.3) 0%, transparent 62%),
     linear-gradient(180deg, #1a120c 0%, #0f0b08 100%);
-  padding: 16px 14px 14px;
+  padding: 14px 14px 20px;
   box-shadow: 0 22px 44px -16px rgba(0, 0, 0, 0.72);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  animation: tolya-sheet-up 0.28s ease-out;
+  overflow: hidden;
+}
+
+@keyframes tolya-sheet-up {
+  from {
+    transform: translateY(26px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .tolya-menu__close {
@@ -3890,12 +3906,12 @@ body {
 .tolya-menu__items {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 8px;
 }
 
 .tolya-menu__item {
-  width: 100%;
+  flex: 1;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.05);
@@ -3905,6 +3921,70 @@ body {
   padding: 10px 12px;
   text-align: left;
   cursor: pointer;
+}
+
+.tolya-menu__recommend-head {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.tolya-menu__recommend-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tolya-menu__carousel {
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 118px;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 4px;
+}
+
+.tolya-menu__carousel::-webkit-scrollbar { display: none; }
+
+.tolya-menu__card-mini {
+  scroll-snap-align: start;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tolya-menu__card-mini-media {
+  height: 72px;
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+}
+
+.tolya-menu__card-mini-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tolya-menu__card-mini-name {
+  font-size: 11px;
+  line-height: 1.25;
+  color: #fff;
+}
+
+.tolya-menu__card-mini-shop {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* notes (общий с mobile-demo) */
