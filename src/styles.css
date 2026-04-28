@@ -1515,7 +1515,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 22px;
+  /* Ближе к краям рамки — время и иконки не «отступают» как из‑за лишнего inset */
+  padding: 0 12px 0 10px;
 }
 
 .iphone-statusbar-kit__side {
@@ -1525,24 +1526,32 @@ body {
   min-width: 0;
 }
 
+.iphone-statusbar-kit__side--left {
+  justify-content: flex-start;
+}
+
+.iphone-statusbar-kit__side--right {
+  justify-content: flex-end;
+}
+
 .iphone-statusbar-svg {
   display: block;
   height: auto;
 }
 
-/* Высота по ощущению как у жёлтой шторки (иконки/циферблат не «мельче» центра) */
+/* Высота ближе к шторке Т‑Банка */
 .iphone-statusbar-svg--time {
-  height: 30px;
+  height: 34px;
   width: auto;
 }
 
 .iphone-statusbar-svg--icons {
-  height: 30px;
+  height: 34px;
   width: auto;
 }
 
 .iphone-statusbar-svg--island {
-  height: 30px;
+  height: 34px;
   width: auto;
 }
 

@@ -48,12 +48,15 @@ const RIGHT_SIGNAL_BATTERY = (
   </>
 );
 
+/** Обрезка под реальный bbox цифр времени — без пустого поля слева в viewBox */
+const TIME_VIEWBOX = '50 21 32 16';
+
 export function IphoneStatusBarTimeSvg() {
   return (
     <svg
       className="iphone-statusbar-svg iphone-statusbar-svg--time"
-      viewBox="0 0 140 59"
-      preserveAspectRatio="xMidYMid meet"
+      viewBox={TIME_VIEWBOX}
+      preserveAspectRatio="xMinYMid meet"
       aria-hidden
     >
       <path d={TIME_PATH} fill="white" />
@@ -85,12 +88,15 @@ export function IphoneStatusBarIslandSvg() {
   );
 }
 
+/** Иконки справа — без лишнего воздуха после батареи */
+const ICONS_VIEWBOX = '282 21 84 18';
+
 export function IphoneStatusBarIconsSvg() {
   return (
     <svg
       className="iphone-statusbar-svg iphone-statusbar-svg--icons"
-      viewBox="278 0 92 59"
-      preserveAspectRatio="xMidYMid meet"
+      viewBox={ICONS_VIEWBOX}
+      preserveAspectRatio="xMaxYMid meet"
       aria-hidden
     >
       {RIGHT_SIGNAL_BATTERY}
