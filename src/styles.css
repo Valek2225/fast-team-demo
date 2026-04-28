@@ -751,3 +751,142 @@ body {
   color: var(--text-tertiary);
   font-weight: 600;
 }
+
+.glossary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 720px) {
+  .glossary {
+    grid-template-columns: 1fr;
+  }
+}
+
+.term {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-lg);
+}
+
+.term__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid var(--stroke);
+  padding-bottom: 10px;
+}
+
+.term__name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.term__alias {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.term__tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke-strong);
+  white-space: nowrap;
+}
+
+.term__tag--tech {
+  color: var(--info);
+  border-color: rgba(109, 185, 255, 0.4);
+  background: var(--info-soft);
+}
+
+.term__tag--finance {
+  color: var(--success);
+  border-color: rgba(95, 208, 122, 0.4);
+  background: var(--success-soft);
+}
+
+.term__tag--marketing {
+  color: var(--warning);
+  border-color: rgba(244, 183, 64, 0.4);
+  background: var(--warning-soft);
+}
+
+.term__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.term__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.term__row--example .term__label {
+  color: var(--accent);
+}
+
+.term__row--example {
+  padding: 10px 12px;
+  background: var(--bg-soft);
+  border-left: 2px solid var(--accent);
+  border-radius: 6px;
+  margin: 2px 0;
+}
+
+.term__text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0;
+}
+
+.term__text--secondary {
+  color: var(--text-secondary);
+}
+
+.category-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.category-header__tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.category-header__tag--tech {
+  color: var(--info);
+}
+
+.category-header__tag--finance {
+  color: var(--success);
+}
+
+.category-header__tag--marketing {
+  color: var(--warning);
+}
