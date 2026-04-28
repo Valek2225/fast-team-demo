@@ -2609,6 +2609,87 @@ body {
   line-height: 1;
 }
 
+.lobby-top__series-pill--pulse {
+  animation: more-pulse 1.35s ease-in-out infinite;
+}
+
+/* Промежуток перед подсказкой: блокируем тапы во время авто-позиционирования к верху */
+.iphone__screen--series-scroll-wait .lobby-content {
+  pointer-events: none;
+}
+
+/* После клейма: затемнение лобби + только тап по 🔥 на верхней панели */
+.iphone__screen--series-hint {
+  position: relative;
+}
+
+.iphone__screen--series-hint::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.56);
+}
+
+.iphone__screen--series-hint .lobby-content {
+  position: relative;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.iphone__screen--series-hint .lobby-top__receipt {
+  position: relative;
+  z-index: 22;
+  pointer-events: auto;
+}
+
+.lobby-series-hint-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-top: -2px;
+  margin-bottom: 2px;
+  background: linear-gradient(120deg, rgba(255, 122, 58, 0.24) 0%, rgba(255, 210, 74, 0.14) 100%);
+  border: 1px solid rgba(255, 122, 58, 0.42);
+  border-radius: 12px;
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+  animation: bubble-in 0.35s ease;
+}
+
+.lobby-series-hint-banner__fox {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ff7a3a;
+  flex: 0 0 36px;
+}
+
+.lobby-series-hint-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lobby-series-hint-banner__title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.lobby-series-hint-banner__sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.35;
+}
+
 .lobby-search {
   display: flex;
   align-items: center;

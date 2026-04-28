@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   IphoneStatusBarIconsSvg,
   IphoneStatusBarIslandSvg,
@@ -16,6 +16,8 @@ type Step =
   | 'foundItem'
   | 'crediting'
   | 'claimed'
+  | 'lobbySeriesScroll'
+  | 'lobbySeriesHint'
   | 'done';
 
 const STEP_ORDER: Step[] = [
@@ -29,6 +31,8 @@ const STEP_ORDER: Step[] = [
   'foundItem',
   'crediting',
   'claimed',
+  'lobbySeriesScroll',
+  'lobbySeriesHint',
   'done',
 ];
 
@@ -43,7 +47,9 @@ const STEP_LABEL: Record<Step, string> = {
   foundItem: '8 · Нашёл Толю',
   crediting: '9 · Начисляем серию',
   claimed: '10 · Серия +1',
-  done: '11 · Готово',
+  lobbySeriesScroll: '11 · К панели серии',
+  lobbySeriesHint: '12 · Меню Толи',
+  done: '13 · Готово',
 };
 
 /* ============================================================
@@ -463,16 +469,21 @@ function ScreenLobby({
   carouselRef,
 }: LobbyProps) {
   const moreActive = step === 'lobbyHint';
+  const seriesPanelTutorial = step === 'lobbySeriesHint';
   // Туториал лобби (авто-скролл → «Все») только при первом входе. Если пользователь уже
   // получил серию и вернулся назад — скролл разблокирован.
   const scrollLocked =
     step === 'lobbyAutoScroll' ||
     step === 'lobbyHint' ||
+    step === 'lobbySeriesScroll' ||
+    step === 'lobbySeriesHint' ||
     (step === 'lobbyArrival' && currentSeries === 0);
   return (
     <div
       className={`iphone__screen iphone__screen--lobby${
         scrollLocked ? ' iphone__screen--locked' : ''
+      }${step === 'lobbySeriesScroll' ? ' iphone__screen--series-scroll-wait' : ''}${
+        seriesPanelTutorial ? ' iphone__screen--series-hint' : ''
       }`}
     >
       <div className="lobby-content">
@@ -483,17 +494,36 @@ function ScreenLobby({
             <span className="lobby-top__addr-main">Сиреневая улица, 21 ▾</span>
           </div>
           <button
+            type="button"
             className={`lobby-top__receipt${currentSeries > 0 ? ' lobby-top__receipt--wide' : ''}`}
             aria-label={currentSeries > 0 ? 'Открыть меню Толи' : 'Чеки'}
             onClick={currentSeries > 0 ? onOpenTolyaMenu : undefined}
           >
             {currentSeries > 0 ? (
-              <span className="lobby-top__series-pill">🔥 {currentSeries}</span>
+              <span
+                className={`lobby-top__series-pill${seriesPanelTutorial ? ' lobby-top__series-pill--pulse' : ''}`}
+              >
+                🔥 {currentSeries}
+              </span>
             ) : (
               <ReceiptIcon />
             )}
           </button>
         </div>
+
+        {seriesPanelTutorial && (
+          <div className="lobby-series-hint-banner">
+            <span className="lobby-series-hint-banner__fox">
+              <FoxFace size={28} />
+            </span>
+            <div className="lobby-series-hint-banner__text">
+              <span className="lobby-series-hint-banner__title">Серия на панели</span>
+              <span className="lobby-series-hint-banner__sub">
+                Дополнительно про Толю — нажми на 🔥 справа вверху
+              </span>
+            </div>
+          </div>
+        )}
 
         <div className="lobby-search">
           <SearchIcon />
@@ -669,7 +699,7 @@ function ScreenFullList({
           <h2 className="full-list__title">Подобрали для вас</h2>
           {showTolyaBadge ? (
             <button
-              className={`full-list__tolya-pill${step === 'done' ? ' full-list__tolya-pill--pulse' : ''}`}
+              className="full-list__tolya-pill"
               onClick={onOpenTolyaMenu}
               aria-label="Открыть меню Толи"
             >
@@ -916,8 +946,19 @@ export function FlowDemo() {
   useEffect(() => {
     if (step !== 'claimed') return;
     const t = setTimeout(() => {
-      setStep((s) => (s === 'claimed' ? 'done' : s));
+      setStep((s) => (s === 'claimed' ? 'lobbySeriesScroll' : s));
     }, 2400);
+    return () => clearTimeout(t);
+  }, [step]);
+
+  // После клейма: возвращаем в лобби к верхней панели, затем подсказка «тапни 🔥»
+  useEffect(() => {
+    if (step !== 'lobbySeriesScroll') return;
+    const screen = screenRef.current?.querySelector('.iphone__screen--lobby') as HTMLElement | null;
+    if (screen) {
+      screen.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    const t = setTimeout(() => goto('lobbySeriesHint'), screen ? 950 : 400);
     return () => clearTimeout(t);
   }, [step]);
 
@@ -961,6 +1002,11 @@ export function FlowDemo() {
     };
   }, [step, currentSeries]);
 
+  const handleLobbyMenuOpen = useCallback(() => {
+    setTolyaMenuOpen(true);
+    setStep((s) => (s === 'lobbySeriesHint' ? 'done' : s));
+  }, []);
+
   const stepContent = useMemo(() => {
     switch (step) {
       case 'cart':
@@ -972,12 +1018,15 @@ export function FlowDemo() {
       case 'lobbyArrival':
       case 'lobbyAutoScroll':
       case 'lobbyHint':
+      case 'lobbySeriesScroll':
+      case 'lobbySeriesHint':
+      case 'done':
         return (
           <ScreenLobby
             step={step}
             currentSeries={currentSeries}
             onOpenFullList={() => goto('fullList')}
-            onOpenTolyaMenu={() => setTolyaMenuOpen(true)}
+            onOpenTolyaMenu={handleLobbyMenuOpen}
             recommendsAnchorRef={recommendsAnchorRef}
             carouselRef={carouselRef}
           />
@@ -986,7 +1035,6 @@ export function FlowDemo() {
       case 'foundItem':
       case 'crediting':
       case 'claimed':
-      case 'done':
         return (
           <ScreenFullList
             step={step}
@@ -1001,7 +1049,7 @@ export function FlowDemo() {
       default:
         return null;
     }
-  }, [step, currentSeries]);
+  }, [step, currentSeries, handleLobbyMenuOpen]);
 
   // Прогресс
   const stepIdx = STEP_ORDER.indexOf(step);
@@ -1022,7 +1070,8 @@ export function FlowDemo() {
             Один iPhone, один сквозной флоу. Кликаем «Оформить заказ» в корзине → дальше всё ведёт
             себя само: подарок → знакомство с Лисом Толей → попадаем в лобби → авто-скролл к ленте
             «Подобрали для вас» → подсказка «листайте» → ищем товар Толи в карусели → серый
-            оверлей с акцентом → клейм → серия +1.
+            оверлей с акцентом → клейм → серия +1 → возврат в лобби и подсказка «тапни 🔥» наверху,
+            чтобы открыть меню Толи.
           </p>
         </div>
       </header>
@@ -1071,6 +1120,8 @@ export function FlowDemo() {
               (step === 'lobbyArrival' ||
                 step === 'lobbyAutoScroll' ||
                 step === 'lobbyHint' ||
+                step === 'lobbySeriesScroll' ||
+                step === 'lobbySeriesHint' ||
                 step === 'fullList' ||
                 step === 'foundItem' ||
                 step === 'crediting' ||
@@ -1116,6 +1167,12 @@ export function FlowDemo() {
             короткая вспышка «🔥 Серия +1» на затемнённом фоне, затем появляется тост с
             плашкой «Серия продлена» и анимированной ячейкой дня в шкале. Тост закрывается сам,
             после чего оверлей снимается, лента возвращается в обычный вид.
+          </li>
+          <li>
+            <strong>Подсказка на верхнюю панель после клейма.</strong> После тоста сценарий
+            возвращает в главное лобби к верхней панели (автоскролл к началу экрана), затем
+            затемняет интерфейс и оставляет активной только плашку 🔥 с пульсацией — как с кнопкой
+            «Все». После тапа по плашке открывается меню Толи, мигание снимается, шаг завершён.
           </li>
         </ul>
         <p className="flow-demo__note-suffix">

@@ -19,4 +19,9 @@ test.describe('/mobile (интерактивный flow)', () => {
     }
     await expect(page.locator('.flow-demo__progress-label')).toContainText('Полная лента');
   });
+
+  test('до клейма не активен туториал плашки серии на панели', async ({ page }) => {
+    await page.goto('/mobile');
+    await expect(page.locator('.iphone__screen--series-hint')).toHaveCount(0);
+  });
 });
