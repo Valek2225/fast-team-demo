@@ -626,6 +626,7 @@ type FullListProps = {
   tolyaCardRef: React.RefObject<HTMLDivElement>;
   onBack: () => void;
   onClaim: () => void;
+  onOpenTolyaMenu: () => void;
 };
 
 function ScreenFullList({
@@ -634,8 +635,11 @@ function ScreenFullList({
   tolyaCardRef,
   onBack,
   onClaim,
+  onOpenTolyaMenu,
 }: FullListProps) {
   const isFocused = step === 'foundItem' || step === 'crediting' || step === 'claimed';
+  const showTolyaBadge = step === 'done' || step === 'claimed' || step === 'crediting';
+  const backLocked = step !== 'fullList';
 
   return (
     <div
@@ -646,13 +650,28 @@ function ScreenFullList({
     >
       <div className="full-list">
         <div className="full-list__topnav">
-          <button className="full-list__back" onClick={onBack} aria-label="Назад">
+          <button
+            className="full-list__back"
+            onClick={backLocked ? undefined : onBack}
+            aria-label="Назад"
+            disabled={backLocked}
+          >
             <span className="full-list__back-arrow" />
           </button>
           <h2 className="full-list__title">Подобрали для вас</h2>
-          <button className="full-list__search" aria-label="Поиск">
-            <SearchIcon size={20} />
-          </button>
+          {showTolyaBadge ? (
+            <button
+              className={`full-list__tolya-pill${step === 'done' ? ' full-list__tolya-pill--pulse' : ''}`}
+              onClick={onOpenTolyaMenu}
+              aria-label="Открыть меню Толи"
+            >
+              🔥 1
+            </button>
+          ) : (
+            <button className="full-list__search" aria-label="Поиск">
+              <SearchIcon size={20} />
+            </button>
+          )}
         </div>
 
         <div className="lobby-recommends-tabs full-list__tabs">
@@ -720,13 +739,6 @@ function ScreenFullList({
         </div>
       </div>
 
-      {step === 'crediting' && (
-        <div className="full-list__credit-fx" aria-hidden>
-          <div className="full-list__credit-ring" />
-          <div className="full-list__credit-chip">🔥 Огонёк +1</div>
-        </div>
-      )}
-
       <div className="lobby-bottom">
         <span className="lobby-bottom__shop">ВкусВилл</span>
         <span className="lobby-bottom__total">{CART_TOTAL} ₽</span>
@@ -771,12 +783,44 @@ function ClaimModal() {
   );
 }
 
+function CreditFx() {
+  return (
+    <div className="credit-fx-screen" aria-hidden>
+      <div className="credit-fx-screen__ring" />
+      <div className="credit-fx-screen__chip">🔥 Огонёк +1</div>
+    </div>
+  );
+}
+
+function TolyaMenu({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="tolya-menu" role="dialog" aria-modal="true">
+      <div className="tolya-menu__card">
+        <button className="tolya-menu__close" onClick={onClose} aria-label="Закрыть">
+          ✕
+        </button>
+        <div className="tolya-menu__fox">
+          <FoxFace size={72} />
+        </div>
+        <h3 className="tolya-menu__title">Меню Толи</h3>
+        <p className="tolya-menu__sub">Текущий стрик: 🔥 1 день</p>
+        <div className="tolya-menu__items">
+          <button className="tolya-menu__item">Мой стрик</button>
+          <button className="tolya-menu__item">Предложение дня</button>
+          <button className="tolya-menu__item">Правила стрика</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ============================================================
    FlowDemo — корневой компонент
    ============================================================ */
 
 export function FlowDemo() {
   const [step, setStep] = useState<Step>('cart');
+  const [tolyaMenuOpen, setTolyaMenuOpen] = useState(false);
   const screenRef = useRef<HTMLDivElement | null>(null);
   const recommendsAnchorRef = useRef<HTMLDivElement | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
@@ -784,7 +828,10 @@ export function FlowDemo() {
   const tolyaCardRef = useRef<HTMLDivElement | null>(null);
 
   const goto = (next: Step) => setStep(next);
-  const reset = () => setStep('cart');
+  const reset = () => {
+    setTolyaMenuOpen(false);
+    setStep('cart');
+  };
 
   const skipNext = () => {
     const idx = STEP_ORDER.indexOf(step);
@@ -828,6 +875,10 @@ export function FlowDemo() {
       setStep((s) => (s === 'claimed' ? 'done' : s));
     }, 2400);
     return () => clearTimeout(t);
+  }, [step]);
+
+  useEffect(() => {
+    if (step !== 'done') setTolyaMenuOpen(false);
   }, [step]);
 
   // Слежение в полной ленте: IntersectionObserver на карточке Толи в её скролл-контейнере
@@ -899,6 +950,7 @@ export function FlowDemo() {
             tolyaCardRef={tolyaCardRef}
             onBack={() => goto('lobbyHint')}
             onClaim={() => goto('crediting')}
+            onOpenTolyaMenu={() => setTolyaMenuOpen(true)}
           />
         );
       default:
@@ -964,7 +1016,9 @@ export function FlowDemo() {
             {(step === 'foundItem' || step === 'crediting' || step === 'claimed') && (
               <div className="iphone__dim" />
             )}
+            {step === 'crediting' && <CreditFx />}
             {step === 'claimed' && <ClaimModal />}
+            {step === 'done' && tolyaMenuOpen && <TolyaMenu onClose={() => setTolyaMenuOpen(false)} />}
           </div>
         </div>
       </div>
