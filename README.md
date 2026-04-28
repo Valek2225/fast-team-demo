@@ -75,14 +75,21 @@ presentation/
 ├── package.json            # минимум зависимостей: react, react-dom, vite
 ├── vite.config.ts
 ├── tsconfig.json
-├── vercel.json             # фреймворк-преcет для Vercel
+├── vercel.json             # фреймворк-преcет для Vercel + SPA rewrites
 ├── public/
 │   └── favicon.svg
 └── src/
-    ├── main.tsx            # mount React
-    ├── App.tsx             # вся презентация
-    └── styles.css          # тёмная тема, без gradient/box-shadow
+    ├── main.tsx            # mount React + роутинг (/ vs /mobile)
+    ├── App.tsx             # вся презентация (главная страница)
+    ├── MobileDemo.tsx      # /mobile — статичный мокап iPhone-экранов
+    └── styles.css          # тёмная тема, iPhone frame, маскот-блоки
 ```
+
+## Роуты
+
+- `/` — основная финплан-презентация (TopBar, секции).
+- `/mobile` — Demo UI: два статичных iPhone-экрана (Заказ оформлен → Знакомство с Лисом Толей).
+  В TopBar главной есть быстрая ссылка «Demo UI».
 
 ## Что внутри
 

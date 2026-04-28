@@ -333,7 +333,7 @@ function DataTable({
 }
 
 function TopBar() {
-  const links: { href: string; label: string; accent?: boolean }[] = [
+  const links: { href: string; label: string; accent?: boolean; external?: boolean }[] = [
     { href: '#audience', label: 'Аудитория' },
     { href: '#costs', label: 'Стоимость' },
     { href: '#scenarios', label: 'Сценарии' },
@@ -343,6 +343,7 @@ function TopBar() {
     { href: '#competitors', label: 'Конкуренты' },
     { href: '#data', label: 'Данные' },
     { href: '#glossary', label: 'Словарь' },
+    { href: '/mobile', label: 'Demo UI', accent: true, external: true },
   ];
   return (
     <header className="topbar">
@@ -355,6 +356,7 @@ function TopBar() {
             <a
               key={l.href}
               href={l.href}
+              target={l.external ? '_self' : undefined}
               className={`topbar__link${l.accent ? ' topbar__link--accent' : ''}`}
             >
               {l.label}
