@@ -958,3 +958,32 @@ body {
   color: var(--text-secondary);
   font-weight: 500;
 }
+
+.data-row__value {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+.data-row__badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--stroke-strong);
+}
+
+.data-row__badge--manual {
+  color: var(--accent);
+  border-color: rgba(255, 221, 45, 0.4);
+  background: var(--accent-soft);
+}
+
+.data-row__badge--auto {
+  color: var(--text-tertiary);
+  background: var(--bg-soft);
+}

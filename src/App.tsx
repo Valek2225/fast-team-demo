@@ -49,6 +49,19 @@ export type Inputs = {
     courierVisitRub: number;
     courierIosRequestShare: number;
   };
+  overrides: {
+    targetAudience: number | null;
+    iosAudience: number | null;
+    androidAudience: number | null;
+    activatedUsers: number | null;
+    monthlyOrders: number | null;
+    monthlyMargin: number | null;
+    yearlyMargin: number | null;
+    yearOneCostA: number | null;
+    yearOneCostC: number | null;
+    yearOneCostE: number | null;
+    courierTotalCost: number | null;
+  };
 };
 
 const DEFAULT_INPUTS: Inputs = {
@@ -83,40 +96,64 @@ const DEFAULT_INPUTS: Inputs = {
     courierVisitRub: 2_000,
     courierIosRequestShare: 0.05,
   },
+  overrides: {
+    targetAudience: null,
+    iosAudience: null,
+    androidAudience: null,
+    activatedUsers: null,
+    monthlyOrders: null,
+    monthlyMargin: null,
+    yearlyMargin: null,
+    yearOneCostA: null,
+    yearOneCostC: null,
+    yearOneCostE: null,
+    courierTotalCost: null,
+  },
 };
+
+const pick = (override: number | null, computed: number): number =>
+  typeof override === 'number' && !Number.isNaN(override) ? override : computed;
 
 function computeMetrics(input: Inputs) {
   const a = input.audience;
   const c = input.conversion;
   const k = input.costs;
+  const o = input.overrides;
 
-  const targetAudience = a.tBankMAU * a.targetAgeShare;
-  const iosAudience = targetAudience * a.iosShare;
-  const activatedUsers = targetAudience * c.expectedActivationRate;
-  const monthlyOrders = activatedUsers * c.ordersPerUserPerMonth;
+  const targetAudience = pick(o.targetAudience, a.tBankMAU * a.targetAgeShare);
+  const iosAudience = pick(o.iosAudience, targetAudience * a.iosShare);
+  const androidAudience = pick(o.androidAudience, targetAudience * a.androidShare);
+  const activatedUsers = pick(o.activatedUsers, targetAudience * c.expectedActivationRate);
+  const monthlyOrders = pick(o.monthlyOrders, activatedUsers * c.ordersPerUserPerMonth);
   const marginPerOrder = c.avgOrderValueRub * c.platformMarginRate;
-  const monthlyMargin = monthlyOrders * marginPerOrder;
-  const yearlyMargin = monthlyMargin * 12;
+  const monthlyMargin = pick(o.monthlyMargin, monthlyOrders * marginPerOrder);
+  const yearlyMargin = pick(o.yearlyMargin, monthlyMargin * 12);
 
   const pwaInfraYear =
     (k.infraMonthlyRub + k.pushInfraMonthlyRub + k.analyticsMonthlyRub + k.smsActivationMonthlyRub) *
     12;
   const pwaTeamYear = k.pwaTeamMonthlyRub * 12;
 
-  const yearOneCostA = pwaTeamYear + pwaInfraYear + k.mascotDesignOneTimeRub;
+  const yearOneCostA = pick(
+    o.yearOneCostA,
+    pwaTeamYear + pwaInfraYear + k.mascotDesignOneTimeRub,
+  );
 
   const yearOneCostB =
     (k.pushInfraMonthlyRub + k.smsActivationMonthlyRub + k.analyticsMonthlyRub) * 12 +
     k.pwaTeamMonthlyRub * 4 * 0.4;
 
   const androidTeamYear = k.androidTeamMonthlyRub * 12;
-  const yearOneCostC = androidTeamYear + (k.infraMonthlyRub + k.pushInfraMonthlyRub) * 12 / 2;
+  const yearOneCostC = pick(
+    o.yearOneCostC,
+    androidTeamYear + (k.infraMonthlyRub + k.pushInfraMonthlyRub) * 12 / 2,
+  );
 
   const courierIosVisits = iosAudience * k.courierIosRequestShare;
-  const courierTotalCost = courierIosVisits * k.courierVisitRub;
+  const courierTotalCost = pick(o.courierTotalCost, courierIosVisits * k.courierVisitRub);
   const yearOneCostD = yearOneCostA + courierTotalCost;
 
-  const yearOneCostE = yearOneCostA + yearOneCostC;
+  const yearOneCostE = pick(o.yearOneCostE, yearOneCostA + yearOneCostC);
 
   const paybackDaysA = monthlyMargin > 0 ? (yearOneCostA / monthlyMargin) * 30 : 0;
   const paybackDaysE = monthlyMargin > 0 ? (yearOneCostE / monthlyMargin) * 30 : 0;
@@ -126,10 +163,26 @@ function computeMetrics(input: Inputs) {
 
   const yearTwoPlusA = pwaTeamYear * 0.6 + pwaInfraYear;
 
+  const overrideKeys: Array<keyof typeof o> = [
+    'targetAudience',
+    'iosAudience',
+    'androidAudience',
+    'activatedUsers',
+    'monthlyOrders',
+    'monthlyMargin',
+    'yearlyMargin',
+    'yearOneCostA',
+    'yearOneCostC',
+    'yearOneCostE',
+    'courierTotalCost',
+  ];
+  const isManual = (key: keyof typeof o): boolean => typeof o[key] === 'number';
+  const manualCount = overrideKeys.filter(isManual).length;
+
   return {
     targetAudience,
     iosAudience,
-    androidAudience: targetAudience * a.androidShare,
+    androidAudience,
     activatedUsers,
     monthlyOrders,
     marginPerOrder,
@@ -150,6 +203,8 @@ function computeMetrics(input: Inputs) {
     paybackDaysD,
     pushMonthlyOpens,
     roiMultiplier: yearOneCostA > 0 ? yearlyMargin / yearOneCostA : 0,
+    isManual,
+    manualCount,
   };
 }
 
@@ -700,12 +755,97 @@ type FieldSpec = {
 
 type FieldGroup = {
   title: string;
-  category: 'audience' | 'conversion' | 'dropoffs' | 'costs';
+  category: 'audience' | 'conversion' | 'dropoffs' | 'costs' | 'overrides';
   intro: string;
   fields: FieldSpec[];
 };
 
 const FIELD_GROUPS: FieldGroup[] = [
+  {
+    title: 'Прямые значения (если есть готовая цифра)',
+    category: 'overrides',
+    intro:
+      'Если у вас уже есть готовое число (например, аналитики посчитали целевую базу или маржу), просто впишите его сюда — формула будет проигнорирована, и весь сайт пересчитается на ваше значение. Оставьте null или пропустите, чтобы число вычислялось из исходных данных ниже.',
+    fields: [
+      {
+        key: 'targetAudience',
+        label: 'Целевая аудитория, человек',
+        what: 'Сколько людей в нашем целевом сегменте 14–35 в Т-Банке.',
+        source: 'По умолчанию: tBankMAU × targetAgeShare = 25 млн × 40% = 10 млн. Если есть готовое число — впишите.',
+        format: 'number',
+      },
+      {
+        key: 'iosAudience',
+        label: 'iOS-аудитория, человек',
+        what: 'Сколько людей в целевой аудитории сидят на iPhone.',
+        source: 'По умолчанию: targetAudience × iosShare. Если CRM знает точное число — впишите.',
+        format: 'number',
+      },
+      {
+        key: 'androidAudience',
+        label: 'Android-аудитория, человек',
+        what: 'Сколько людей в целевой аудитории на Android.',
+        source: 'По умолчанию: targetAudience × androidShare.',
+        format: 'number',
+      },
+      {
+        key: 'activatedUsers',
+        label: 'Активированные пользователи Т-Города, человек',
+        what: 'Сколько человек станут активными пользователями Т-Города в год 1.',
+        source: 'По умолчанию: targetAudience × expectedActivationRate. Если у маркетинга есть свой прогноз — впишите.',
+        format: 'number',
+      },
+      {
+        key: 'monthlyOrders',
+        label: 'Заказов в месяц, штук',
+        what: 'Общее количество заказов через Т-Город в месяц на полной раскатке.',
+        source: 'По умолчанию: activatedUsers × ordersPerUserPerMonth.',
+        format: 'number',
+      },
+      {
+        key: 'monthlyMargin',
+        label: 'Маржа в месяц, ₽',
+        what: 'Сколько чистой маржи Т-Город приносит в месяц на полной раскатке.',
+        source: 'По умолчанию: monthlyOrders × avgOrderValue × platformMarginRate.',
+        format: 'rub',
+      },
+      {
+        key: 'yearlyMargin',
+        label: 'Маржа в год, ₽',
+        what: 'Годовая маржа Т-Города на полной раскатке.',
+        source: 'По умолчанию: monthlyMargin × 12.',
+        format: 'rub',
+      },
+      {
+        key: 'yearOneCostA',
+        label: 'Стоимость варианта A (PWA), год 1, ₽',
+        what: 'Совокупные затраты на PWA-сценарий в первый год.',
+        source: 'По умолчанию: pwaTeam × 12 + (infra+push+analytics+sms) × 12 + дизайн маскота.',
+        format: 'rub',
+      },
+      {
+        key: 'yearOneCostC',
+        label: 'Стоимость варианта C (Android-виджет), год 1, ₽',
+        what: 'Доп. затраты на нативный AppWidget через RuStore.',
+        source: 'По умолчанию: androidTeam × 12 + (infra+push)/2 × 12.',
+        format: 'rub',
+      },
+      {
+        key: 'yearOneCostE',
+        label: 'Стоимость варианта E (комбо), год 1, ₽',
+        what: 'Совокупные затраты на полное комбо A + B + C.',
+        source: 'По умолчанию: yearOneCostA + yearOneCostC.',
+        format: 'rub',
+      },
+      {
+        key: 'courierTotalCost',
+        label: 'Стоимость курьеров для всех iOS, ₽',
+        what: 'Общие разовые расходы на выезд курьеров (сценарий D).',
+        source: 'По умолчанию: iosAudience × courierIosRequestShare × courierVisitRub.',
+        format: 'rub',
+      },
+    ],
+  },
   {
     title: 'Аудитория',
     category: 'audience',
@@ -905,18 +1045,31 @@ function formatField(value: number, format: FieldSpec['format']): string {
   return value.toLocaleString('ru-RU');
 }
 
-function getFieldValue(inputs: Inputs, category: FieldGroup['category'], key: string): number {
+function getFieldValue(
+  inputs: Inputs,
+  metrics: ReturnType<typeof computeMetrics>,
+  category: FieldGroup['category'],
+  key: string,
+): { display: number; manual: boolean } {
+  if (category === 'overrides') {
+    const override = (inputs.overrides as Record<string, number | null>)[key];
+    const computed = (metrics as unknown as Record<string, number>)[key] ?? 0;
+    if (typeof override === 'number') return { display: override, manual: true };
+    return { display: computed, manual: false };
+  }
   const group = inputs[category] as Record<string, number>;
-  return group[key] ?? 0;
+  return { display: group[key] ?? 0, manual: false };
 }
 
 function DataSection({
   inputs,
+  metrics,
   onLoad,
   onReset,
   loadStatus,
 }: {
   inputs: Inputs;
+  metrics: ReturnType<typeof computeMetrics>;
   onLoad: (file: File) => void;
   onReset: () => void;
   loadStatus: { kind: 'idle' } | { kind: 'ok'; name: string } | { kind: 'error'; msg: string };
@@ -929,12 +1082,33 @@ function DataSection({
         </span>
         <H2>Что нужно от финансиста / команды для пересчёта</H2>
         <Text tone="secondary">
-          На этой странице все цифры считаются по формуле от 4 групп входных данных. Скачайте
-          шаблон, заполните своими значениями, загрузите назад — таблицы и метрики пересчитаются
-          автоматически. Выводы и рекомендация остаются неизменными — это не магия, а
-          математика.
+          Все цифры на этой странице вычисляются от одного JSON-файла. Скачайте шаблон, заполните
+          значения, загрузите назад — таблицы и метрики пересчитаются автоматически. Выводы и
+          рекомендация остаются неизменными — это не магия, а математика.
         </Text>
       </Stack>
+
+      <Callout tone="info" title="Два способа задать значение">
+        <Text size="small">
+          Сайт уважает{' '}
+          <Text as="span" weight="semibold">оба варианта</Text> заполнения:
+        </Text>
+        <Text size="small">
+          <Text as="span" weight="semibold">1. Прямое число.</Text> Если у вас уже есть готовая
+          цифра (например, аналитики посчитали 11.3 млн человек 14–35 в Т-Банке) — впишите её в
+          секцию <span className="kbd">overrides</span>. Сайт возьмёт ваше число как есть, без
+          расчёта.
+        </Text>
+        <Text size="small">
+          <Text as="span" weight="semibold">2. Через формулу.</Text> Если готового числа нет —
+          оставьте в overrides null, заполните только базовые параметры (MAU, доли, чек, маржа).
+          Сайт сам всё вычислит.
+        </Text>
+        <Text size="small">
+          В таблицах ниже у каждого вычисляемого значения видно, как оно сейчас получено: бейдж
+          «вручную» = взято из вашего числа, «формула» = посчитано из базовых параметров.
+        </Text>
+      </Callout>
 
       <Card title="Загрузить заполненный JSON">
         <Stack gap={12}>
@@ -991,30 +1165,50 @@ function DataSection({
               {group.intro}
             </Text>
             <DataTable
-              headers={['Поле', 'Что это', 'Где брать значение', 'Текущее']}
+              headers={['Поле', 'Что это', 'Где брать значение / формула', 'Текущее']}
               align={['left', 'left', 'left', 'right']}
-              rows={group.fields.map((f) => [
-                <span className="data-row__key">
-                  <span className="kbd">{f.key}</span>
-                  <span className="data-row__label">{f.label}</span>
-                </span>,
-                f.what,
-                f.source,
-                formatField(getFieldValue(inputs, group.category, f.key), f.format),
-              ])}
+              rows={group.fields.map((f) => {
+                const v = getFieldValue(inputs, metrics, group.category, f.key);
+                return [
+                  <span className="data-row__key">
+                    <span className="kbd">{f.key}</span>
+                    <span className="data-row__label">{f.label}</span>
+                  </span>,
+                  f.what,
+                  f.source,
+                  <span className="data-row__value">
+                    {formatField(v.display, f.format)}
+                    {group.category === 'overrides' && (
+                      <span
+                        className={`data-row__badge data-row__badge--${
+                          v.manual ? 'manual' : 'auto'
+                        }`}
+                      >
+                        {v.manual ? 'вручную' : 'формула'}
+                      </span>
+                    )}
+                  </span>,
+                ];
+              })}
             />
           </Stack>
         ))}
       </Stack>
 
-      <Callout tone="info" title="Какие данные критически влияют">
+      <Callout tone="info" title="Что задавать вручную, а что считать">
         <Text size="small">
-          Самые чувствительные параметры:{' '}
+          Если у вас уже есть готовые цифры от аналитиков (например, точная численность 14–35 в
+          базе, или прогноз маржи) — впишите их в группу{' '}
+          <Text as="span" weight="semibold">overrides</Text>: они перебьют формулу и весь сайт
+          пересчитается. Если нет — оставьте null, и значения посчитаются из исходных параметров
+          ниже (MAU, доли, чек, маржа).
+        </Text>
+        <Text size="small">
+          Самые чувствительные исходные параметры:{' '}
           <Text as="span" weight="semibold">expectedActivationRate</Text>,{' '}
           <Text as="span" weight="semibold">avgOrderValueRub</Text>,{' '}
           <Text as="span" weight="semibold">platformMarginRate</Text>. Изменение каждого на 20%
-          меняет годовую маржу на сотни миллионов рублей. Drop-off проценты — почти константы,
-          их трогать не нужно. Зарплаты влияют линейно, проще всего обновляются HR.
+          меняет годовую маржу на сотни миллионов рублей.
         </Text>
       </Callout>
     </Stack>
@@ -1031,8 +1225,15 @@ function mergeInputs(base: Inputs, patch: unknown): Inputs {
     conversion: { ...base.conversion },
     dropoffs: { ...base.dropoffs },
     costs: { ...base.costs },
+    overrides: { ...base.overrides },
   };
-  (Object.keys(next) as Array<keyof Inputs>).forEach((groupKey) => {
+  const numericGroups: Array<keyof Omit<Inputs, 'overrides'>> = [
+    'audience',
+    'conversion',
+    'dropoffs',
+    'costs',
+  ];
+  numericGroups.forEach((groupKey) => {
     const partial = p[groupKey];
     if (partial && typeof partial === 'object') {
       const g = partial as Record<string, unknown>;
@@ -1043,6 +1244,16 @@ function mergeInputs(base: Inputs, patch: unknown): Inputs {
       });
     }
   });
+  const overridesPatch = p.overrides;
+  if (overridesPatch && typeof overridesPatch === 'object') {
+    const g = overridesPatch as Record<string, unknown>;
+    const target = next.overrides as Record<string, number | null>;
+    Object.keys(target).forEach((field) => {
+      const v = g[field];
+      if (typeof v === 'number' && !Number.isNaN(v)) target[field] = v;
+      else if (v === null) target[field] = null;
+    });
+  }
   return next;
 }
 
@@ -1716,6 +1927,7 @@ export function App() {
 
         <DataSection
           inputs={inputs}
+          metrics={m}
           onLoad={handleLoad}
           onReset={handleReset}
           loadStatus={loadStatus}

@@ -1,8 +1,45 @@
 {
   "_about": "Шаблон входных данных для финплана Т-Город. Заполните значения и загрузите файл на сайте в разделе Данные. Все денежные значения — в рублях, все доли — числом от 0 до 1 (например, 0.4 означает 40%).",
 
+  "overrides": {
+    "_about": "ЕСЛИ У ВАС УЖЕ ЕСТЬ ГОТОВОЕ ЧИСЛО — впишите его сюда. Оно перебьёт формулу, и весь сайт пересчитается на ваше значение. Если нет — оставьте null, и значение вычислится из исходных параметров ниже.",
+
+    "targetAudience": null,
+    "_targetAudience": "Готовая численность целевой аудитории 14–35. По умолчанию: tBankMAU × targetAgeShare = 25 млн × 40% = 10 млн. Если аналитики уже посчитали — впишите.",
+
+    "iosAudience": null,
+    "_iosAudience": "Готовая численность iOS-юзеров в целевой аудитории. По умолчанию: targetAudience × iosShare.",
+
+    "androidAudience": null,
+    "_androidAudience": "Готовая численность Android-юзеров. По умолчанию: targetAudience × androidShare.",
+
+    "activatedUsers": null,
+    "_activatedUsers": "Прогноз активированных пользователей Т-Города в год 1. По умолчанию: targetAudience × expectedActivationRate. Если у маркетинга свой прогноз — впишите.",
+
+    "monthlyOrders": null,
+    "_monthlyOrders": "Заказов в месяц на полной раскатке. По умолчанию: activatedUsers × ordersPerUserPerMonth.",
+
+    "monthlyMargin": null,
+    "_monthlyMargin": "Маржа в месяц, ₽. По умолчанию: monthlyOrders × avgOrderValue × platformMarginRate.",
+
+    "yearlyMargin": null,
+    "_yearlyMargin": "Маржа в год, ₽. По умолчанию: monthlyMargin × 12.",
+
+    "yearOneCostA": null,
+    "_yearOneCostA": "Стоимость варианта A (PWA), год 1, ₽. По умолчанию: pwaTeam × 12 + (infra+push+analytics+sms) × 12 + дизайн маскота.",
+
+    "yearOneCostC": null,
+    "_yearOneCostC": "Стоимость варианта C (Android-виджет, доп.), год 1, ₽. По умолчанию: androidTeam × 12 + (infra+push)/2 × 12.",
+
+    "yearOneCostE": null,
+    "_yearOneCostE": "Стоимость варианта E (комбо A+B+C), год 1, ₽. По умолчанию: yearOneCostA + yearOneCostC.",
+
+    "courierTotalCost": null,
+    "_courierTotalCost": "Совокупная стоимость курьеров (сценарий D), ₽. По умолчанию: iosAudience × courierIosRequestShare × courierVisitRub."
+  },
+
   "audience": {
-    "_about": "Размер базы и распределение по платформам. Большинство значений берутся из аналитики Т-Банка.",
+    "_about": "Размер базы и распределение по платформам. Большинство значений берутся из аналитики Т-Банка. Используются только если соответствующие overrides пустые.",
     "tBankMAU": 25000000,
     "_tBankMAU": "Активные пользователи Т-Банка за месяц (MAU). Источник: внутренняя аналитика. Плюс-минус миллион погоды не делает.",
     "targetAgeShare": 0.4,
