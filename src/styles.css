@@ -1566,8 +1566,8 @@ body {
 .iphone__notch-wrap {
   position: absolute;
   left: 50%;
-  top: 8px;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   z-index: 3;
   pointer-events: none;
 }
