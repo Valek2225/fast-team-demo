@@ -133,16 +133,120 @@ function DataTable({
   );
 }
 
-function H1({ children }: { children: ReactNode }) {
-  return <h1 className="h1">{children}</h1>;
+function TopBar() {
+  const links: { href: string; label: string; accent?: boolean }[] = [
+    { href: '#audience', label: 'Аудитория' },
+    { href: '#costs', label: 'Стоимость' },
+    { href: '#scenarios', label: 'Сценарии' },
+    { href: '#roi', label: 'ROI' },
+    { href: '#decision', label: 'Решение', accent: true },
+  ];
+  return (
+    <header className="topbar">
+      <div className="topbar__inner">
+        <div className="topbar__brand">
+          Т<span>·</span>Город финплан
+        </div>
+        <nav className="topbar__nav">
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className={`topbar__link${l.accent ? ' topbar__link--accent' : ''}`}
+            >
+              {l.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+  );
 }
 
-function H2({ children }: { children: ReactNode }) {
-  return <h2 className="h2">{children}</h2>;
+type OptionMetric = { value: string; label: string };
+type OptionPros = { good: string[]; bad: string[] };
+
+function OptionCard({
+  id,
+  title,
+  metrics,
+  pick,
+  why,
+  pros,
+}: {
+  id: string;
+  title: string;
+  metrics: OptionMetric[];
+  pick?: boolean;
+  why: string;
+  pros: OptionPros;
+}) {
+  return (
+    <article className={`option${pick ? ' option--pick' : ''}`}>
+      <div className="option__head">
+        <div>
+          <div className="option__id">{id}</div>
+          <h3 className="option__title">{title}</h3>
+        </div>
+      </div>
+      <div className="option__metrics">
+        {metrics.map((m) => (
+          <div key={m.label} className="option__metric">
+            <div className="option__metric-value">{m.value}</div>
+            <div className="option__metric-label">{m.label}</div>
+          </div>
+        ))}
+      </div>
+      <div className="proscons">
+        <div className="proscons__col">
+          <div className="proscons__label proscons__label--good">Плюсы</div>
+          <ul className="proscons__list">
+            {pros.good.map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="proscons__col">
+          <div className="proscons__label proscons__label--bad">Минусы</div>
+          <ul className="proscons__list">
+            {pros.bad.map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div className="option__why">
+        <div className="option__why-label">
+          {pick ? 'Почему я бы выбрал' : 'Когда имеет смысл'}
+        </div>
+        <Text size="small">{why}</Text>
+      </div>
+    </article>
+  );
 }
 
-function H3({ children }: { children: ReactNode }) {
-  return <h3 className="h3">{children}</h3>;
+function H1({ children, id }: { children: ReactNode; id?: string }) {
+  return (
+    <h1 className="h1" id={id}>
+      {children}
+    </h1>
+  );
+}
+
+function H2({ children, id }: { children: ReactNode; id?: string }) {
+  return (
+    <h2 className="h2" id={id}>
+      {children}
+    </h2>
+  );
+}
+
+function H3({ children, id }: { children: ReactNode; id?: string }) {
+  return (
+    <h3 className="h3" id={id}>
+      {children}
+    </h3>
+  );
 }
 
 function Text({
@@ -150,17 +254,20 @@ function Text({
   tone,
   size,
   weight,
+  as = 'p',
 }: {
   children: ReactNode;
   tone?: 'secondary';
   size?: 'small';
   weight?: 'semibold';
+  as?: 'p' | 'span';
 }) {
   const cls = ['text'];
   if (tone === 'secondary') cls.push('text--secondary');
   if (size === 'small') cls.push('text--small');
   if (weight === 'semibold') cls.push('text--semibold');
-  return <p className={cls.join(' ')}>{children}</p>;
+  const Tag = as;
+  return <Tag className={cls.join(' ')}>{children}</Tag>;
 }
 
 function Divider() {
@@ -169,8 +276,10 @@ function Divider() {
 
 export function App() {
   return (
-    <main className="page">
-      <Stack gap={32}>
+    <>
+      <TopBar />
+      <main className="page">
+        <Stack gap={32}>
         <Stack gap={8}>
           <span className="section-mark">Т-Город × Т-Банк · хакатон 2026</span>
           <H1>Финплан вариантов «виджета» и онбординга маскота</H1>
@@ -190,7 +299,7 @@ export function App() {
         <Divider />
 
         <Stack gap={12}>
-          <H2>Готовность аудитории 14–35 справиться без курьера</H2>
+          <H2 id="audience">Готовность аудитории 14–35 справиться без курьера</H2>
           <Text tone="secondary">
             Главный вопрос — drop-off на этапе самостоятельной установки. Цифры — медианы по
             международным PWA-каналам и российским кейсам Авито/Ozon/X5 за 2024–2025.
@@ -229,7 +338,7 @@ export function App() {
         <Divider />
 
         <Stack gap={12}>
-          <H2>Разработка и инфраструктура — стоимость по статьям</H2>
+          <H2 id="costs">Разработка и инфраструктура — стоимость по статьям</H2>
           <Text tone="secondary">
             Расчёт исходит из рынка РФ: senior fullstack ≈ 500 тыс ₽/мес, mobile ≈ 600 тыс ₽/мес,
             design / PM / QA — по 300–400 тыс ₽/мес, инфра Yandex Cloud + CDN.
@@ -290,7 +399,7 @@ export function App() {
         <Divider />
 
         <Stack gap={20}>
-          <H2>Сценарии: совокупная стоимость и окупаемость</H2>
+          <H2 id="scenarios">Сценарии: совокупная стоимость и окупаемость</H2>
 
           <Card title="A. PWA + Tinkoff ID + GIF-онбординг" trailing={<Pill tone="success">Рекомендуем</Pill>}>
             <Stack gap={12}>
@@ -399,7 +508,7 @@ export function App() {
         <Divider />
 
         <Stack gap={12}>
-          <H2>Проверка ROI: откуда возьмётся прибыль</H2>
+          <H2 id="roi">Проверка ROI: откуда возьмётся прибыль</H2>
           <Text tone="secondary">
             Считаем по средним цифрам российского food-tech 2025: средний чек 2 000 ₽, маржа платформы
             10% (Самокат, Купер). При активации 500 тыс юзеров и 2 заказа/мес:
@@ -478,11 +587,232 @@ export function App() {
 
         <Divider />
 
+        <Stack gap={24}>
+          <Stack gap={8}>
+            <span className="section-mark" id="decision">
+              Финальное решение
+            </span>
+            <H2>Что я бы выбрал — отдельно для iOS и Android</H2>
+            <Text tone="secondary">
+              Для каждой ОС взял два полярных варианта: «вложиться в долгий продукт» против
+              «сэкономить и проверить рынок». На большинстве рынков нет смысла экономить на iOS —
+              там Apple прижимает все легальные пути и любая дешёвая обходная схема ломает habit
+              loop. На Android всё проще: ОС сама даёт нативные крючки.
+            </Text>
+          </Stack>
+
+          <Stack gap={20}>
+            <div className="os-section">
+              <div className="os-header">
+                <span className="os-header__tag">iOS</span>
+                <H3>Закрытая ОС, App Store недоступен — главное сохранить клиентов</H3>
+              </div>
+              <Grid columns={2} gap={16}>
+                <OptionCard
+                  id="iOS · вариант 1"
+                  title="PWA + Add to Home Screen + Tinkoff ID"
+                  pick
+                  metrics={[
+                    { value: formatRub(35_000_000), label: 'Год 1' },
+                    { value: '5 чел', label: 'Команда (PM/FE×2/BE/design)' },
+                    { value: '~18 дн', label: 'Окупаемость' },
+                  ]}
+                  pros={{
+                    good: [
+                      'Иконка маскота на хоум-экране = постоянный habit-cue',
+                      'Tinkoff ID OAuth: 1 тап SSO если Т-Банк установлен',
+                      'Обновляется без сторе, push-уведомления с iOS 16.4',
+                      'LTV растёт стабильно: пользователь возвращается ритуально',
+                    ],
+                    bad: [
+                      'Drop-off 30–60% на iOS Safari при Add to Home',
+                      'Apple ограничивает Web Push API и фоновую работу',
+                      'Нужен сильный onboarding (GIF + видео + push-страховка)',
+                    ],
+                  }}
+                  why={
+                    'Это инвестиция в долгий продукт. На iOS у нас один шанс закрепить привычку — иконка на хоум-экране это единственный легальный аналог виджета для заблокированной экосистемы. Если сэкономить и не сделать PWA нормально, мы потеряем клиентов: пуши без cue выгорают за 2 недели, и продукт не оправдает 2.4 млрд ₽ годовой маржи. Дороже один раз — но платим за привычку, а не за разовый клик.'
+                  }
+                />
+                <OptionCard
+                  id="iOS · вариант 2"
+                  title="Push + Universal Link (без иконки)"
+                  metrics={[
+                    { value: formatRub(12_000_000), label: 'Год 1' },
+                    { value: '2 чел', label: 'Команда (BE + push-маркетолог)' },
+                    { value: '— нет cue', label: 'Habit формирование' },
+                  ]}
+                  pros={{
+                    good: [
+                      'Запуск за 4 недели, минимум команды',
+                      '1 тап от пуша до Т-Города через Universal Link',
+                      'Можно проверить гипотезу до фулл-инвестиции',
+                      'Использует существующую push-инфру Т-Банка',
+                    ],
+                    bad: [
+                      'Без иконки на хоум-экране нет habit-cue: пользователь не вернётся сам',
+                      'Push-выгорание за 2–3 недели → активные клиенты уйдут',
+                      'Каждый запуск зависит от наших пушей — это не их выбор',
+                      'iOS режет частоту пушей при отписках, фуннел сужается',
+                    ],
+                  }}
+                  why={
+                    'Имеет смысл только как 4-недельный пилот для проверки рынка перед фулл-инвестицией в PWA. Если на пилоте конверсия в первый заказ < 2%, продукт на iOS не взлетит и в полном варианте — лучше узнать это за 12 млн ₽, чем за 35. Но как стационарное решение это путь к оттоку: сэкономить на команде сейчас = заплатить уходом клиентов через 6 месяцев.'
+                  }
+                />
+              </Grid>
+            </div>
+
+            <div className="os-section">
+              <div className="os-header">
+                <span className="os-header__tag">Android</span>
+                <H3>Открытая ОС: даже базовое решение даёт почти-виджет бесплатно</H3>
+              </div>
+              <Grid columns={2} gap={16}>
+                <OptionCard
+                  id="Android · вариант 1"
+                  title="Native AppWidget через RuStore + Pinned Shortcut"
+                  metrics={[
+                    { value: formatRub(18_000_000), label: 'Год 1 (доп к PWA)' },
+                    { value: '+4 чел', label: 'Mobile + QA' },
+                    { value: 'настоящий', label: 'Виджет на хоуме' },
+                  ]}
+                  pros={{
+                    good: [
+                      'Реальный AppWidget с маскотом — лучшая discoverability',
+                      'Long-press на иконке Т-Банка → «Открыть Т-Город» (dynamic shortcut)',
+                      'RuStore позволяет релизы без задержек Google Play',
+                      'Виджет показывает state маскота на хоуме без открытия приложения',
+                    ],
+                    bad: [
+                      'Релизный цикл RuStore 2–4 недели, дольше итерации',
+                      'Доп. mobile-команда (+4 чел = +14 млн ₽/год)',
+                      'Покрывает только Android (~50% базы), iOS остаётся на PWA',
+                      'Дублирование логики маскота с PWA',
+                    ],
+                  }}
+                  why={
+                    'Стоит делать во второй фазе, когда PWA подтвердила экономику. Даёт +5–10% к удержанию, но не оправдывает старт с него: 14 млн ₽ доп зарплат можно потратить только когда первая когорта PWA даст 200+ млн ₽ маржи в месяц. До этого — переинвестирование в платформу, у которой 50% покрытие.'
+                  }
+                />
+                <OptionCard
+                  id="Android · вариант 2"
+                  title="PWA WebAPK (Chrome авто-промпт)"
+                  pick
+                  metrics={[
+                    { value: '0 ₽', label: 'Доп бюджета' },
+                    { value: '0 чел', label: 'Команда (общая с iOS)' },
+                    { value: '~85%', label: 'Самоустановка' },
+                  ]}
+                  pros={{
+                    good: [
+                      'Chrome сам предложит «Установить приложение» — иконка на хоуме',
+                      '0 ₽ дополнительных затрат: всё уже сделано в рамках iOS PWA',
+                      'Drop-off минимальный (12–18%) — Gen Z нажимает auto-prompt',
+                      'Web Push на Android работает без ограничений Apple',
+                      'Релиз вместе с PWA — никаких сторе и циклов',
+                    ],
+                    bad: [
+                      'Не нативный виджет — только иконка-плитка, без живого state',
+                      'Chrome-only (но это 90%+ Android-рынка)',
+                      'Меньше brand-эффекта чем настоящий AppWidget в RuStore',
+                    ],
+                  }}
+                  why={
+                    'Это бесплатный win. Та же кодовая база PWA, что для iOS, на Android даёт почти-виджет через WebAPK без единой строки нативного кода. На Android открытая ОС не наказывает за обходные пути — Chrome сам предлагает установку, авто-промпт работает. Берём это как старт, а нативный виджет добавляем после подтверждения экономики. Сэкономленные 18 млн ₽ идут на маркетинг и удержание.'
+                  }
+                />
+              </Grid>
+            </div>
+          </Stack>
+
+          <Stack gap={12}>
+            <H3>Карта решений: ось «инвестиции» × ось «удержание клиентов»</H3>
+            <Text size="small" tone="secondary">
+              Где каждый из 4 вариантов на карте «сколько вкладываем» против «сколько клиентов
+              остаётся в долгую». Видно, что лучшая клетка — «низкие инвестиции + высокий LTV» —
+              достигается только на Android. На iOS — придётся выбирать: или платим больше и
+              остаёмся, или экономим и теряем.
+            </Text>
+            <div className="matrix">
+              <div className="matrix__y-axis">
+                <span className="matrix__y-label">Удержание клиентов / LTV →</span>
+              </div>
+
+              <div className="matrix__cell">
+                <span className="matrix__cell-coords">↑ Hi LTV · ↓ Lo invest</span>
+                <span className="matrix__cell-label">Идеальная клетка</span>
+                <div className="matrix__chip matrix__chip--accent">
+                  <span className="matrix__chip-os">Android · 2</span>
+                  PWA WebAPK
+                </div>
+              </div>
+
+              <div className="matrix__cell">
+                <span className="matrix__cell-coords">↑ Hi LTV · ↑ Hi invest</span>
+                <span className="matrix__cell-label">Платим за привычку</span>
+                <div className="matrix__chip matrix__chip--accent">
+                  <span className="matrix__chip-os">iOS · 1</span>
+                  PWA + Add to Home
+                </div>
+                <div className="matrix__chip">
+                  <span className="matrix__chip-os">Android · 1</span>
+                  Native AppWidget
+                </div>
+              </div>
+
+              <div className="matrix__cell">
+                <span className="matrix__cell-coords">↓ Lo LTV · ↓ Lo invest</span>
+                <span className="matrix__cell-label">Пилотный замер</span>
+                <div className="matrix__chip">
+                  <span className="matrix__chip-os">iOS · 2</span>
+                  Push + Universal Link
+                </div>
+              </div>
+
+              <div className="matrix__cell">
+                <span className="matrix__cell-coords">↓ Lo LTV · ↑ Hi invest</span>
+                <span className="matrix__cell-label">Ловушка для бюджета</span>
+                <Text size="small" tone="secondary">
+                  Сюда попадает любой курьерский сценарий и iOS Shortcuts с массовой
+                  поддержкой — потратили много, клиентов всё равно мало.
+                </Text>
+              </div>
+
+              <div className="matrix__x-axis">
+                <span className="matrix__x-label">→ Размер инвестиции в команду</span>
+              </div>
+            </div>
+          </Stack>
+
+          <Callout tone="success" title="Финальная рекомендация">
+            <Text size="small">
+              Берём <Text as="span" weight="semibold">iOS-1 (PWA + Add to Home + Tinkoff ID)</Text>{' '}
+              и <Text as="span" weight="semibold">Android-2 (PWA WebAPK)</Text> в первой фазе.
+              Это одна общая команда из 5 человек, общий стек, одна кодовая база. Бюджет — 35 млн ₽
+              год 1, окупаемость ≈ 18 дней.
+            </Text>
+            <Text size="small">
+              <Text as="span" weight="semibold">Android-1 (native AppWidget)</Text> добавляем
+              во второй фазе, когда первая когорта подтвердит маржу — это +18 млн ₽ за +5–10% к
+              retention на половине базы.
+            </Text>
+            <Text size="small">
+              <Text as="span" weight="semibold">iOS-2 (push only)</Text> используем только как
+              4-недельный пилот для тестирования гипотезы или как канал активации поверх iOS-1, но
+              никогда как основное решение — без иконки на хоум-экране клиенты не закрепляются.
+            </Text>
+          </Callout>
+        </Stack>
+
+        <Divider />
+
         <Text size="small" tone="secondary">
           Сборка: <span className="kbd">npm install</span> → <span className="kbd">npm run dev</span>{' '}
           (локально). Деплой — Vercel, см. README.md.
         </Text>
-      </Stack>
-    </main>
+        </Stack>
+      </main>
+    </>
   );
 }
