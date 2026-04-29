@@ -4,6 +4,7 @@ import {
   IphoneStatusBarIslandSvg,
   IphoneStatusBarTimeSvg,
 } from './IphoneStatusBarGraphic';
+import { CourierStatusTrack } from './CourierStatusTrack';
 
 function StatusBar() {
   return (
@@ -205,18 +206,7 @@ function ScreenOrderConfirmed() {
 
         <div className="m-card m-card--soft">
           <span className="m-card__head-title">Статус</span>
-          <div className="m-courier">
-            <div className="m-courier__dot" />
-            <div className="m-courier__line">
-              <div className="m-courier__progress" />
-            </div>
-            <div className="m-courier__dot m-courier__dot--end" />
-          </div>
-          <div className="m-courier__labels">
-            <span>В сборке</span>
-            <span>В пути</span>
-            <span>Доставлено</span>
-          </div>
+          <CourierStatusTrack stage={1} />
         </div>
       </div>
     </div>

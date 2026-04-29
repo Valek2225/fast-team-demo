@@ -2118,42 +2118,75 @@ body {
   margin-top: 4px;
 }
 
-/* Courier track */
+/* Courier track — дискретные отрезки (целиком 0% или 100%, без долей времени) */
 
 .m-courier {
   display: flex;
   align-items: center;
-  gap: 6px;
   margin-top: 6px;
+}
+
+.m-courier--discrete {
+  gap: 0;
+  width: 100%;
 }
 
 .m-courier__dot {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #ff7a3a;
-  box-shadow: 0 0 0 4px rgba(255, 122, 58, 0.18);
-  flex: 0 0 auto;
+  flex: 0 0 14px;
 }
 
-.m-courier__dot--end {
-  background: rgba(255, 255, 255, 0.18);
+.m-courier__dot--current {
+  background: #ff7a3a;
+  box-shadow: 0 0 0 4px rgba(255, 122, 58, 0.2);
+}
+
+.m-courier__dot--done {
+  background: #ff7a3a;
   box-shadow: none;
 }
 
-.m-courier__line {
+.m-courier__dot--todo {
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: none;
+}
+
+.m-courier__segment {
   flex: 1;
+  min-width: 8px;
   height: 4px;
+  align-self: center;
+  margin: 0 4px;
+}
+
+.m-courier__segment-inner {
+  position: relative;
+  height: 100%;
   border-radius: 2px;
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
 
-.m-courier__progress {
-  width: 35%;
-  height: 100%;
+.m-courier__segment-fill {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s ease;
   background: linear-gradient(90deg, #ff7a3a 0%, #ffd24a 100%);
   border-radius: 2px;
+}
+
+.m-courier__segment-fill--full {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-courier__segment-fill {
+    transition: none;
+  }
 }
 
 .m-courier__labels {
