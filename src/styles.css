@@ -2685,6 +2685,13 @@ body {
   border-radius: 36px;
 }
 
+/* Меньше «воздуха» между низом экрана и белой чертой — базово 30px с центрированием давали большой зазор. */
+.iphone--flow .iphone__home {
+  height: 22px;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+
 /*
  * Корзина в demo flow: CTA прижата к низу области экрана (над полосой Home) через position:absolute.
  * Нижний padding у .m-app резервирует место под кнопку — без flex-дыры между «Итого» и CTA.
@@ -2701,10 +2708,14 @@ body {
   justify-content: flex-start;
 }
 
-/* место под абсолютную кнопку (~одна строка CTA + отступ от «Итого») */
+/*
+ * Растягиваем колонку на высоту экрана и margin-top:auto у блока «Итого» —
+ * лишняя высота уходит в зону между списком и сводкой, а не между сводкой и CTA.
+ */
 .iphone--flow .iphone__screen--cart > .m-app {
-  flex: 0 0 auto;
-  padding: 0 14px 52px;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 14px 50px;
   gap: 8px;
   overflow: visible;
 }
@@ -2759,7 +2770,7 @@ body {
 .iphone--flow .iphone__screen--cart .cart-summary {
   flex: 0 0 auto;
   padding: 6px 0 2px;
-  margin-top: 4px;
+  margin-top: auto;
   gap: 2px;
 }
 
@@ -2776,7 +2787,7 @@ body {
   position: absolute;
   left: 12px;
   right: 12px;
-  bottom: 5px;
+  bottom: 0;
   margin: 0;
   width: auto;
   flex: none;
