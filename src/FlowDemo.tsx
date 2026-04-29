@@ -266,7 +266,11 @@ function ScreenCart({ onCheckout }: { onCheckout: () => void }) {
         </div>
       </div>
 
-      <button className="m-cta m-cta--gold m-cta--cart" onClick={onCheckout}>
+      <button
+        type="button"
+        className="m-cta m-cta--gold m-cta--attention m-cta--cart"
+        onClick={onCheckout}
+      >
         <span>Оформить заказ · {CART_TOTAL} ₽</span>
         <span className="m-cta__arrow">→</span>
       </button>
@@ -312,8 +316,8 @@ function ScreenOrderConfirmed({ onUnpack }: { onUnpack: () => void }) {
             За первый заказ в Т-Городе мы дарим вам маскота — он будет помогать ловить лучшие
             предложения каждый день.
           </p>
-          <button className="m-cta m-cta--gold" onClick={onUnpack}>
-            <span>Распаковать подарок</span>
+          <button type="button" className="m-cta m-cta--gold m-cta--attention" onClick={onUnpack}>
+            <span>Забрать подарок</span>
             <span className="m-cta__arrow">→</span>
           </button>
         </div>
@@ -390,7 +394,7 @@ function ScreenMascotIntro({ onCatch }: { onCatch: () => void }) {
           </p>
         </div>
 
-        <button className="m-cta m-cta--gold m-cta--sticky" onClick={onCatch}>
+        <button type="button" className="m-cta m-cta--gold m-cta--attention m-cta--sticky" onClick={onCatch}>
           <span>Поймать первое предложение</span>
           <span className="m-cta__arrow">→</span>
         </button>
@@ -1066,6 +1070,7 @@ export function FlowDemo() {
           <h1 className="flow-demo__title">
             Корзина → заказ → знакомство → ловим первое предложение
           </h1>
+          {/*
           <p className="flow-demo__sub">
             Один iPhone, один сквозной флоу. Кликаем «Оформить заказ» в корзине → дальше всё ведёт
             себя само: подарок → знакомство с Лисом Толей → попадаем в лобби → авто-скролл к ленте
@@ -1073,6 +1078,7 @@ export function FlowDemo() {
             оверлей с акцентом → клейм → серия +1 → возврат в лобби и подсказка «тапни 🔥» наверху,
             чтобы открыть меню Толи.
           </p>
+          */}
         </div>
       </header>
 
@@ -1147,7 +1153,7 @@ export function FlowDemo() {
           </li>
           <li>
             <strong>Блокировка скролла на «обязательных» шагах.</strong> На экранах с главным
-            действием (корзина → оформить, заказ → распаковать, знакомство → поймать) и в лобби на
+            действием (корзина → оформить, заказ → забрать подарок, знакомство → поймать) и в лобби на
             шагах 4–6 вертикальный скролл выключен — нельзя сбить авто-скролл и случайно увести
             фокус с кнопки «Все».
           </li>

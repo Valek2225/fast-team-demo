@@ -162,8 +162,8 @@ function ScreenOrderConfirmed() {
             За первый заказ в Т-Городе мы дарим вам маскота — он будет помогать ловить лучшие
             предложения каждый день.
           </p>
-          <button className="m-cta m-cta--gold">
-            <span>Распаковать подарок</span>
+          <button type="button" className="m-cta m-cta--gold m-cta--attention">
+            <span>Забрать подарок</span>
             <span className="m-cta__arrow" aria-hidden>→</span>
           </button>
         </div>
@@ -291,7 +291,7 @@ function ScreenMascotIntro() {
           </div>
         </div>
 
-        <button className="m-cta m-cta--gold m-cta--sticky">
+        <button type="button" className="m-cta m-cta--gold m-cta--attention m-cta--sticky">
           <span>Поймать первое предложение</span>
           <span className="m-cta__arrow" aria-hidden>→</span>
         </button>
@@ -364,7 +364,7 @@ export function MobileDemo() {
         </IPhone>
         <IPhone
           label="Экран 2"
-          caption="Юзер тапнул «Распаковать подарок» — встречает Лиса Толю и стартует серию."
+          caption="Юзер тапнул «Забрать подарок» — встречает Лиса Толю и стартует серию."
         >
           <ScreenMascotIntro />
         </IPhone>
@@ -379,7 +379,7 @@ export function MobileDemo() {
             точке.
           </li>
           <li>
-            <strong>Переход.</strong> Тап «Распаковать» → подарочная коробка лопается, лис
+            <strong>Переход.</strong> Тап «Забрать подарок» → подарочная коробка лопается, лис
             выпрыгивает (Lottie/Rive). Длительность ≤ 1.2 с, можно скипнуть тапом.
           </li>
           <li>
