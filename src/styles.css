@@ -2724,10 +2724,11 @@ body {
 /*
  * Колонка на высоту экрана; у корзины узкий зазор задаёт короткий shell + margin-top у сводки.
  */
+/* ~72px: bottom 12px у CTA + высота кнопки с нижним запасом под анимацию — иначе перекрывает «Итого» */
 .iphone--flow .iphone__screen--cart > .m-app {
   flex: 1 1 auto;
   min-height: 0;
-  padding: 0 14px 50px;
+  padding: 0 14px 72px;
   gap: 8px;
   overflow: visible;
 }
