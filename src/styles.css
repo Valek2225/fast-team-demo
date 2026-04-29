@@ -1919,29 +1919,29 @@ body {
     transform: translateY(0) scale(1);
     filter: brightness(1) saturate(1);
     box-shadow:
-      0 6px 16px -6px rgba(245, 180, 0, 0.5),
+      0 6px 14px -7px rgba(245, 180, 0, 0.48),
       0 0 0 0 rgba(255, 210, 74, 0),
-      0 0 26px -10px rgba(255, 185, 60, 0.28),
+      0 0 18px -12px rgba(255, 185, 60, 0.24),
       inset 0 1px 0 rgba(255, 255, 255, 0.38),
       inset 0 -10px 22px rgba(200, 120, 0, 0.06);
   }
   38% {
-    transform: translateY(-3px) scale(1.012);
+    transform: translateY(-3px) scale(1.006);
     filter: brightness(1.11) saturate(1.14);
     box-shadow:
-      0 15px 30px -10px rgba(225, 145, 0, 0.62),
-      0 0 0 6px rgba(255, 218, 95, 0.28),
-      0 8px 38px -5px rgba(255, 200, 75, 0.52),
+      0 12px 26px -11px rgba(225, 145, 0, 0.58),
+      0 0 0 4px rgba(255, 218, 95, 0.24),
+      0 6px 28px -8px rgba(255, 200, 75, 0.46),
       inset 0 2px 1px rgba(255, 255, 255, 0.62),
       inset 0 -6px 18px rgba(255, 220, 130, 0.14);
   }
   68% {
-    transform: translateY(-1px) scale(1.005);
+    transform: translateY(-1px) scale(1.003);
     filter: brightness(1.05) saturate(1.06);
     box-shadow:
-      0 10px 22px -8px rgba(245, 180, 0, 0.55),
-      0 0 0 3px rgba(255, 210, 74, 0.18),
-      0 3px 28px -8px rgba(255, 190, 65, 0.38),
+      0 10px 20px -9px rgba(245, 180, 0, 0.52),
+      0 0 0 2px rgba(255, 210, 74, 0.16),
+      0 2px 22px -10px rgba(255, 190, 65, 0.34),
       inset 0 1px 0 rgba(255, 255, 255, 0.48),
       inset 0 -12px 20px rgba(200, 115, 0, 0.08);
   }
