@@ -5,7 +5,9 @@ type Tone = 'success' | 'warning' | 'danger' | 'info' | undefined;
 const formatRub = (rub: number): string => {
   if (rub >= 1_000_000_000) return `${(rub / 1_000_000_000).toFixed(2)} млрд ₽`;
   if (rub >= 1_000_000) return `${(rub / 1_000_000).toFixed(1)} млн ₽`;
-  if (rub >= 1_000) return `${(rub / 1_000).toFixed(0)} тыс ₽`;
+  // До ~2k руб показываем точное значение в рублях,
+  // чтобы 1770 не превращалось в "2 тыс ₽".
+  if (rub >= 2_000) return `${(rub / 1_000).toFixed(0)} тыс ₽`;
   return `${Math.round(rub)} ₽`;
 };
 
