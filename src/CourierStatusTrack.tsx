@@ -18,23 +18,29 @@ export function CourierStatusTrack({ stage = 1 }: { stage?: CourierStage }) {
         role="img"
         aria-label={`Статус: этап ${stage} из 3`}
       >
-        <div className={dotClass(1, stage)} />
-        <div className="m-courier__segment">
-          <div className="m-courier__segment-inner">
-            <div
-              className={`m-courier__segment-fill ${segAfterFirstDone ? 'm-courier__segment-fill--full' : ''}`}
-            />
+        <div className="m-courier__wing m-courier__wing--left">
+          <div className={dotClass(1, stage)} />
+          <div className="m-courier__segment">
+            <div className="m-courier__segment-inner">
+              <div
+                className={`m-courier__segment-fill ${segAfterFirstDone ? 'm-courier__segment-fill--full' : ''}`}
+              />
+            </div>
           </div>
         </div>
-        <div className={dotClass(2, stage)} />
-        <div className="m-courier__segment">
-          <div className="m-courier__segment-inner">
-            <div
-              className={`m-courier__segment-fill ${segAfterSecondDone ? 'm-courier__segment-fill--full' : ''}`}
-            />
-          </div>
+        <div className="m-courier__center">
+          <div className={dotClass(2, stage)} />
         </div>
-        <div className={dotClass(3, stage)} />
+        <div className="m-courier__wing m-courier__wing--right">
+          <div className="m-courier__segment">
+            <div className="m-courier__segment-inner">
+              <div
+                className={`m-courier__segment-fill ${segAfterSecondDone ? 'm-courier__segment-fill--full' : ''}`}
+              />
+            </div>
+          </div>
+          <div className={dotClass(3, stage)} />
+        </div>
       </div>
       <div className="m-courier__labels">
         <span>В сборке</span>

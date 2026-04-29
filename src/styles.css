@@ -2127,8 +2127,38 @@ body {
 }
 
 .m-courier--discrete {
-  gap: 0;
+  gap: 8px;
   width: 100%;
+}
+
+/* Левый/правый блок тянут отрезки; средняя колонка фиксирована — вторая точка по центру экрана */
+.m-courier__wing {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.m-courier__wing--left {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.m-courier__wing--right {
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.m-courier__wing .m-courier__segment {
+  flex: 1;
+  min-width: 8px;
+}
+
+.m-courier__center {
+  flex: 0 0 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .m-courier__dot {
@@ -2154,11 +2184,8 @@ body {
 }
 
 .m-courier__segment {
-  flex: 1;
-  min-width: 8px;
   height: 4px;
   align-self: center;
-  margin: 0 4px;
 }
 
 .m-courier__segment-inner {
@@ -2190,13 +2217,32 @@ body {
 }
 
 .m-courier__labels {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: 4px 8px;
   font-size: 10px;
   color: rgba(255, 255, 255, 0.55);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin-top: 6px;
+}
+
+.m-courier__labels span:nth-child(1) {
+  justify-self: start;
+  text-align: left;
+}
+
+.m-courier__labels span:nth-child(2) {
+  grid-column: 2;
+  justify-self: center;
+  text-align: center;
+}
+
+.m-courier__labels span:nth-child(3) {
+  grid-column: 3;
+  justify-self: end;
+  text-align: right;
 }
 
 /* ============================================================
