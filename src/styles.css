@@ -2702,7 +2702,14 @@ body {
   flex: 1 1 auto;
   min-height: 0;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 0;
+}
+
+/* Хвост после CTA забирает «лишнюю» высоту слота — не между Итого и кнопкой (див не между ними) */
+.iphone--flow .cart-flow__tail {
+  flex: 1 1 auto;
+  min-height: 0;
+  pointer-events: none;
 }
 
 /* Не даём .m-app растягиваться на всю высоту — иначе пустота между «Итого» и кнопкой */
@@ -2779,7 +2786,7 @@ body {
 .iphone--flow .iphone__screen--cart .m-cta--cart {
   flex: 0 0 auto;
   align-self: stretch;
-  margin: 0 12px 5px;
+  margin: 10px 12px 0;
   width: auto;
   padding: 11px 14px;
   font-size: 14px;
