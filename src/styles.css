@@ -2686,6 +2686,14 @@ body {
   border-radius: 36px;
 }
 
+/*
+ * Только экран корзины: короче корпус — иначе лишняя высота неизбежно превращается в чёрный «карман»
+ * между строками и «Итого» (flex не может «исчезнуть»).
+ */
+.iphone--flow--cart-shell .iphone__frame {
+  height: 552px;
+}
+
 /* Меньше «воздуха» между низом экрана и белой чертой — базово 30px с центрированием давали большой зазор. */
 .iphone--flow .iphone__home {
   height: 22px;
@@ -2710,8 +2718,7 @@ body {
 }
 
 /*
- * Колонка на высоту экрана: лишнее место забирает .cart-flow__list-slot (flex:1),
- * а не безлимитный зазор между списком и «Итого».
+ * Колонка на высоту экрана; у корзины узкий зазор задаёт короткий shell + margin-top у сводки.
  */
 .iphone--flow .iphone__screen--cart > .m-app {
   flex: 1 1 auto;
@@ -2731,12 +2738,16 @@ body {
   font-size: 12px;
 }
 
-/* Растёт вместе с экраном; карман — только под строками товаров, не между списком и сводкой. */
+/* Не растягиваем слот списка без ограничения — иначе огромная чёрная полоса под товарами. */
 .iphone--flow .iphone__screen--cart .cart-flow__list-slot {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
+}
+
+/* Короткий корпус корзины: остаток высоты — аккуратный зазор между списком и «Итого», не «карман на полэкрана». */
+.iphone--flow--cart-shell .iphone__screen--cart .cart-summary {
+  margin-top: auto;
 }
 
 .iphone--flow .iphone__screen--cart .cart-list {
@@ -4888,6 +4899,10 @@ body {
 
   .iphone--flow .iphone__frame {
     height: min(656px, calc(100vh - 120px));
+  }
+
+  .iphone--flow--cart-shell .iphone__frame {
+    height: min(520px, calc(100vh - 120px));
   }
 
   .flow-demo__title {

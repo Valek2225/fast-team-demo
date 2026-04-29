@@ -1227,7 +1227,9 @@ export function FlowDemo() {
       </div>
 
       <div className="flow-demo__stage" ref={screenRef}>
-        <div className="iphone iphone--flow">
+        <div
+          className={`iphone iphone--flow${step === 'cart' ? ' iphone--flow--cart-shell' : ''}`}
+        >
           <div
             className={`iphone__frame${pwaStandaloneMode ? ' iphone__frame--pwa-standalone' : ''}`}
           >
