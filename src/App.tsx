@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 
 type Tone = 'success' | 'warning' | 'danger' | 'info' | undefined;
 
@@ -1806,6 +1806,19 @@ export function App() {
   const [inputs, setInputs] = useState<Inputs>(DEFAULT_INPUTS);
   const [loadStatus, setLoadStatus] = useState<LoadStatus>({ kind: 'idle' });
   const m = useMemo(() => computeMetrics(inputs), [inputs]);
+
+  // Автоматически подтягиваем известные бизнес-числа из Excel (превращены в JSON в public/).
+  // Если файла нет или его нельзя прочитать — оставляем текущие мок-значения.
+  useEffect(() => {
+    fetch('/data.final.json')
+      .then(async (r) => (r.ok ? (await r.json()) : null))
+      .then((patch) => {
+        if (patch) setInputs((curr) => mergeInputs(curr, patch));
+      })
+      .catch(() => {
+        /* silent */
+      });
+  }, []);
 
   const handleLoad = (file: File) => {
     file

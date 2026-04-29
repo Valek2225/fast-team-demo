@@ -1,0 +1,11 @@
+{
+  "audience": {
+    "tBankMAU": 39000000
+  },
+  "conversion": {
+    "ordersPerUserPerMonth": 2.26,
+    "avgOrderValueRub": 1770,
+    "expectedActivationRate": 0.003,
+    "platformMarginRate": 0.11
+  }
+}
