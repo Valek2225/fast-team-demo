@@ -2680,8 +2680,9 @@ body {
   border-radius: 44px;
 }
 
+/* Высота ~2.12× ширина контент-полотна — ближе к пропорции экрана iPhone, без «колбасы». */
 .iphone--flow .iphone__frame {
-  height: 752px;
+  height: 702px;
   border-radius: 36px;
 }
 
@@ -2709,8 +2710,8 @@ body {
 }
 
 /*
- * Растягиваем колонку на высоту экрана и margin-top:auto у блока «Итого» —
- * лишняя высота уходит в зону между списком и сводкой, а не между сводкой и CTA.
+ * Колонка на высоту экрана: лишнее место забирает .cart-flow__list-slot (flex:1),
+ * а не безлимитный зазор между списком и «Итого».
  */
 .iphone--flow .iphone__screen--cart > .m-app {
   flex: 1 1 auto;
@@ -2730,8 +2731,16 @@ body {
   font-size: 12px;
 }
 
+/* Растёт вместе с экраном; карман — только под строками товаров, не между списком и сводкой. */
+.iphone--flow .iphone__screen--cart .cart-flow__list-slot {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .iphone--flow .iphone__screen--cart .cart-list {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   gap: 5px;
 }
 
@@ -2770,7 +2779,6 @@ body {
 .iphone--flow .iphone__screen--cart .cart-summary {
   flex: 0 0 auto;
   padding: 6px 0 2px;
-  margin-top: auto;
   gap: 2px;
 }
 
@@ -4879,7 +4887,7 @@ body {
   }
 
   .iphone--flow .iphone__frame {
-    height: min(704px, calc(100vh - 120px));
+    height: min(656px, calc(100vh - 120px));
   }
 
   .flow-demo__title {

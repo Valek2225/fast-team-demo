@@ -231,25 +231,27 @@ function ScreenCart({ onCheckout }: { onCheckout: () => void }) {
         <h2 className="cart-title">Корзина · ВкусВилл</h2>
         <p className="cart-sub">Завтра с 07:00</p>
 
-        <ul className="cart-list">
-          {CART_ITEMS.map((it) => (
-            <li key={it.name} className="cart-item">
-              <span className="cart-item__emoji" aria-hidden>
-                {it.emoji}
-              </span>
-              <div className="cart-item__text">
-                <span className="cart-item__name">{it.name}</span>
-                <span className="cart-item__sub">{it.sub}</span>
-              </div>
-              <div className="cart-item__qty">
-                <span>−</span>
-                <span className="cart-item__qty-num">{it.qty}</span>
-                <span>+</span>
-              </div>
-              <span className="cart-item__price">{it.price} ₽</span>
-            </li>
-          ))}
-        </ul>
+        <div className="cart-flow__list-slot">
+          <ul className="cart-list">
+            {CART_ITEMS.map((it) => (
+              <li key={it.name} className="cart-item">
+                <span className="cart-item__emoji" aria-hidden>
+                  {it.emoji}
+                </span>
+                <div className="cart-item__text">
+                  <span className="cart-item__name">{it.name}</span>
+                  <span className="cart-item__sub">{it.sub}</span>
+                </div>
+                <div className="cart-item__qty">
+                  <span>−</span>
+                  <span className="cart-item__qty-num">{it.qty}</span>
+                  <span>+</span>
+                </div>
+                <span className="cart-item__price">{it.price} ₽</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         <div className="cart-summary">
           <div className="cart-summary__row">
