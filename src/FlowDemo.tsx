@@ -275,8 +275,6 @@ function ScreenCart({ onCheckout }: { onCheckout: () => void }) {
         <span>Оформить заказ · {CART_TOTAL} ₽</span>
         <span className="m-cta__arrow">→</span>
       </button>
-      {/* съедает лишнюю высоту экрана над Home Indicator — без раздува между «Итого» и кнопкой */}
-      <div className="cart-flow__tail" aria-hidden />
     </div>
   );
 }
