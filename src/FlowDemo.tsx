@@ -832,9 +832,10 @@ const TOLYA_MENU_RECOMMENDS = [
   { id: 'tm5', name: 'Кофе от ВкусВилл', shop: 'ВкусВилл', price: '349 ₽', emoji: '☕' },
 ];
 
-type InstallFlowPhase = 'idle' | 'benefits_sidebar' | 'share_sheet' | 'magic_transition';
+type InstallFlowPhase = 'idle' | 'benefits_sheet' | 'share_sheet' | 'magic_transition';
 
-function InstallBenefitsSidebar({
+/** Нижний sheet на всю ширину — перекрывает профиль Толи, без выезда справа */
+function InstallBenefitsSheet({
   onInstall,
   onClose,
 }: {
@@ -842,23 +843,29 @@ function InstallBenefitsSidebar({
   onClose: () => void;
 }) {
   return (
-    <div className="install-sidebar" role="dialog" aria-modal="true" aria-labelledby="install-sidebar-title">
-      <button type="button" className="install-sidebar__backdrop" onClick={onClose} aria-label="Закрыть" />
-      <div className="install-sidebar__panel">
-        <button type="button" className="install-sidebar__back" onClick={onClose} aria-label="Назад">
-          ←
+    <div
+      className="install-benefits-sheet"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="install-benefits-title"
+    >
+      <button type="button" className="install-benefits-sheet__backdrop" onClick={onClose} aria-label="Закрыть" />
+      <div className="install-benefits-sheet__panel">
+        <div className="install-benefits-sheet__grab" aria-hidden />
+        <button type="button" className="install-benefits-sheet__close" onClick={onClose} aria-label="Закрыть">
+          ✕
         </button>
-        <h3 id="install-sidebar-title" className="install-sidebar__title">
+        <h3 id="install-benefits-title" className="install-benefits-sheet__title">
           За установку виджета
         </h3>
-        <ul className="install-sidebar__list">
+        <ul className="install-benefits-sheet__list">
           <li>Заказы и акции — один тап с экрана «Домой»</li>
           <li>Напоминания о серии с Лисом Толей</li>
           <li>Вход через Т‑ИД без лишних паролей</li>
         </ul>
         <button
           type="button"
-          className="install-sidebar__cta"
+          className="install-benefits-sheet__cta"
           data-testid="install-widget-btn"
           onClick={onInstall}
         >
@@ -1237,8 +1244,8 @@ export function FlowDemo() {
             )}
             {step === 'crediting' && <CreditFx />}
             {step === 'claimed' && <ClaimModal />}
-            {installFlowPhase === 'benefits_sidebar' && (
-              <InstallBenefitsSidebar
+            {installFlowPhase === 'benefits_sheet' && (
+              <InstallBenefitsSheet
                 onInstall={() => setInstallFlowPhase('share_sheet')}
                 onClose={() => setInstallFlowPhase('idle')}
               />
@@ -1246,7 +1253,7 @@ export function FlowDemo() {
             {installFlowPhase === 'share_sheet' && (
               <IosShareSheet
                 onAddToHome={() => setInstallFlowPhase('magic_transition')}
-                onDismiss={() => setInstallFlowPhase('benefits_sidebar')}
+                onDismiss={() => setInstallFlowPhase('benefits_sheet')}
               />
             )}
             {installFlowPhase === 'magic_transition' && <PwaMagicTransition />}
@@ -1264,7 +1271,7 @@ export function FlowDemo() {
               <TolyaMenu
                 seriesDays={currentSeries}
                 onClose={closeTolyaMenu}
-                onGiftClick={() => setInstallFlowPhase('benefits_sidebar')}
+                onGiftClick={() => setInstallFlowPhase('benefits_sheet')}
               />
             )}
           </div>
