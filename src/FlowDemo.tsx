@@ -856,12 +856,14 @@ function InstallBenefitsSheet({
           ✕
         </button>
         <h3 id="install-benefits-title" className="install-benefits-sheet__title">
-          За установку виджета
+          Подарок за виджет
         </h3>
         <ul className="install-benefits-sheet__list">
-          <li>Заказы и акции — один тап с экрана «Домой»</li>
-          <li>Напоминания о серии с Лисом Толей</li>
-          <li>Вход через Т‑ИД без лишних паролей</li>
+          <li>
+            <strong>Промокод до 500 ₽ на заказ</strong> — после добавления на экран «Домой»
+          </li>
+          <li>Заказы и акции в один тап с главного экрана</li>
+          <li>Серия с Лисом Толей и вход через Т‑ИД</li>
         </ul>
         <button
           type="button"
@@ -937,11 +939,11 @@ function TolyaMenu({
             type="button"
             className="tolya-menu__gift-btn"
             data-testid="tolya-menu-gift-btn"
-            aria-label="Получить подарок — установка виджета"
+            aria-label="Получить подарок: промокод до 500 рублей на заказ за установку виджета"
             onClick={onGiftClick}
           >
             <span className="tolya-menu__gift-btn-main">Получить подарок</span>
-            <span className="tolya-menu__gift-btn-hint">Добавим ярлык на главный экран</span>
+            <span className="tolya-menu__gift-btn-hint">Промокод до 500 ₽ на заказ за виджет</span>
           </button>
         </div>
         <h3 className="tolya-menu__title">Меню Толи</h3>
