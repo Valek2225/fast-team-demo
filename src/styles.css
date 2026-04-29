@@ -2685,19 +2685,30 @@ body {
   border-radius: 36px;
 }
 
+/*
+ * Корзина: базовый .iphone__screen { flex: 1 1 auto } растягивает экран на всю высоту слота —
+ * лишняя вертикаль превращается в «дыру» между последним блоком в .m-app и кнопкой.
+ * Фикс: высота экрана = контент; маленький gap между блоком и CTA.
+ */
+.iphone--flow .iphone__screens-slot > .iphone__screen--cart {
+  flex: 0 0 auto;
+  align-self: stretch;
+}
+
 /* Корзина: при iphone__screen--locked скролла нет — убираем «резерв» 80px у .m-app, CTA снаружи остаётся внизу */
 .iphone--flow .iphone__screen--cart {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 0;
   justify-content: flex-start;
+  gap: 10px;
 }
 
 /* Не даём .m-app растягиваться на всю высоту — иначе пустота между «Итого» и кнопкой */
 .iphone--flow .iphone__screen--cart > .m-app {
   flex: 0 0 auto;
-  padding: 0 14px 8px;
+  padding: 0 14px 0;
   gap: 8px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .iphone--flow .iphone__screen--cart .cart-title {
@@ -2711,6 +2722,7 @@ body {
 }
 
 .iphone--flow .iphone__screen--cart .cart-list {
+  flex: 0 0 auto;
   gap: 5px;
 }
 
@@ -2747,6 +2759,7 @@ body {
 }
 
 .iphone--flow .iphone__screen--cart .cart-summary {
+  flex: 0 0 auto;
   padding: 6px 0 2px;
   margin-top: 4px;
   gap: 2px;
@@ -2764,7 +2777,7 @@ body {
 .iphone--flow .iphone__screen--cart .m-cta--cart {
   flex: 0 0 auto;
   align-self: stretch;
-  margin: 10px 12px 14px;
+  margin: 0 12px 12px;
   width: auto;
   padding: 11px 14px;
   font-size: 14px;
