@@ -832,7 +832,85 @@ const TOLYA_MENU_RECOMMENDS = [
   { id: 'tm5', name: 'Кофе от ВкусВилл', shop: 'ВкусВилл', price: '349 ₽', emoji: '☕' },
 ];
 
-function TolyaMenu({ seriesDays, onClose }: { seriesDays: number; onClose: () => void }) {
+type InstallFlowPhase = 'idle' | 'benefits_sidebar' | 'share_sheet' | 'magic_transition';
+
+function InstallBenefitsSidebar({
+  onInstall,
+  onClose,
+}: {
+  onInstall: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="install-sidebar" role="dialog" aria-modal="true" aria-labelledby="install-sidebar-title">
+      <button type="button" className="install-sidebar__backdrop" onClick={onClose} aria-label="Закрыть" />
+      <div className="install-sidebar__panel">
+        <button type="button" className="install-sidebar__back" onClick={onClose} aria-label="Назад">
+          ←
+        </button>
+        <h3 id="install-sidebar-title" className="install-sidebar__title">
+          За установку виджета
+        </h3>
+        <ul className="install-sidebar__list">
+          <li>Заказы и акции — один тап с экрана «Домой»</li>
+          <li>Напоминания о серии с Лисом Толей</li>
+          <li>Вход через Т‑ИД без лишних паролей</li>
+        </ul>
+        <button
+          type="button"
+          className="install-sidebar__cta"
+          data-testid="install-widget-btn"
+          onClick={onInstall}
+        >
+          Установить виджет
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function IosShareSheet({
+  onAddToHome,
+  onDismiss,
+}: {
+  onAddToHome: () => void;
+  onDismiss: () => void;
+}) {
+  return (
+    <div className="ios-share" role="dialog" aria-modal="true" aria-label="Меню Поделиться">
+      <button type="button" className="ios-share__backdrop" onClick={onDismiss} aria-label="Закрыть" />
+      <div className="ios-share__sheet">
+        <div className="ios-share__grab" aria-hidden />
+        <p className="ios-share__caption">Добавить на устройство</p>
+        <button
+          type="button"
+          className="ios-share__home-row"
+          data-testid="ios-add-to-home-btn"
+          onClick={onAddToHome}
+        >
+          <span className="ios-share__home-icon" aria-hidden>
+            ⊕
+          </span>
+          <span className="ios-share__home-label">На экран «Домой»</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PwaMagicTransition() {
+  return <div className="pwa-magic-overlay" aria-hidden />;
+}
+
+function TolyaMenu({
+  seriesDays,
+  onClose,
+  onGiftClick,
+}: {
+  seriesDays: number;
+  onClose: () => void;
+  onGiftClick: () => void;
+}) {
   const daysLabel = seriesDays === 1 ? 'день' : seriesDays >= 2 && seriesDays <= 4 ? 'дня' : 'дней';
   return (
     <div className="tolya-menu" role="dialog" aria-modal="true">
@@ -844,8 +922,20 @@ function TolyaMenu({ seriesDays, onClose }: { seriesDays: number; onClose: () =>
         <button type="button" className="tolya-menu__help" aria-label="Правила серии" title="Правила серии">
           ?
         </button>
-        <div className="tolya-menu__fox">
-          <FoxFace size={72} />
+        <div className="tolya-menu__hero">
+          <div className="tolya-menu__fox">
+            <FoxFace size={72} />
+          </div>
+          <button
+            type="button"
+            className="tolya-menu__gift-btn"
+            data-testid="tolya-menu-gift-btn"
+            aria-label="Получить подарок — установка виджета"
+            onClick={onGiftClick}
+          >
+            <span className="tolya-menu__gift-btn-main">Получить подарок</span>
+            <span className="tolya-menu__gift-btn-hint">Добавим ярлык на главный экран</span>
+          </button>
         </div>
         <h3 className="tolya-menu__title">Меню Толи</h3>
         <p className="tolya-menu__sub">
@@ -885,6 +975,8 @@ function TolyaMenu({ seriesDays, onClose }: { seriesDays: number; onClose: () =>
 export function FlowDemo() {
   const [step, setStep] = useState<Step>('cart');
   const [tolyaMenuOpen, setTolyaMenuOpen] = useState(false);
+  const [installFlowPhase, setInstallFlowPhase] = useState<InstallFlowPhase>('idle');
+  const [pwaStandaloneMode, setPwaStandaloneMode] = useState(false);
   const [currentSeries, setCurrentSeries] = useState(0);
   const screenRef = useRef<HTMLDivElement | null>(null);
   const recommendsAnchorRef = useRef<HTMLDivElement | null>(null);
@@ -895,9 +987,32 @@ export function FlowDemo() {
   const goto = (next: Step) => setStep(next);
   const reset = () => {
     setTolyaMenuOpen(false);
+    setInstallFlowPhase('idle');
+    setPwaStandaloneMode(false);
     setCurrentSeries(0);
     setStep('cart');
   };
+
+  const closeTolyaMenu = useCallback(() => {
+    setTolyaMenuOpen(false);
+    if (!pwaStandaloneMode) {
+      setInstallFlowPhase('idle');
+    }
+  }, [pwaStandaloneMode]);
+
+  useEffect(() => {
+    if (installFlowPhase !== 'magic_transition') return;
+    const id = window.setTimeout(() => {
+      setPwaStandaloneMode(true);
+      setInstallFlowPhase('idle');
+      setTolyaMenuOpen(false);
+    }, 300);
+    return () => window.clearTimeout(id);
+  }, [installFlowPhase]);
+
+  const showSafariChrome =
+    !pwaStandaloneMode &&
+    (installFlowPhase === 'share_sheet' || installFlowPhase === 'magic_transition');
 
   const skipNext = () => {
     const idx = STEP_ORDER.indexOf(step);
@@ -1102,9 +1217,19 @@ export function FlowDemo() {
 
       <div className="flow-demo__stage" ref={screenRef}>
         <div className="iphone iphone--flow">
-          <div className="iphone__frame">
+          <div
+            className={`iphone__frame${pwaStandaloneMode ? ' iphone__frame--pwa-standalone' : ''}`}
+          >
             <StatusBar tBank />
-            {stepContent}
+            {showSafariChrome && (
+              <div className="iphone__safari-chrome" aria-hidden>
+                <div className="iphone__safari-chrome-inner">
+                  <span className="iphone__safari-lock">🔒</span>
+                  <span className="iphone__safari-url">tg-city.tbank.ru</span>
+                </div>
+              </div>
+            )}
+            <div className="iphone__screens-slot">{stepContent}</div>
             <HomeIndicator />
 
             {(step === 'foundItem' || step === 'crediting' || step === 'claimed') && (
@@ -1112,6 +1237,19 @@ export function FlowDemo() {
             )}
             {step === 'crediting' && <CreditFx />}
             {step === 'claimed' && <ClaimModal />}
+            {installFlowPhase === 'benefits_sidebar' && (
+              <InstallBenefitsSidebar
+                onInstall={() => setInstallFlowPhase('share_sheet')}
+                onClose={() => setInstallFlowPhase('idle')}
+              />
+            )}
+            {installFlowPhase === 'share_sheet' && (
+              <IosShareSheet
+                onAddToHome={() => setInstallFlowPhase('magic_transition')}
+                onDismiss={() => setInstallFlowPhase('benefits_sidebar')}
+              />
+            )}
+            {installFlowPhase === 'magic_transition' && <PwaMagicTransition />}
             {tolyaMenuOpen &&
               (step === 'lobbyArrival' ||
                 step === 'lobbyAutoScroll' ||
@@ -1123,7 +1261,11 @@ export function FlowDemo() {
                 step === 'crediting' ||
                 step === 'claimed' ||
                 step === 'done') && (
-              <TolyaMenu seriesDays={currentSeries} onClose={() => setTolyaMenuOpen(false)} />
+              <TolyaMenu
+                seriesDays={currentSeries}
+                onClose={closeTolyaMenu}
+                onGiftClick={() => setInstallFlowPhase('benefits_sidebar')}
+              />
             )}
           </div>
         </div>

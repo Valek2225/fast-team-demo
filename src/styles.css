@@ -4236,6 +4236,14 @@ body {
   cursor: pointer;
 }
 
+.tolya-menu__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
 .tolya-menu__fox {
   width: 78px;
   height: 78px;
@@ -4245,6 +4253,47 @@ body {
   align-items: center;
   justify-content: center;
   background: rgba(20, 12, 8, 0.75);
+  flex-shrink: 0;
+}
+
+/* CTA под аватаром: ярко и статично — без анимаций «пульса» и лишнего движения */
+.tolya-menu__gift-btn {
+  width: 100%;
+  max-width: 280px;
+  margin: 0;
+  padding: 11px 14px 10px;
+  border: 1px solid rgba(255, 220, 140, 0.55);
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-family: inherit;
+  background: linear-gradient(175deg, #ffc94d 0%, #ff8c32 42%, #e85a1a 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35) inset,
+    0 10px 22px -10px rgba(232, 90, 26, 0.85);
+  color: #2a1300;
+}
+
+.tolya-menu__gift-btn:active {
+  opacity: 0.9;
+}
+
+.tolya-menu__gift-btn-main {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.tolya-menu__gift-btn-hint {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(42, 19, 0, 0.72);
+  line-height: 1.25;
 }
 
 .tolya-menu__title {
@@ -4282,6 +4331,301 @@ body {
 
 .lobby-card--sheet {
   flex: 0 0 132px;
+}
+
+/* Область экранов под статус-баром (+ опционально Safari URL bar) */
+.iphone__screens-slot {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.iphone__screens-slot > .iphone__screen {
+  min-height: 0;
+}
+
+/* Имитация строки Safari — только в фазе установки до перехода в PWA */
+.iphone__safari-chrome {
+  flex: 0 0 auto;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  background: rgba(44, 44, 46, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 5;
+}
+
+.iphone__safari-chrome-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 92%;
+  padding: 5px 12px;
+  border-radius: 9px;
+  background: rgba(58, 58, 60, 0.95);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.iphone__safari-lock {
+  flex-shrink: 0;
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+.iphone__safari-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Режим «приложение с экрана Домой»: без Safari bar контент занимает высоту как standalone */
+.iphone__frame--pwa-standalone .iphone__screens-slot > .iphone__screen--lobby,
+.iphone__frame--pwa-standalone .iphone__screens-slot > .iphone__screen--fulllist {
+  box-shadow: inset 0 1px 0 rgba(255, 122, 58, 0.06);
+}
+
+/* Сайдбар выгод установки */
+.install-sidebar {
+  position: absolute;
+  inset: 0;
+  z-index: 68;
+  pointer-events: auto;
+}
+
+.install-sidebar__backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.52);
+  cursor: pointer;
+}
+
+.install-sidebar__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  width: min(88%, 262px);
+  padding: 48px 14px 20px 14px;
+  background:
+    linear-gradient(180deg, rgba(34, 26, 18, 0.98) 0%, rgba(15, 11, 8, 0.99) 100%);
+  border-left: 1px solid rgba(255, 122, 58, 0.35);
+  box-shadow: -12px 0 36px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: install-sidebar-slide-in 0.32s ease-out forwards;
+}
+
+@keyframes install-sidebar-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.install-sidebar__back {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.install-sidebar__title {
+  margin: 8px 0 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.install-sidebar__list {
+  margin: 0;
+  padding: 0 0 0 18px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 13px;
+  line-height: 1.45;
+  flex: 1 1 auto;
+}
+
+.install-sidebar__list li {
+  margin-bottom: 8px;
+}
+
+.install-sidebar__list li:last-child {
+  margin-bottom: 0;
+}
+
+.install-sidebar__cta {
+  margin-top: auto;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 210, 100, 0.45);
+  border-radius: 14px;
+  background: linear-gradient(175deg, #ffc94d 0%, #e85a1a 100%);
+  color: #2a1300;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.install-sidebar__cta:active {
+  opacity: 0.92;
+}
+
+/* iOS Share Sheet — имитация */
+.ios-share {
+  position: absolute;
+  inset: 0;
+  z-index: 72;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: auto;
+  padding: 0 8px calc(10px + env(safe-area-inset-bottom, 0px));
+}
+
+.ios-share__backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(18, 18, 20, 0.42);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  cursor: pointer;
+}
+
+.ios-share__sheet {
+  position: relative;
+  z-index: 2;
+  border-radius: 14px 14px 22px 22px;
+  padding: 10px 12px 14px;
+  background: rgba(36, 36, 38, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 -8px 40px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  animation: ios-share-sheet-up 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes ios-share-sheet-up {
+  from {
+    transform: translateY(calc(100% + 24px));
+    opacity: 0.94;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.ios-share__grab {
+  width: 38px;
+  height: 5px;
+  margin: 2px auto 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.ios-share__caption {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+}
+
+.ios-share__home-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 13px;
+  background: rgba(72, 72, 74, 0.95);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 650;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ios-share__home-row:active {
+  opacity: 0.9;
+}
+
+.ios-share__home-icon {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+  color: #34c759;
+}
+
+.ios-share__home-label {
+  letter-spacing: -0.02em;
+}
+
+/* Переход перед PWA: затемнение + blur ~0.3s */
+.pwa-magic-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 78;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  animation: pwa-magic-fade 0.3s ease forwards;
+}
+
+@keyframes pwa-magic-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .install-sidebar__panel {
+    animation: none;
+    transform: translateX(0);
+  }
+
+  .ios-share__sheet {
+    animation: none;
+    transform: none;
+  }
+
+  .pwa-magic-overlay {
+    animation: none;
+    opacity: 1;
+  }
 }
 
 /* notes (общий с mobile-demo) */
