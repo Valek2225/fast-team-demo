@@ -1,56 +1,62 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   IphoneStatusBarIconsSvg,
   IphoneStatusBarIslandSvg,
   IphoneStatusBarTimeSvg,
-} from './IphoneStatusBarGraphic';
-import { CourierStatusTrack } from './CourierStatusTrack';
+} from "./IphoneStatusBarGraphic";
+import { CourierStatusTrack } from "./CourierStatusTrack";
 
 type Step =
-  | 'cart'
-  | 'confirmed'
-  | 'mascotIntro'
-  | 'lobbyArrival'
-  | 'lobbyAutoScroll'
-  | 'lobbyHint'
-  | 'fullList'
-  | 'foundItem'
-  | 'crediting'
-  | 'claimed'
-  | 'lobbySeriesScroll'
-  | 'lobbySeriesHint'
-  | 'done';
+  | "cart"
+  | "confirmed"
+  | "mascotIntro"
+  | "lobbyArrival"
+  | "lobbyAutoScroll"
+  | "lobbyHint"
+  | "fullList"
+  | "foundItem"
+  | "crediting"
+  | "claimed"
+  | "lobbySeriesScroll"
+  | "lobbySeriesHint"
+  | "done";
 
 const STEP_ORDER: Step[] = [
-  'cart',
-  'confirmed',
-  'mascotIntro',
-  'lobbyArrival',
-  'lobbyAutoScroll',
-  'lobbyHint',
-  'fullList',
-  'foundItem',
-  'crediting',
-  'claimed',
-  'lobbySeriesScroll',
-  'lobbySeriesHint',
-  'done',
+  "cart",
+  "confirmed",
+  "mascotIntro",
+  "lobbyArrival",
+  "lobbyAutoScroll",
+  "lobbyHint",
+  "fullList",
+  "foundItem",
+  "crediting",
+  "claimed",
+  "lobbySeriesScroll",
+  "lobbySeriesHint",
+  "done",
 ];
 
 const STEP_LABEL: Record<Step, string> = {
-  cart: '1 · Корзина',
-  confirmed: '2 · Заказ оформлен',
-  mascotIntro: '3 · Знакомство',
-  lobbyArrival: '4 · Главное лобби',
-  lobbyAutoScroll: '5 · Авто-скролл',
-  lobbyHint: '6 · Жми «Все»',
-  fullList: '7 · Полная лента',
-  foundItem: '8 · Нашёл Толю',
-  crediting: '9 · Начисляем серию',
-  claimed: '10 · Серия +1',
-  lobbySeriesScroll: '11 · К панели серии',
-  lobbySeriesHint: '12 · Меню Толи',
-  done: '13 · Готово',
+  cart: "1 · Корзина",
+  confirmed: "2 · Заказ оформлен",
+  mascotIntro: "3 · Знакомство",
+  lobbyArrival: "4 · Главное лобби",
+  lobbyAutoScroll: "5 · Авто-скролл",
+  lobbyHint: "6 · Жми «Все»",
+  fullList: "7 · Полная лента",
+  foundItem: "8 · Нашёл Толю",
+  crediting: "9 · Начисляем серию",
+  claimed: "10 · Серия +1",
+  lobbySeriesScroll: "11 · К панели серии",
+  lobbySeriesHint: "12 · Меню Толи",
+  done: "13 · Готово",
 };
 
 /* ============================================================
@@ -59,7 +65,13 @@ const STEP_LABEL: Record<Step, string> = {
 
 function FoxFace({ size = 48 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 120 120" fill="none" aria-label="Лис Толя">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 120 120"
+      fill="none"
+      aria-label="Лис Толя"
+    >
       <defs>
         <radialGradient id={`fox-body-${size}`} cx="50%" cy="40%" r="60%">
           <stop offset="0%" stopColor="#ffb070" />
@@ -67,7 +79,13 @@ function FoxFace({ size = 48 }: { size?: number }) {
           <stop offset="100%" stopColor="#e85a1a" />
         </radialGradient>
       </defs>
-      <ellipse cx="60" cy="78" rx="40" ry="34" fill={`url(#fox-body-${size})`} />
+      <ellipse
+        cx="60"
+        cy="78"
+        rx="40"
+        ry="34"
+        fill={`url(#fox-body-${size})`}
+      />
       <path d="M22 50 L30 80 L42 70 Z" fill="#ff7a3a" />
       <path d="M98 50 L90 80 L78 70 Z" fill="#ff7a3a" />
       <path d="M28 56 L33 73 L40 68 Z" fill="#fff1e6" />
@@ -108,7 +126,15 @@ function CheckIcon({ size = 40 }: { size?: number }) {
 function GiftIcon({ size = 22 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="9" width="18" height="11" rx="2" stroke="#ffd24a" strokeWidth="1.8" />
+      <rect
+        x="3"
+        y="9"
+        width="18"
+        height="11"
+        rx="2"
+        stroke="#ffd24a"
+        strokeWidth="1.8"
+      />
       <path d="M3 13 H21" stroke="#ffd24a" strokeWidth="1.8" />
       <path d="M12 9 V20" stroke="#ffd24a" strokeWidth="1.8" />
       <path
@@ -131,7 +157,12 @@ function SearchIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
       <circle cx="7" cy="7" r="5" stroke="#7d8390" strokeWidth="1.6" />
-      <path d="M11 11 L14 14" stroke="#7d8390" strokeWidth="1.6" strokeLinecap="round" />
+      <path
+        d="M11 11 L14 14"
+        stroke="#7d8390"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -145,8 +176,18 @@ function ReceiptIcon() {
         strokeWidth="1.6"
         strokeLinejoin="round"
       />
-      <path d="M7.5 7 H12.5" stroke="#3da9ff" strokeWidth="1.4" strokeLinecap="round" />
-      <path d="M7.5 10 H12.5" stroke="#3da9ff" strokeWidth="1.4" strokeLinecap="round" />
+      <path
+        d="M7.5 7 H12.5"
+        stroke="#3da9ff"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      <path
+        d="M7.5 10 H12.5"
+        stroke="#3da9ff"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -187,26 +228,32 @@ function HomeIndicator() {
    Cart screen (Шаг 1)
    ============================================================ */
 
-const CART_ITEMS: { name: string; sub: string; price: number; emoji: string; qty: number }[] = [
+const CART_ITEMS: {
+  name: string;
+  sub: string;
+  price: number;
+  emoji: string;
+  qty: number;
+}[] = [
   {
     name: 'Вода минеральная "Рычал-Су"',
-    sub: '1 л',
+    sub: "1 л",
     price: 151,
-    emoji: '💧',
+    emoji: "💧",
     qty: 1,
   },
   {
-    name: 'Тальятелле с курицей в сырном соусе',
-    sub: '240 г · осталось 2',
+    name: "Тальятелле с курицей в сырном соусе",
+    sub: "240 г · осталось 2",
     price: 299,
-    emoji: '🍝',
+    emoji: "🍝",
     qty: 1,
   },
   {
-    name: 'Эскимо Пломбир шоколадный',
-    sub: '80 г',
+    name: "Эскимо Пломбир шоколадный",
+    sub: "80 г",
     price: 172,
-    emoji: '🍦',
+    emoji: "🍦",
     qty: 1,
   },
 ];
@@ -275,7 +322,6 @@ function ScreenCart({ onCheckout }: { onCheckout: () => void }) {
         onClick={onCheckout}
       >
         <span>Оформить заказ · {CART_TOTAL} ₽</span>
-        <span className="m-cta__arrow">→</span>
       </button>
     </div>
   );
@@ -316,12 +362,15 @@ function ScreenOrderConfirmed({ onUnpack }: { onUnpack: () => void }) {
             <span className="m-card__badge">первый заказ</span>
           </div>
           <p className="m-card__text">
-            За первый заказ в Т-Городе мы дарим вам маскота — он будет помогать ловить лучшие
-            предложения каждый день.
+            За первый заказ в Т-Городе мы дарим вам маскота — он будет помогать
+            ловить лучшие предложения каждый день.
           </p>
-          <button type="button" className="m-cta m-cta--gold m-cta--attention" onClick={onUnpack}>
+          <button
+            type="button"
+            className="m-cta m-cta--gold m-cta--attention"
+            onClick={onUnpack}
+          >
             <span>Забрать подарок</span>
-            <span className="m-cta__arrow">→</span>
           </button>
         </div>
 
@@ -364,8 +413,9 @@ function ScreenMascotIntro({ onCatch }: { onCatch: () => void }) {
         <div className="m-mascot-text">
           <h1 className="m-mascot-text__title">Привет! Я Лис Толя</h1>
           <p className="m-mascot-text__sub">
-            Каждый день буду оставлять для тебя одно классное предложение в твоей ленте «Подобрали
-            для вас». Поймаешь — продлишь серию. Пропустишь день — я посплю, не обижусь.
+            Каждый день буду оставлять для тебя одно классное предложение в
+            твоей ленте «Подобрали для вас». Поймаешь — продлишь серию.
+            Пропустишь день — я посплю, не обижусь.
           </p>
         </div>
 
@@ -376,7 +426,10 @@ function ScreenMascotIntro({ onCatch }: { onCatch: () => void }) {
           </div>
           <div className="m-series-track">
             {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className={`m-series-day ${i === 0 ? 'm-series-day--active' : ''}`}>
+              <div
+                key={i}
+                className={`m-series-day ${i === 0 ? "m-series-day--active" : ""}`}
+              >
                 <span className="m-series-day__num">{i + 1}</span>
               </div>
             ))}
@@ -386,9 +439,12 @@ function ScreenMascotIntro({ onCatch }: { onCatch: () => void }) {
           </p>
         </div>
 
-        <button type="button" className="m-cta m-cta--gold m-cta--attention m-cta--sticky" onClick={onCatch}>
+        <button
+          type="button"
+          className="m-cta m-cta--gold m-cta--attention m-cta--sticky"
+          onClick={onCatch}
+        >
           <span>Поймать первое предложение</span>
-          <span className="m-cta__arrow">→</span>
         </button>
       </div>
     </div>
@@ -399,13 +455,62 @@ function ScreenMascotIntro({ onCatch }: { onCatch: () => void }) {
    Lobby screen (Шаги 4..7)
    ============================================================ */
 
-const SHOPS: { id: string; name: string; eta: string; bg: string; logo: string; logoColor: string }[] = [
-  { id: 'vv', name: 'ВкусВилл', eta: 'Завтра с 07:00', bg: '#3aa948', logo: 'BB', logoColor: '#fff' },
-  { id: 'pk', name: 'Перекрёсток', eta: '30 – 45 мин', bg: '#0d4f2a', logo: '✿', logoColor: '#fff' },
-  { id: 'ash', name: 'Ашан', eta: 'Завтра с 11:30', bg: '#d63333', logo: '🐦', logoColor: '#fff' },
-  { id: 'metro', name: 'METRO', eta: 'Завтра с 10:00', bg: '#0e3b8c', logo: 'M', logoColor: '#ffd400' },
-  { id: 'globus', name: 'Глобус', eta: 'Завтра с 09:00', bg: '#f59425', logo: 'globus', logoColor: '#005ea6' },
-  { id: 'sgr', name: 'Сгоряча ВкусВи…', eta: 'Завтра с 07:00', bg: '#dc224a', logo: 'C', logoColor: '#fff' },
+const SHOPS: {
+  id: string;
+  name: string;
+  eta: string;
+  bg: string;
+  logo: string;
+  logoColor: string;
+}[] = [
+  {
+    id: "vv",
+    name: "ВкусВилл",
+    eta: "Завтра с 07:00",
+    bg: "#3aa948",
+    logo: "BB",
+    logoColor: "#fff",
+  },
+  {
+    id: "pk",
+    name: "Перекрёсток",
+    eta: "30 – 45 мин",
+    bg: "#0d4f2a",
+    logo: "✿",
+    logoColor: "#fff",
+  },
+  {
+    id: "ash",
+    name: "Ашан",
+    eta: "Завтра с 11:30",
+    bg: "#d63333",
+    logo: "🐦",
+    logoColor: "#fff",
+  },
+  {
+    id: "metro",
+    name: "METRO",
+    eta: "Завтра с 10:00",
+    bg: "#0e3b8c",
+    logo: "M",
+    logoColor: "#ffd400",
+  },
+  {
+    id: "globus",
+    name: "Глобус",
+    eta: "Завтра с 09:00",
+    bg: "#f59425",
+    logo: "globus",
+    logoColor: "#005ea6",
+  },
+  {
+    id: "sgr",
+    name: "Сгоряча ВкусВи…",
+    eta: "Завтра с 07:00",
+    bg: "#dc224a",
+    logo: "C",
+    logoColor: "#fff",
+  },
 ];
 
 type Recommend = {
@@ -421,28 +526,137 @@ type Recommend = {
 
 // Горизонтальная карусель в Main Lobby — обычные товары, БЕЗ Толи.
 const LOBBY_RECOMMENDS: Recommend[] = [
-  { id: 'lr1', name: 'Вода минеральная "Рычал-Су"', weight: '1 л', price: '151 ₽', emoji: '💧' },
-  { id: 'lr2', name: 'Тальятелле с курицей', weight: '240 г', price: '299 ₽', emoji: '🍝', badge: 'Осталось 2' },
-  { id: 'lr3', name: 'Ролл Филадельфия', weight: '255 г', price: '616 ₽', emoji: '🍣', badge: 'Осталось 1' },
-  { id: 'lr4', name: 'Эскимо Пломбир', weight: '80 г', price: '172 ₽', emoji: '🍦' },
-  { id: 'lr5', name: 'Авокадо Хасс', weight: '360 г', price: '180 ₽', emoji: '🥑' },
+  {
+    id: "lr1",
+    name: 'Вода минеральная "Рычал-Су"',
+    weight: "1 л",
+    price: "151 ₽",
+    emoji: "💧",
+  },
+  {
+    id: "lr2",
+    name: "Тальятелле с курицей",
+    weight: "240 г",
+    price: "299 ₽",
+    emoji: "🍝",
+    badge: "Осталось 2",
+  },
+  {
+    id: "lr3",
+    name: "Ролл Филадельфия",
+    weight: "255 г",
+    price: "616 ₽",
+    emoji: "🍣",
+    badge: "Осталось 1",
+  },
+  {
+    id: "lr4",
+    name: "Эскимо Пломбир",
+    weight: "80 г",
+    price: "172 ₽",
+    emoji: "🍦",
+  },
+  {
+    id: "lr5",
+    name: "Авокадо Хасс",
+    weight: "360 г",
+    price: "180 ₽",
+    emoji: "🥑",
+  },
 ];
 
 // Полная вертикальная лента — открывается по тапу «Все». Толя на 11 позиции (Row 4 центр).
 // Чтобы увидеть карточку, пользователю нужно проскроллить ленту вниз ~ на 1 ряд — эффект «ищу».
 const FULL_RECOMMENDS: Recommend[] = [
-  { id: 'f1', name: 'Вода минеральная "Рычал-Су"', weight: '1 л', price: '151 ₽', emoji: '💧' },
-  { id: 'f2', name: 'Тальятелле с курицей в сырном соусе', weight: '240 г', price: '299 ₽', emoji: '🍝', badge: 'Осталось 2' },
-  { id: 'f3', name: 'Эскимо Пломбир шоколадный в молочном шоколаде', weight: '80 г', price: '172 ₽', emoji: '🍦' },
-  { id: 'f4', name: 'Бедро цыплёнка-бройлера бескостное', weight: '850 г', price: '499,80 ₽', emoji: '🍗' },
-  { id: 'f5', name: 'Блины шоколадные с маскарпоне и вишней', weight: '210 г', price: '268 ₽', emoji: '🥞', badge: 'Осталось 2' },
-  { id: 'f6', name: 'Малина в белом шоколаде «Фрамбуа»', weight: '130 г', price: '845 ₽', emoji: '🍫' },
-  { id: 'f7', name: 'Сыр Гауда 42%', weight: '200 г', price: '199 ₽', emoji: '🧀' },
-  { id: 'f8', name: 'Шампиньоны королевские', weight: '500 г', price: '159 ₽', emoji: '🍄', badge: 'Осталось 3' },
-  { id: 'f9', name: 'Йогурт греческий натуральный', weight: '300 г', price: '149 ₽', emoji: '🥛' },
-  { id: 'f10', name: 'Кофе в зёрнах средняя обжарка', weight: '250 г', price: '349 ₽', emoji: '☕' },
-  { id: 'f11', name: 'Хлеб Бородинский нарезка', sub: 'твой любимый', weight: '300 г', price: '79 ₽', emoji: '🍞', fromTolya: true },
-  { id: 'f12', name: 'Авокадо Хасс спелые', weight: '360 г', price: '180 ₽', emoji: '🥑' },
+  {
+    id: "f1",
+    name: 'Вода минеральная "Рычал-Су"',
+    weight: "1 л",
+    price: "151 ₽",
+    emoji: "💧",
+  },
+  {
+    id: "f2",
+    name: "Тальятелле с курицей в сырном соусе",
+    weight: "240 г",
+    price: "299 ₽",
+    emoji: "🍝",
+    badge: "Осталось 2",
+  },
+  {
+    id: "f3",
+    name: "Эскимо Пломбир шоколадный в молочном шоколаде",
+    weight: "80 г",
+    price: "172 ₽",
+    emoji: "🍦",
+  },
+  {
+    id: "f4",
+    name: "Бедро цыплёнка-бройлера бескостное",
+    weight: "850 г",
+    price: "499,80 ₽",
+    emoji: "🍗",
+  },
+  {
+    id: "f5",
+    name: "Блины шоколадные с маскарпоне и вишней",
+    weight: "210 г",
+    price: "268 ₽",
+    emoji: "🥞",
+    badge: "Осталось 2",
+  },
+  {
+    id: "f6",
+    name: "Малина в белом шоколаде «Фрамбуа»",
+    weight: "130 г",
+    price: "845 ₽",
+    emoji: "🍫",
+  },
+  {
+    id: "f7",
+    name: "Сыр Гауда 42%",
+    weight: "200 г",
+    price: "199 ₽",
+    emoji: "🧀",
+  },
+  {
+    id: "f8",
+    name: "Шампиньоны королевские",
+    weight: "500 г",
+    price: "159 ₽",
+    emoji: "🍄",
+    badge: "Осталось 3",
+  },
+  {
+    id: "f9",
+    name: "Йогурт греческий натуральный",
+    weight: "300 г",
+    price: "149 ₽",
+    emoji: "🥛",
+  },
+  {
+    id: "f10",
+    name: "Кофе в зёрнах средняя обжарка",
+    weight: "250 г",
+    price: "349 ₽",
+    emoji: "☕",
+  },
+  {
+    id: "f11",
+    name: "Хлеб Бородинский нарезка",
+    sub: "твой любимый",
+    weight: "300 г",
+    price: "79 ₽",
+    emoji: "🍞",
+    fromTolya: true,
+  },
+  {
+    id: "f12",
+    name: "Авокадо Хасс спелые",
+    weight: "360 г",
+    price: "180 ₽",
+    emoji: "🥑",
+  },
 ];
 
 const TOLYA_FULL_INDEX = FULL_RECOMMENDS.findIndex((r) => r.fromTolya);
@@ -464,22 +678,22 @@ function ScreenLobby({
   recommendsAnchorRef,
   carouselRef,
 }: LobbyProps) {
-  const moreActive = step === 'lobbyHint';
-  const seriesPanelTutorial = step === 'lobbySeriesHint';
+  const moreActive = step === "lobbyHint";
+  const seriesPanelTutorial = step === "lobbySeriesHint";
   // Туториал лобби (авто-скролл → «Все») только при первом входе. Если пользователь уже
   // получил серию и вернулся назад — скролл разблокирован.
   const scrollLocked =
-    step === 'lobbyAutoScroll' ||
-    step === 'lobbyHint' ||
-    step === 'lobbySeriesScroll' ||
-    step === 'lobbySeriesHint' ||
-    (step === 'lobbyArrival' && currentSeries === 0);
+    step === "lobbyAutoScroll" ||
+    step === "lobbyHint" ||
+    step === "lobbySeriesScroll" ||
+    step === "lobbySeriesHint" ||
+    (step === "lobbyArrival" && currentSeries === 0);
   return (
     <div
       className={`iphone__screen iphone__screen--lobby${
-        scrollLocked ? ' iphone__screen--locked' : ''
-      }${step === 'lobbySeriesScroll' ? ' iphone__screen--series-scroll-wait' : ''}${
-        seriesPanelTutorial ? ' iphone__screen--series-hint' : ''
+        scrollLocked ? " iphone__screen--locked" : ""
+      }${step === "lobbySeriesScroll" ? " iphone__screen--series-scroll-wait" : ""}${
+        seriesPanelTutorial ? " iphone__screen--series-hint" : ""
       }`}
     >
       <div className="lobby-content">
@@ -491,13 +705,13 @@ function ScreenLobby({
           </div>
           <button
             type="button"
-            className={`lobby-top__receipt${currentSeries > 0 ? ' lobby-top__receipt--wide' : ''}`}
-            aria-label={currentSeries > 0 ? 'Открыть меню Толи' : 'Чеки'}
+            className={`lobby-top__receipt${currentSeries > 0 ? " lobby-top__receipt--wide" : ""}`}
+            aria-label={currentSeries > 0 ? "Открыть меню Толи" : "Чеки"}
             onClick={currentSeries > 0 ? onOpenTolyaMenu : undefined}
           >
             {currentSeries > 0 ? (
               <span
-                className={`lobby-top__series-pill${seriesPanelTutorial ? ' lobby-top__series-pill--pulse' : ''}`}
+                className={`lobby-top__series-pill${seriesPanelTutorial ? " lobby-top__series-pill--pulse" : ""}`}
               >
                 🔥 {currentSeries}
               </span>
@@ -513,7 +727,9 @@ function ScreenLobby({
               <FoxFace size={28} />
             </span>
             <div className="lobby-series-hint-banner__text">
-              <span className="lobby-series-hint-banner__title">Серия на панели</span>
+              <span className="lobby-series-hint-banner__title">
+                Серия на панели
+              </span>
               <span className="lobby-series-hint-banner__sub">
                 Дополнительно про Толю — нажми на 🔥 справа вверху
               </span>
@@ -532,10 +748,12 @@ function ScreenLobby({
             <div key={s.id} className="lobby-shop">
               <div className="lobby-shop__tile" style={{ background: s.bg }}>
                 <span className="lobby-shop__discount">15%</span>
-                {s.id === 'pk' && (
-                  <span className="lobby-shop__discount lobby-shop__discount--big">40%</span>
+                {s.id === "pk" && (
+                  <span className="lobby-shop__discount lobby-shop__discount--big">
+                    40%
+                  </span>
                 )}
-                {s.id !== 'pk' && null}
+                {s.id !== "pk" && null}
                 <span
                   className="lobby-shop__logo"
                   style={{ color: s.logoColor }}
@@ -553,7 +771,10 @@ function ScreenLobby({
         <h3 className="lobby-section-title">Бесплатная доставка</h3>
         <div className="lobby-free">
           <div className="lobby-shop">
-            <div className="lobby-shop__tile lobby-shop__tile--big" style={{ background: '#3aa948' }}>
+            <div
+              className="lobby-shop__tile lobby-shop__tile--big"
+              style={{ background: "#3aa948" }}
+            >
               <span className="lobby-shop__discount">15%</span>
               <span className="lobby-shop__logo lobby-shop__logo--big">BB</span>
             </div>
@@ -565,13 +786,13 @@ function ScreenLobby({
         <div ref={recommendsAnchorRef} className="lobby-anchor" />
         <div
           className={`lobby-recommends-head ${
-            step === 'lobbyHint' ? 'lobby-recommends-head--pulse' : ''
+            step === "lobbyHint" ? "lobby-recommends-head--pulse" : ""
           }`}
         >
           <h3 className="lobby-section-title">Подобрали для вас</h3>
           <button
             type="button"
-            className={`lobby-recommends-head__more${moreActive ? ' lobby-recommends-head__more--pulse' : ''}`}
+            className={`lobby-recommends-head__more${moreActive ? " lobby-recommends-head__more--pulse" : ""}`}
             onClick={onOpenFullList}
           >
             Все
@@ -579,13 +800,15 @@ function ScreenLobby({
           </button>
         </div>
 
-        {step === 'lobbyHint' && (
+        {step === "lobbyHint" && (
           <div className="lobby-hint">
             <span className="lobby-hint__fox">
               <FoxFace size={28} />
             </span>
             <div className="lobby-hint__text">
-              <span className="lobby-hint__title">Толя оставил для тебя предложение</span>
+              <span className="lobby-hint__title">
+                Толя оставил для тебя предложение
+              </span>
               <span className="lobby-hint__sub">
                 Открой полную ленту — нажми «Все», там его карточка
               </span>
@@ -595,7 +818,10 @@ function ScreenLobby({
 
         <div className="lobby-recommends-tabs">
           <div className="lobby-recommends-tab lobby-recommends-tab--active">
-            <span className="lobby-recommends-tab__avatar" style={{ background: '#3aa948' }}>
+            <span
+              className="lobby-recommends-tab__avatar"
+              style={{ background: "#3aa948" }}
+            >
               BB
             </span>
             <div className="lobby-recommends-tab__text">
@@ -606,7 +832,7 @@ function ScreenLobby({
           <div className="lobby-recommends-tab">
             <span
               className="lobby-recommends-tab__avatar"
-              style={{ background: '#0d4f2a', color: '#fff' }}
+              style={{ background: "#0d4f2a", color: "#fff" }}
             >
               ✿
             </span>
@@ -621,7 +847,9 @@ function ScreenLobby({
           {LOBBY_RECOMMENDS.map((r, i) => (
             <div key={r.id} className="lobby-card" data-index={i}>
               <div className="lobby-card__media">
-                {r.badge && <span className="lobby-card__badge">{r.badge}</span>}
+                {r.badge && (
+                  <span className="lobby-card__badge">{r.badge}</span>
+                )}
                 <span className="lobby-card__emoji" aria-hidden>
                   {r.emoji}
                 </span>
@@ -637,7 +865,6 @@ function ScreenLobby({
             </div>
           ))}
         </div>
-
       </div>
 
       <div className="lobby-bottom">
@@ -671,15 +898,16 @@ function ScreenFullList({
   onClaim,
   onOpenTolyaMenu,
 }: FullListProps) {
-  const isFocused = step === 'foundItem' || step === 'crediting' || step === 'claimed';
+  const isFocused =
+    step === "foundItem" || step === "crediting" || step === "claimed";
   const showTolyaBadge = true;
-  const backLocked = step === 'crediting' || step === 'claimed';
+  const backLocked = step === "crediting" || step === "claimed";
 
   return (
     <div
       ref={scrollRef}
       className={`iphone__screen iphone__screen--fulllist${
-        isFocused ? ' iphone__screen--locked' : ''
+        isFocused ? " iphone__screen--locked" : ""
       }`}
     >
       <div className="full-list">
@@ -710,7 +938,10 @@ function ScreenFullList({
 
         <div className="lobby-recommends-tabs full-list__tabs">
           <div className="lobby-recommends-tab lobby-recommends-tab--active">
-            <span className="lobby-recommends-tab__avatar" style={{ background: '#3aa948' }}>
+            <span
+              className="lobby-recommends-tab__avatar"
+              style={{ background: "#3aa948" }}
+            >
               BB
             </span>
             <div className="lobby-recommends-tab__text">
@@ -721,7 +952,7 @@ function ScreenFullList({
           <div className="lobby-recommends-tab">
             <span
               className="lobby-recommends-tab__avatar"
-              style={{ background: '#0d4f2a', color: '#fff' }}
+              style={{ background: "#0d4f2a", color: "#fff" }}
             >
               ✿
             </span>
@@ -740,16 +971,18 @@ function ScreenFullList({
               <div
                 key={r.id}
                 ref={isTolya ? tolyaCardRef : undefined}
-                className={`full-card${isTolya ? ' full-card--tolya' : ''}${
-                  isTolyaFocused ? ' full-card--focused' : ''
+                className={`full-card${isTolya ? " full-card--tolya" : ""}${
+                  isTolyaFocused ? " full-card--focused" : ""
                 }`}
-                data-tolya={isTolya ? '1' : undefined}
+                data-tolya={isTolya ? "1" : undefined}
                 onClick={() => {
-                  if (isTolya && step === 'foundItem') onClaim();
+                  if (isTolya && step === "foundItem") onClaim();
                 }}
               >
                 <div className="full-card__media">
-                  {r.badge && <span className="full-card__badge">{r.badge}</span>}
+                  {r.badge && (
+                    <span className="full-card__badge">{r.badge}</span>
+                  )}
                   <span className="full-card__emoji" aria-hidden>
                     {r.emoji}
                   </span>
@@ -778,7 +1011,7 @@ function ScreenFullList({
         <span className="lobby-bottom__total">{CART_TOTAL} ₽</span>
       </div>
 
-      {step === 'fullList' && currentSeries === 0 && (
+      {step === "fullList" && currentSeries === 0 && (
         <div className="full-list__hunt-hint">
           <span className="full-list__hunt-hint-fox">
             <FoxFace size={26} />
@@ -800,13 +1033,11 @@ function ClaimModal() {
           <FoxFace size={72} />
         </div>
         <h3 className="claim-modal__title">🎉 Серия обновлена!</h3>
-        <p className="claim-modal__sub">Встретимся завтра!</p>
-        <p className="claim-modal__status">Серия продлена</p>
         <div className="claim-modal__series">
           {Array.from({ length: 7 }).map((_, i) => (
             <div
               key={i}
-              className={`m-series-day ${i === 0 ? 'm-series-day--active' : ''}`}
+              className={`m-series-day ${i === 0 ? "m-series-day--active" : ""}`}
             >
               <span className="m-series-day__num">{i + 1}</span>
             </div>
@@ -827,14 +1058,48 @@ function CreditFx() {
 }
 
 const TOLYA_MENU_RECOMMENDS = [
-  { id: 'tm1', name: 'Сыр Гауда от ВкусВилл', shop: 'ВкусВилл', price: '199 ₽', emoji: '🧀' },
-  { id: 'tm2', name: 'Томаты от Магнит', shop: 'Магнит', price: '159 ₽', emoji: '🍅' },
-  { id: 'tm3', name: 'Авокадо от ВкусВилл', shop: 'ВкусВилл', price: '180 ₽', emoji: '🥑' },
-  { id: 'tm4', name: 'Базилик от Перекрёсток', shop: 'Перекрёсток', price: '89 ₽', emoji: '🌿' },
-  { id: 'tm5', name: 'Кофе от ВкусВилл', shop: 'ВкусВилл', price: '349 ₽', emoji: '☕' },
+  {
+    id: "tm1",
+    name: "Сыр Гауда от ВкусВилл",
+    shop: "ВкусВилл",
+    price: "199 ₽",
+    emoji: "🧀",
+  },
+  {
+    id: "tm2",
+    name: "Томаты от Магнит",
+    shop: "Магнит",
+    price: "159 ₽",
+    emoji: "🍅",
+  },
+  {
+    id: "tm3",
+    name: "Авокадо от ВкусВилл",
+    shop: "ВкусВилл",
+    price: "180 ₽",
+    emoji: "🥑",
+  },
+  {
+    id: "tm4",
+    name: "Базилик от Перекрёсток",
+    shop: "Перекрёсток",
+    price: "89 ₽",
+    emoji: "🌿",
+  },
+  {
+    id: "tm5",
+    name: "Кофе от ВкусВилл",
+    shop: "ВкусВилл",
+    price: "349 ₽",
+    emoji: "☕",
+  },
 ];
 
-type InstallFlowPhase = 'idle' | 'benefits_sheet' | 'share_sheet' | 'magic_transition';
+type InstallFlowPhase =
+  | "idle"
+  | "benefits_sheet"
+  | "share_sheet"
+  | "magic_transition";
 
 /** Нижний sheet на всю ширину — перекрывает профиль Толи, без выезда справа */
 function InstallBenefitsSheet({
@@ -851,18 +1116,32 @@ function InstallBenefitsSheet({
       aria-modal="true"
       aria-labelledby="install-benefits-title"
     >
-      <button type="button" className="install-benefits-sheet__backdrop" onClick={onClose} aria-label="Закрыть" />
+      <button
+        type="button"
+        className="install-benefits-sheet__backdrop"
+        onClick={onClose}
+        aria-label="Закрыть"
+      />
       <div className="install-benefits-sheet__panel">
         <div className="install-benefits-sheet__grab" aria-hidden />
-        <button type="button" className="install-benefits-sheet__close" onClick={onClose} aria-label="Закрыть">
+        <button
+          type="button"
+          className="install-benefits-sheet__close"
+          onClick={onClose}
+          aria-label="Закрыть"
+        >
           ✕
         </button>
-        <h3 id="install-benefits-title" className="install-benefits-sheet__title">
+        <h3
+          id="install-benefits-title"
+          className="install-benefits-sheet__title"
+        >
           Подарок за виджет
         </h3>
         <ul className="install-benefits-sheet__list">
           <li>
-            <strong>Промокод до 500 ₽ на заказ</strong> — после добавления на экран «Домой»
+            <strong>Промокод до 500 ₽ на заказ</strong> — после добавления на
+            экран «Домой»
           </li>
           <li>Заказы и акции в один тап с главного экрана</li>
           <li>Серия с Лисом Толей и вход через Т‑ИД</li>
@@ -888,8 +1167,18 @@ function IosShareSheet({
   onDismiss: () => void;
 }) {
   return (
-    <div className="ios-share" role="dialog" aria-modal="true" aria-label="Меню Поделиться">
-      <button type="button" className="ios-share__backdrop" onClick={onDismiss} aria-label="Закрыть" />
+    <div
+      className="ios-share"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Меню Поделиться"
+    >
+      <button
+        type="button"
+        className="ios-share__backdrop"
+        onClick={onDismiss}
+        aria-label="Закрыть"
+      />
       <div className="ios-share__sheet">
         <div className="ios-share__grab" aria-hidden />
         <p className="ios-share__caption">Добавить на устройство</p>
@@ -922,15 +1211,29 @@ function TolyaMenu({
   onClose: () => void;
   onGiftClick: () => void;
 }) {
-  const daysLabel = seriesDays === 1 ? 'день' : seriesDays >= 2 && seriesDays <= 4 ? 'дня' : 'дней';
+  const daysLabel =
+    seriesDays === 1
+      ? "день"
+      : seriesDays >= 2 && seriesDays <= 4
+        ? "дня"
+        : "дней";
   return (
     <div className="tolya-menu" role="dialog" aria-modal="true">
       <div className="tolya-menu__backdrop" onClick={onClose} aria-hidden />
       <div className="tolya-menu__card" onClick={(e) => e.stopPropagation()}>
-        <button className="tolya-menu__close" onClick={onClose} aria-label="Закрыть">
+        <button
+          className="tolya-menu__close"
+          onClick={onClose}
+          aria-label="Закрыть"
+        >
           ✕
         </button>
-        <button type="button" className="tolya-menu__help" aria-label="Правила серии" title="Правила серии">
+        <button
+          type="button"
+          className="tolya-menu__help"
+          aria-label="Правила серии"
+          title="Правила серии"
+        >
           ?
         </button>
         <div className="tolya-menu__hero">
@@ -945,7 +1248,9 @@ function TolyaMenu({
             onClick={onGiftClick}
           >
             <span className="tolya-menu__gift-btn-main">Получить подарок</span>
-            <span className="tolya-menu__gift-btn-hint">Промокод до 500 ₽ на заказ за виджет</span>
+            <span className="tolya-menu__gift-btn-hint">
+              Промокод до 500 ₽ на заказ за виджет
+            </span>
           </button>
         </div>
         <h3 className="tolya-menu__title">Меню Толи</h3>
@@ -953,7 +1258,9 @@ function TolyaMenu({
           Текущая серия: 🔥 {seriesDays} {daysLabel}
         </p>
         <div className="tolya-menu__reco">
-          <h3 className="lobby-section-title lobby-section-title--sheet">Подобрали для вас</h3>
+          <h3 className="lobby-section-title lobby-section-title--sheet">
+            Подобрали для вас
+          </h3>
           <div className="lobby-carousel lobby-carousel--sheet">
             {TOLYA_MENU_RECOMMENDS.map((item) => (
               <div key={item.id} className="lobby-card lobby-card--sheet">
@@ -966,7 +1273,11 @@ function TolyaMenu({
                 <div className="lobby-card__name">{item.name}</div>
                 <div className="lobby-card__bottom">
                   <span className="lobby-card__weight">{item.shop}</span>
-                  <button type="button" className="lobby-card__plus" aria-label="Добавить">
+                  <button
+                    type="button"
+                    className="lobby-card__plus"
+                    aria-label="Добавить"
+                  >
                     +
                   </button>
                 </div>
@@ -984,9 +1295,10 @@ function TolyaMenu({
    ============================================================ */
 
 export function FlowDemo() {
-  const [step, setStep] = useState<Step>('cart');
+  const [step, setStep] = useState<Step>("cart");
   const [tolyaMenuOpen, setTolyaMenuOpen] = useState(false);
-  const [installFlowPhase, setInstallFlowPhase] = useState<InstallFlowPhase>('idle');
+  const [installFlowPhase, setInstallFlowPhase] =
+    useState<InstallFlowPhase>("idle");
   const [pwaStandaloneMode, setPwaStandaloneMode] = useState(false);
   const [currentSeries, setCurrentSeries] = useState(0);
   const screenRef = useRef<HTMLDivElement | null>(null);
@@ -998,24 +1310,24 @@ export function FlowDemo() {
   const goto = (next: Step) => setStep(next);
   const reset = () => {
     setTolyaMenuOpen(false);
-    setInstallFlowPhase('idle');
+    setInstallFlowPhase("idle");
     setPwaStandaloneMode(false);
     setCurrentSeries(0);
-    setStep('cart');
+    setStep("cart");
   };
 
   const closeTolyaMenu = useCallback(() => {
     setTolyaMenuOpen(false);
     if (!pwaStandaloneMode) {
-      setInstallFlowPhase('idle');
+      setInstallFlowPhase("idle");
     }
   }, [pwaStandaloneMode]);
 
   useEffect(() => {
-    if (installFlowPhase !== 'magic_transition') return;
+    if (installFlowPhase !== "magic_transition") return;
     const id = window.setTimeout(() => {
       setPwaStandaloneMode(true);
-      setInstallFlowPhase('idle');
+      setInstallFlowPhase("idle");
       setTolyaMenuOpen(false);
     }, 300);
     return () => window.clearTimeout(id);
@@ -1023,7 +1335,8 @@ export function FlowDemo() {
 
   const showSafariChrome =
     !pwaStandaloneMode &&
-    (installFlowPhase === 'share_sheet' || installFlowPhase === 'magic_transition');
+    (installFlowPhase === "share_sheet" ||
+      installFlowPhase === "magic_transition");
 
   const skipNext = () => {
     const idx = STEP_ORDER.indexOf(step);
@@ -1036,55 +1349,59 @@ export function FlowDemo() {
 
   // Авто-скролл при попадании в лобби
   useEffect(() => {
-    if (step !== 'lobbyArrival') return;
+    if (step !== "lobbyArrival") return;
     if (currentSeries > 0) return;
-    const t1 = setTimeout(() => goto('lobbyAutoScroll'), 700);
+    const t1 = setTimeout(() => goto("lobbyAutoScroll"), 700);
     return () => clearTimeout(t1);
   }, [step, currentSeries]);
 
   useEffect(() => {
-    if (step !== 'lobbyAutoScroll') return;
-    const screen = screenRef.current?.querySelector('.iphone__screen--lobby') as HTMLElement | null;
+    if (step !== "lobbyAutoScroll") return;
+    const screen = screenRef.current?.querySelector(
+      ".iphone__screen--lobby",
+    ) as HTMLElement | null;
     const anchor = recommendsAnchorRef.current;
     if (!screen || !anchor) return;
     const top = anchor.offsetTop - 24;
-    screen.scrollTo({ top, behavior: 'smooth' });
-    const t2 = setTimeout(() => goto('lobbyHint'), 1400);
+    screen.scrollTo({ top, behavior: "smooth" });
+    const t2 = setTimeout(() => goto("lobbyHint"), 1400);
     return () => clearTimeout(t2);
   }, [step]);
 
   // Авто-закрытие claim-модала: повисел и сам улетел.
   useEffect(() => {
-    if (step !== 'crediting') return;
+    if (step !== "crediting") return;
     const t = setTimeout(() => {
       setCurrentSeries((s) => s + 1);
-      setStep((s) => (s === 'crediting' ? 'claimed' : s));
+      setStep((s) => (s === "crediting" ? "claimed" : s));
     }, 850);
     return () => clearTimeout(t);
   }, [step]);
 
   useEffect(() => {
-    if (step !== 'claimed') return;
+    if (step !== "claimed") return;
     const t = setTimeout(() => {
-      setStep((s) => (s === 'claimed' ? 'lobbySeriesScroll' : s));
+      setStep((s) => (s === "claimed" ? "lobbySeriesScroll" : s));
     }, 2400);
     return () => clearTimeout(t);
   }, [step]);
 
   // После клейма: возвращаем в лобби к верхней панели, затем подсказка «тапни 🔥»
   useEffect(() => {
-    if (step !== 'lobbySeriesScroll') return;
-    const screen = screenRef.current?.querySelector('.iphone__screen--lobby') as HTMLElement | null;
+    if (step !== "lobbySeriesScroll") return;
+    const screen = screenRef.current?.querySelector(
+      ".iphone__screen--lobby",
+    ) as HTMLElement | null;
     if (screen) {
-      screen.scrollTo({ top: 0, behavior: 'smooth' });
+      screen.scrollTo({ top: 0, behavior: "smooth" });
     }
-    const t = setTimeout(() => goto('lobbySeriesHint'), screen ? 950 : 400);
+    const t = setTimeout(() => goto("lobbySeriesHint"), screen ? 950 : 400);
     return () => clearTimeout(t);
   }, [step]);
 
   // Слежение в полной ленте: IntersectionObserver на карточке Толи в её скролл-контейнере
   useEffect(() => {
-    if (step !== 'fullList') return;
+    if (step !== "fullList") return;
     // Подсказка и автодоводка до Толи нужны только при первом прохождении.
     if (currentSeries > 0) return;
     const root = fullListScrollRef.current;
@@ -1098,9 +1415,9 @@ export function FlowDemo() {
           if (!triggered && entry.intersectionRatio >= 0.5) {
             triggered = true;
             // Сначала плавно центрируем карточку, затем переключаем state
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.scrollIntoView({ behavior: "smooth", block: "center" });
             setTimeout(() => {
-              setStep((s) => (s === 'fullList' ? 'foundItem' : s));
+              setStep((s) => (s === "fullList" ? "foundItem" : s));
             }, 380);
             observer.disconnect();
           }
@@ -1113,7 +1430,7 @@ export function FlowDemo() {
     // Fallback: если юзер не доскроллил за 14 сек — система мягко доведёт сама
     const fallback = setTimeout(() => {
       if (triggered) return;
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 14000);
 
     return () => {
@@ -1124,45 +1441,45 @@ export function FlowDemo() {
 
   const handleLobbyMenuOpen = useCallback(() => {
     setTolyaMenuOpen(true);
-    setStep((s) => (s === 'lobbySeriesHint' ? 'done' : s));
+    setStep((s) => (s === "lobbySeriesHint" ? "done" : s));
   }, []);
 
   const stepContent = useMemo(() => {
     switch (step) {
-      case 'cart':
-        return <ScreenCart onCheckout={() => goto('confirmed')} />;
-      case 'confirmed':
-        return <ScreenOrderConfirmed onUnpack={() => goto('mascotIntro')} />;
-      case 'mascotIntro':
-        return <ScreenMascotIntro onCatch={() => goto('lobbyArrival')} />;
-      case 'lobbyArrival':
-      case 'lobbyAutoScroll':
-      case 'lobbyHint':
-      case 'lobbySeriesScroll':
-      case 'lobbySeriesHint':
-      case 'done':
+      case "cart":
+        return <ScreenCart onCheckout={() => goto("confirmed")} />;
+      case "confirmed":
+        return <ScreenOrderConfirmed onUnpack={() => goto("mascotIntro")} />;
+      case "mascotIntro":
+        return <ScreenMascotIntro onCatch={() => goto("lobbyArrival")} />;
+      case "lobbyArrival":
+      case "lobbyAutoScroll":
+      case "lobbyHint":
+      case "lobbySeriesScroll":
+      case "lobbySeriesHint":
+      case "done":
         return (
           <ScreenLobby
             step={step}
             currentSeries={currentSeries}
-            onOpenFullList={() => goto('fullList')}
+            onOpenFullList={() => goto("fullList")}
             onOpenTolyaMenu={handleLobbyMenuOpen}
             recommendsAnchorRef={recommendsAnchorRef}
             carouselRef={carouselRef}
           />
         );
-      case 'fullList':
-      case 'foundItem':
-      case 'crediting':
-      case 'claimed':
+      case "fullList":
+      case "foundItem":
+      case "crediting":
+      case "claimed":
         return (
           <ScreenFullList
             step={step}
             currentSeries={currentSeries}
             scrollRef={fullListScrollRef}
             tolyaCardRef={tolyaCardRef}
-            onBack={() => goto('lobbyArrival')}
-            onClaim={() => goto('crediting')}
+            onBack={() => goto("lobbyArrival")}
+            onClaim={() => goto("crediting")}
             onOpenTolyaMenu={() => setTolyaMenuOpen(true)}
           />
         );
@@ -1182,7 +1499,9 @@ export function FlowDemo() {
           ← К презентации
         </a>
         <div className="flow-demo__intro">
-          <span className="flow-demo__eyebrow">Demo flow · интерактивный сценарий</span>
+          <span className="flow-demo__eyebrow">
+            Demo flow · интерактивный сценарий
+          </span>
           <h1 className="flow-demo__title">
             Корзина → заказ → знакомство → ловим первое предложение
           </h1>
@@ -1200,27 +1519,36 @@ export function FlowDemo() {
 
       <div
         className={`flow-demo__controls ${
-          import.meta.env.VITE_SHOW_FLOW_CONTROLS ? '' : 'flow-demo__controls--hidden'
+          import.meta.env.VITE_SHOW_FLOW_CONTROLS
+            ? ""
+            : "flow-demo__controls--hidden"
         }`}
       >
-        <button className="flow-demo__ctrl" onClick={reset} disabled={step === 'cart'}>
+        <button
+          className="flow-demo__ctrl"
+          onClick={reset}
+          disabled={step === "cart"}
+        >
           ⟲ Сначала
         </button>
         <div className="flow-demo__progress">
-          <div className="flow-demo__progress-bar" style={{ width: `${progress}%` }} />
+          <div
+            className="flow-demo__progress-bar"
+            style={{ width: `${progress}%` }}
+          />
           <span className="flow-demo__progress-label">{STEP_LABEL[step]}</span>
         </div>
         <button
           className="flow-demo__ctrl"
           onClick={skipPrev}
-          disabled={step === 'cart'}
+          disabled={step === "cart"}
         >
           ← Шаг
         </button>
         <button
           className="flow-demo__ctrl"
           onClick={skipNext}
-          disabled={step === 'claimed' || step === 'crediting'}
+          disabled={step === "claimed" || step === "crediting"}
         >
           Шаг →
         </button>
@@ -1228,10 +1556,10 @@ export function FlowDemo() {
 
       <div className="flow-demo__stage" ref={screenRef}>
         <div
-          className={`iphone iphone--flow${step === 'cart' ? ' iphone--flow--cart-shell' : ''}`}
+          className={`iphone iphone--flow${step === "cart" ? " iphone--flow--cart-shell" : ""}`}
         >
           <div
-            className={`iphone__frame${pwaStandaloneMode ? ' iphone__frame--pwa-standalone' : ''}`}
+            className={`iphone__frame${pwaStandaloneMode ? " iphone__frame--pwa-standalone" : ""}`}
           >
             <StatusBar tBank />
             {showSafariChrome && (
@@ -1245,41 +1573,41 @@ export function FlowDemo() {
             <div className="iphone__screens-slot">{stepContent}</div>
             <HomeIndicator />
 
-            {(step === 'foundItem' || step === 'crediting' || step === 'claimed') && (
-              <div className="iphone__dim" />
-            )}
-            {step === 'crediting' && <CreditFx />}
-            {step === 'claimed' && <ClaimModal />}
-            {installFlowPhase === 'benefits_sheet' && (
+            {(step === "foundItem" ||
+              step === "crediting" ||
+              step === "claimed") && <div className="iphone__dim" />}
+            {step === "crediting" && <CreditFx />}
+            {step === "claimed" && <ClaimModal />}
+            {installFlowPhase === "benefits_sheet" && (
               <InstallBenefitsSheet
-                onInstall={() => setInstallFlowPhase('share_sheet')}
-                onClose={() => setInstallFlowPhase('idle')}
+                onInstall={() => setInstallFlowPhase("share_sheet")}
+                onClose={() => setInstallFlowPhase("idle")}
               />
             )}
-            {installFlowPhase === 'share_sheet' && (
+            {installFlowPhase === "share_sheet" && (
               <IosShareSheet
-                onAddToHome={() => setInstallFlowPhase('magic_transition')}
-                onDismiss={() => setInstallFlowPhase('benefits_sheet')}
+                onAddToHome={() => setInstallFlowPhase("magic_transition")}
+                onDismiss={() => setInstallFlowPhase("benefits_sheet")}
               />
             )}
-            {installFlowPhase === 'magic_transition' && <PwaMagicTransition />}
+            {installFlowPhase === "magic_transition" && <PwaMagicTransition />}
             {tolyaMenuOpen &&
-              (step === 'lobbyArrival' ||
-                step === 'lobbyAutoScroll' ||
-                step === 'lobbyHint' ||
-                step === 'lobbySeriesScroll' ||
-                step === 'lobbySeriesHint' ||
-                step === 'fullList' ||
-                step === 'foundItem' ||
-                step === 'crediting' ||
-                step === 'claimed' ||
-                step === 'done') && (
-              <TolyaMenu
-                seriesDays={currentSeries}
-                onClose={closeTolyaMenu}
-                onGiftClick={() => setInstallFlowPhase('benefits_sheet')}
-              />
-            )}
+              (step === "lobbyArrival" ||
+                step === "lobbyAutoScroll" ||
+                step === "lobbyHint" ||
+                step === "lobbySeriesScroll" ||
+                step === "lobbySeriesHint" ||
+                step === "fullList" ||
+                step === "foundItem" ||
+                step === "crediting" ||
+                step === "claimed" ||
+                step === "done") && (
+                <TolyaMenu
+                  seriesDays={currentSeries}
+                  onClose={closeTolyaMenu}
+                  onGiftClick={() => setInstallFlowPhase("benefits_sheet")}
+                />
+              )}
           </div>
         </div>
       </div>
@@ -1288,46 +1616,53 @@ export function FlowDemo() {
         <h2 className="flow-demo__notes-title">Что важно в этом flow</h2>
         <ul className="mobile-demo__notes-list">
           <li>
-            <strong>Подарок появляется только после первого заказа.</strong> Не на онбординге, не
-            «случайно». Маскот = награда, а не очередной поп-ап.
+            <strong>Подарок появляется только после первого заказа.</strong> Не
+            на онбординге, не «случайно». Маскот = награда, а не очередной
+            поп-ап.
           </li>
           <li>
-            <strong>Авто-скролл к «Подобрали для вас» в Main Lobby.</strong> Система мягко
-            подводит юзера до ленты и подсказывает: «Толя оставил для тебя предложение —
-            нажми Все». Кнопка «Все» пульсирует.
+            <strong>Авто-скролл к «Подобрали для вас» в Main Lobby.</strong>{" "}
+            Система мягко подводит юзера до ленты и подсказывает: «Толя оставил
+            для тебя предложение — нажми Все». Кнопка «Все» пульсирует.
           </li>
           <li>
-            <strong>Блокировка скролла на «обязательных» шагах.</strong> На экранах с главным
-            действием (корзина → оформить, заказ → забрать подарок, знакомство → поймать) и в лобби на
-            шагах 4–6 вертикальный скролл выключен — нельзя сбить авто-скролл и случайно увести
-            фокус с кнопки «Все».
+            <strong>Блокировка скролла на «обязательных» шагах.</strong> На
+            экранах с главным действием (корзина → оформить, заказ → забрать
+            подарок, знакомство → поймать) и в лобби на шагах 4–6 вертикальный
+            скролл выключен — нельзя сбить авто-скролл и случайно увести фокус с
+            кнопки «Все».
           </li>
           <li>
-            <strong>Полная вертикальная лента, 3 колонки.</strong> Товар Толи — на 11-й позиции
-            (4-й ряд, центр). При первом рендере он не виден: чтобы его поймать, нужно
-            проскроллить вниз пару рядов — эффект «ищу, но не напрягаюсь».
+            <strong>Полная вертикальная лента, 3 колонки.</strong> Товар Толи —
+            на 11-й позиции (4-й ряд, центр). При первом рендере он не виден:
+            чтобы его поймать, нужно проскроллить вниз пару рядов — эффект «ищу,
+            но не напрягаюсь».
           </li>
           <li>
-            <strong>IntersectionObserver на ≥50%.</strong> Как только карточка Толи попадает в
-            зону видимости на половину — система мгновенно центрирует её, накладывает тёмный
-            оверлей <code>rgba(0,0,0,0.65)</code> и блокирует скролл/тапы. Активна только сама
-            карточка.
+            <strong>IntersectionObserver на ≥50%.</strong> Как только карточка
+            Толи попадает в зону видимости на половину — система мгновенно
+            центрирует её, накладывает тёмный оверлей{" "}
+            <code>rgba(0,0,0,0.65)</code> и блокирует скролл/тапы. Активна
+            только сама карточка.
           </li>
           <li>
-            <strong>Анимация начисления и продления.</strong> После тапа по карточке сначала идёт
-            короткая вспышка «🔥 Серия +1» на затемнённом фоне, затем появляется тост с
-            плашкой «Серия продлена» и анимированной ячейкой дня в шкале. Тост закрывается сам,
-            после чего оверлей снимается, лента возвращается в обычный вид.
+            <strong>Анимация начисления и продления.</strong> После тапа по
+            карточке сначала идёт короткая вспышка «🔥 Серия +1» на затемнённом
+            фоне, затем появляется тост с плашкой «Серия продлена» и
+            анимированной ячейкой дня в шкале. Тост закрывается сам, после чего
+            оверлей снимается, лента возвращается в обычный вид.
           </li>
           <li>
-            <strong>Подсказка на верхнюю панель после клейма.</strong> После тоста сценарий
-            возвращает в главное лобби к верхней панели (автоскролл к началу экрана), затем
-            затемняет интерфейс и оставляет активной только плашку 🔥 с пульсацией — как с кнопкой
-            «Все». После тапа по плашке открывается меню Толи, мигание снимается, шаг завершён.
+            <strong>Подсказка на верхнюю панель после клейма.</strong> После
+            тоста сценарий возвращает в главное лобби к верхней панели
+            (автоскролл к началу экрана), затем затемняет интерфейс и оставляет
+            активной только плашку 🔥 с пульсацией — как с кнопкой «Все». После
+            тапа по плашке открывается меню Толи, мигание снимается, шаг
+            завершён.
           </li>
         </ul>
         <p className="flow-demo__note-suffix">
-          Активный шаг прогресс-бара = {STEP_LABEL[step]}. Толин товар — позиция{' '}
+          Активный шаг прогресс-бара = {STEP_LABEL[step]}. Толин товар — позиция{" "}
           {TOLYA_FULL_INDEX + 1} из {FULL_RECOMMENDS.length}.
         </p>
       </div>

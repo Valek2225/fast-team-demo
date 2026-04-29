@@ -165,7 +165,6 @@ function ScreenOrderConfirmed() {
           </p>
           <button type="button" className="m-cta m-cta--gold m-cta--attention">
             <span>Забрать подарок</span>
-            <span className="m-cta__arrow" aria-hidden>→</span>
           </button>
         </div>
 
@@ -283,7 +282,6 @@ function ScreenMascotIntro() {
 
         <button type="button" className="m-cta m-cta--gold m-cta--attention m-cta--sticky">
           <span>Поймать первое предложение</span>
-          <span className="m-cta__arrow" aria-hidden>→</span>
         </button>
       </div>
     </div>

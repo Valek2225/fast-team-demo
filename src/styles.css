@@ -2023,11 +2023,6 @@ body {
   margin-top: 8px;
 }
 
-.m-cta__arrow {
-  font-size: 16px;
-  font-weight: 700;
-}
-
 /* Order list */
 
 .m-order-list {
@@ -4314,40 +4309,6 @@ body {
   letter-spacing: -0.005em;
   text-align: center;
   color: #fff;
-}
-
-.claim-modal__sub {
-  margin: 0;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
-  text-align: center;
-}
-
-.claim-modal__status {
-  margin: -1px 0 2px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(255, 210, 74, 0.18);
-  border: 1px solid rgba(255, 210, 74, 0.42);
-  color: #ffe184;
-  font-size: 12px;
-  font-weight: 700;
-  animation: claim-status-pulse 1.4s ease-out both;
-}
-
-@keyframes claim-status-pulse {
-  0% {
-    opacity: 0;
-    transform: scale(0.88);
-  }
-  45% {
-    opacity: 1;
-    transform: scale(1.04);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 .claim-modal__series {
