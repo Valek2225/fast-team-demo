@@ -2686,18 +2686,20 @@ body {
 }
 
 /*
- * Корзина: базовый .iphone__screen { flex: 1 1 auto } растягивает экран на всю высоту слота —
- * лишняя вертикаль превращается в «дыру» между последним блоком в .m-app и кнопкой.
- * Фикс: высота экрана = контент; маленький gap между блоком и CTA.
+ * Корзина:
+ * — Растягивание именно .m-app на flex:1 давало дыру между «Итого» и кнопкой → .m-app без роста.
+ * — Экран со flex:0 был ниже слота — видна полоса над Home → экран снова flex:1 на всю высоту слота;
+ *   пустота остаётся только под кнопкой, того же фона #0b0c0f (не разъезжает Итого и CTA).
  */
 .iphone--flow .iphone__screens-slot > .iphone__screen--cart {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-height: 0;
   align-self: stretch;
 }
 
 /* Корзина: при iphone__screen--locked скролла нет — убираем «резерв» 80px у .m-app, CTA снаружи остаётся внизу */
 .iphone--flow .iphone__screen--cart {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   min-height: 0;
   justify-content: flex-start;
   gap: 10px;
@@ -2777,7 +2779,7 @@ body {
 .iphone--flow .iphone__screen--cart .m-cta--cart {
   flex: 0 0 auto;
   align-self: stretch;
-  margin: 0 12px 12px;
+  margin: 0 12px 5px;
   width: auto;
   padding: 11px 14px;
   font-size: 14px;
