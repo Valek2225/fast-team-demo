@@ -323,7 +323,7 @@ function ScreenOrderConfirmed({ onUnpack }: { onUnpack: () => void }) {
         </div>
 
         <div className="m-card m-card--soft">
-          <span className="m-card__head-title">Курьер на пути</span>
+          <span className="m-card__head-title">Статус</span>
           <div className="m-courier">
             <div className="m-courier__dot" />
             <div className="m-courier__line">
@@ -332,9 +332,9 @@ function ScreenOrderConfirmed({ onUnpack }: { onUnpack: () => void }) {
             <div className="m-courier__dot m-courier__dot--end" />
           </div>
           <div className="m-courier__labels">
-            <span>Собирают</span>
+            <span>В сборке</span>
             <span>В пути</span>
-            <span>У вас</span>
+            <span>Доставлено</span>
           </div>
         </div>
       </div>
