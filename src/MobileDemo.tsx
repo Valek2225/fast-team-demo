@@ -6,6 +6,8 @@ import {
 } from './IphoneStatusBarGraphic';
 import { CourierStatusTrack } from './CourierStatusTrack';
 
+const FOX_MASCOT_PNG_URL = new URL('../iphone_ui_kit/Untitled.png', import.meta.url).href;
+
 function StatusBar() {
   return (
     <div className="iphone__statusbar iphone__statusbar--kit">
@@ -32,41 +34,14 @@ function HomeIndicator() {
 
 function FoxMascot({ size = 96 }: { size?: number }) {
   return (
-    <svg
-      className="fox"
+    <img
+      src={FOX_MASCOT_PNG_URL}
       width={size}
       height={size}
-      viewBox="0 0 120 120"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="Лис Толя"
-    >
-      <defs>
-        <radialGradient id="fox-body" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="#ffb070" />
-          <stop offset="60%" stopColor="#ff7a3a" />
-          <stop offset="100%" stopColor="#e85a1a" />
-        </radialGradient>
-      </defs>
-      <ellipse cx="60" cy="78" rx="40" ry="34" fill="url(#fox-body)" />
-      <path d="M22 50 L30 80 L42 70 Z" fill="#ff7a3a" />
-      <path d="M98 50 L90 80 L78 70 Z" fill="#ff7a3a" />
-      <path d="M28 56 L33 73 L40 68 Z" fill="#fff1e6" />
-      <path d="M92 56 L87 73 L80 68 Z" fill="#fff1e6" />
-      <ellipse cx="60" cy="86" rx="22" ry="16" fill="#fff5ec" />
-      <circle cx="48" cy="74" r="4" fill="#1a1a1a" />
-      <circle cx="72" cy="74" r="4" fill="#1a1a1a" />
-      <circle cx="49" cy="73" r="1.4" fill="#fff" />
-      <circle cx="73" cy="73" r="1.4" fill="#fff" />
-      <ellipse cx="60" cy="86" rx="3.5" ry="2.6" fill="#1a1a1a" />
-      <path
-        d="M52 92 Q60 99 68 92"
-        stroke="#1a1a1a"
-        strokeWidth="2"
-        strokeLinecap="round"
-        fill="none"
-      />
-    </svg>
+      alt="Лис Толя"
+      style={{ display: 'block', objectFit: 'contain' }}
+      draggable={false}
+    />
   );
 }
 
