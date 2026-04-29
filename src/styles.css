@@ -2687,11 +2687,15 @@ body {
 }
 
 /*
- * Только экран корзины: короче корпус — иначе лишняя высота неизбежно превращается в чёрный «карман»
- * между строками и «Итого» (flex не может «исчезнуть»).
+ * Только экран корзины: короче базового корпуса — иначе лишняя высота неизбежно превращается в чёрный «карман»
+ * между строками и «Итого». Надбавка (--flow-cart-shell-bonus) — константа «чуть воздуха», без подбора под каждый px.
  */
+.iphone--flow--cart-shell {
+  --flow-cart-shell-bonus: 40px;
+}
+
 .iphone--flow--cart-shell .iphone__frame {
-  height: 552px;
+  height: calc(552px + var(--flow-cart-shell-bonus));
 }
 
 /* Меньше «воздуха» между низом экрана и белой чертой — базово 30px с центрированием давали большой зазор. */
@@ -4902,7 +4906,7 @@ body {
   }
 
   .iphone--flow--cart-shell .iphone__frame {
-    height: min(520px, calc(100vh - 120px));
+    height: min(calc(520px + var(--flow-cart-shell-bonus)), calc(100vh - 120px));
   }
 
   .flow-demo__title {
