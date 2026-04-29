@@ -2689,11 +2689,12 @@ body {
 .iphone--flow .iphone__screen--cart {
   flex: 1 1 auto;
   min-height: 0;
+  justify-content: flex-start;
 }
 
+/* Не даём .m-app растягиваться на всю высоту — иначе пустота между «Итого» и кнопкой */
 .iphone--flow .iphone__screen--cart > .m-app {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 0 auto;
   padding: 0 14px 8px;
   gap: 8px;
   overflow: hidden;
@@ -2763,7 +2764,7 @@ body {
 .iphone--flow .iphone__screen--cart .m-cta--cart {
   flex: 0 0 auto;
   align-self: stretch;
-  margin: auto 12px 12px;
+  margin: 10px 12px 14px;
   width: auto;
   padding: 11px 14px;
   font-size: 14px;
