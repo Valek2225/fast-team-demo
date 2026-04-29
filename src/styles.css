@@ -1913,37 +1913,32 @@ body {
 }
 
 /* Акцент на главной кнопке: подъём + «живой» блик (brightness/inset), без кислотного лоска */
+/* Без размытых теней — только кольца 0 blur и плоские inset, чтобы не было «ореола» */
 @keyframes m-cta-attention-nudge {
   0%,
   100% {
     transform: translateY(0) scale(1);
     filter: brightness(1) saturate(1);
     box-shadow:
-      0 6px 14px -7px rgba(245, 180, 0, 0.48),
       0 0 0 0 rgba(255, 210, 74, 0),
-      0 0 18px -12px rgba(255, 185, 60, 0.24),
       inset 0 1px 0 rgba(255, 255, 255, 0.38),
-      inset 0 -10px 22px rgba(200, 120, 0, 0.06);
+      inset 0 -1px 0 rgba(120, 70, 0, 0.12);
   }
   38% {
     transform: translateY(-3px) scale(1.006);
     filter: brightness(1.11) saturate(1.14);
     box-shadow:
-      0 12px 26px -11px rgba(225, 145, 0, 0.58),
-      0 0 0 4px rgba(255, 218, 95, 0.24),
-      0 6px 28px -8px rgba(255, 200, 75, 0.46),
-      inset 0 2px 1px rgba(255, 255, 255, 0.62),
-      inset 0 -6px 18px rgba(255, 220, 130, 0.14);
+      0 0 0 4px rgba(255, 218, 95, 0.26),
+      inset 0 2px 0 rgba(255, 255, 255, 0.55),
+      inset 0 -1px 0 rgba(160, 95, 0, 0.14);
   }
   68% {
     transform: translateY(-1px) scale(1.003);
     filter: brightness(1.05) saturate(1.06);
     box-shadow:
-      0 10px 20px -9px rgba(245, 180, 0, 0.52),
-      0 0 0 2px rgba(255, 210, 74, 0.16),
-      0 2px 22px -10px rgba(255, 190, 65, 0.34),
+      0 0 0 2px rgba(255, 210, 74, 0.18),
       inset 0 1px 0 rgba(255, 255, 255, 0.48),
-      inset 0 -12px 20px rgba(200, 115, 0, 0.08);
+      inset 0 -1px 0 rgba(120, 70, 0, 0.1);
   }
 }
 
@@ -1999,7 +1994,10 @@ body {
   animation: none;
   transform: translateY(-1px);
   filter: brightness(1) saturate(1);
-  box-shadow: 0 10px 22px -8px rgba(245, 180, 0, 0.6);
+  box-shadow:
+    0 0 0 2px rgba(245, 180, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 -1px 0 rgba(120, 70, 0, 0.12);
 }
 
 .m-cta--attention.m-cta--gold:hover::after {
