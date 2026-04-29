@@ -2672,12 +2672,174 @@ body {
   width: 100%;
 }
 
+/* Demo flow (/mobile): чуть компактнее корпус; контент экранов ниже — только под .iphone--flow */
 .iphone--flow {
   position: relative;
+  width: 332px;
+  padding: 10px;
+  border-radius: 44px;
 }
 
 .iphone--flow .iphone__frame {
-  height: 800px;
+  height: 752px;
+  border-radius: 36px;
+}
+
+/* Корзина: при iphone__screen--locked скролла нет — убираем «резерв» 80px у .m-app, CTA снаружи остаётся внизу */
+.iphone--flow .iphone__screen--cart {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.iphone--flow .iphone__screen--cart > .m-app {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 14px 8px;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.iphone--flow .iphone__screen--cart .cart-title {
+  font-size: 18px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.iphone--flow .iphone__screen--cart .cart-sub {
+  font-size: 12px;
+}
+
+.iphone--flow .iphone__screen--cart .cart-list {
+  gap: 5px;
+}
+
+.iphone--flow .iphone__screen--cart .cart-item {
+  padding: 5px 0;
+  gap: 7px;
+  grid-template-columns: 36px 1fr auto auto;
+}
+
+.iphone--flow .iphone__screen--cart .cart-item__emoji {
+  width: 36px;
+  height: 36px;
+  font-size: 19px;
+}
+
+.iphone--flow .iphone__screen--cart .cart-item__name {
+  font-size: 11px;
+  line-height: 1.28;
+  -webkit-line-clamp: 2;
+}
+
+.iphone--flow .iphone__screen--cart .cart-item__sub {
+  font-size: 10px;
+}
+
+.iphone--flow .iphone__screen--cart .cart-item__qty {
+  padding: 3px 6px;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.iphone--flow .iphone__screen--cart .cart-item__price {
+  font-size: 12px;
+}
+
+.iphone--flow .iphone__screen--cart .cart-summary {
+  padding: 6px 0 2px;
+  margin-top: 4px;
+  gap: 2px;
+}
+
+.iphone--flow .iphone__screen--cart .cart-summary__row {
+  font-size: 12px;
+}
+
+.iphone--flow .iphone__screen--cart .cart-summary__row--total {
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.iphone--flow .iphone__screen--cart .m-cta--cart {
+  flex: 0 0 auto;
+  align-self: stretch;
+  margin: auto 12px 12px;
+  width: auto;
+  padding: 11px 14px;
+  font-size: 14px;
+}
+
+/* Заказ оформлен + знакомство: те же locked-экраны — уплотнение под меньшую высоту */
+.iphone--flow .iphone__screen--order,
+.iphone--flow .iphone__screen--mascot {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.iphone--flow .iphone__screen--order > .m-app,
+.iphone--flow .iphone__screen--mascot > .m-app {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 14px 14px;
+  gap: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.iphone--flow .iphone__screen--order .m-success {
+  padding: 12px 12px 6px;
+}
+
+.iphone--flow .iphone__screen--order .m-success__title {
+  font-size: 19px;
+}
+
+.iphone--flow .iphone__screen--order .m-card--gift .m-card__text {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.iphone--flow .iphone__screen--order .m-cta {
+  padding: 11px 14px;
+  font-size: 14px;
+}
+
+.iphone--flow .iphone__screen--mascot .m-mascot-stage {
+  transform: scale(0.88);
+  transform-origin: center center;
+  margin: -6px 0 -10px;
+}
+
+.iphone--flow .iphone__screen--mascot .m-mascot-text__title {
+  font-size: 19px;
+}
+
+.iphone--flow .iphone__screen--mascot .m-mascot-text__sub {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.iphone--flow .iphone__screen--mascot .m-mascot-card {
+  padding: 10px;
+  gap: 7px;
+}
+
+.iphone--flow .iphone__screen--mascot .m-series-day {
+  height: 34px;
+  font-size: 10px;
+}
+
+/* При overflow:hidden sticky не работает — прижимаем CTA через flex */
+.iphone--flow .iphone__screen--mascot .m-cta--sticky {
+  position: relative;
+  bottom: auto;
+  margin-top: auto;
+  flex-shrink: 0;
+  padding: 11px 14px;
+  font-size: 14px;
 }
 
 /* T-БАНК pill в notch — компактнее высоты статус-бара (~иконки 26px) */
@@ -4683,12 +4845,19 @@ body {
   .flow-demo {
     padding: 18px 12px 60px;
   }
-  .iphone--flow .iphone__frame {
-    height: 720px;
+
+  .iphone--flow {
+    width: min(308px, calc(100vw - 24px));
   }
+
+  .iphone--flow .iphone__frame {
+    height: min(704px, calc(100vh - 120px));
+  }
+
   .flow-demo__title {
     font-size: 22px;
   }
+
   .flow-demo__controls {
     flex-wrap: wrap;
   }
