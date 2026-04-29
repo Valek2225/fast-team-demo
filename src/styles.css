@@ -1912,27 +1912,42 @@ body {
   box-shadow: 0 10px 22px -8px rgba(245, 180, 0, 0.6);
 }
 
-/* Тихий акцент «главное действие здесь» — корзина / подарок / знакомство (без текста-подсказки) */
-@keyframes m-cta-attention-soft {
+/* Акцент на главной кнопке: лёгкое «дыхание» + подъём — глаз цепляется, без текста-подсказки */
+@keyframes m-cta-attention-nudge {
   0%,
   100% {
+    transform: translateY(0) scale(1);
     box-shadow:
-      0 6px 16px -6px rgba(245, 180, 0, 0.45),
-      0 0 0 0 rgba(255, 210, 74, 0);
+      0 6px 16px -6px rgba(245, 180, 0, 0.5),
+      0 0 0 0 rgba(255, 210, 74, 0),
+      0 0 22px -10px rgba(255, 185, 60, 0.2);
   }
-  50% {
+  40% {
+    transform: translateY(-3px) scale(1.012);
     box-shadow:
-      0 8px 18px -6px rgba(245, 180, 0, 0.52),
-      0 0 0 3px rgba(255, 210, 74, 0.13);
+      0 14px 28px -10px rgba(230, 155, 0, 0.58),
+      0 0 0 5px rgba(255, 215, 90, 0.22),
+      0 6px 32px -6px rgba(255, 200, 70, 0.42);
+  }
+  70% {
+    transform: translateY(-1px) scale(1.005);
+    box-shadow:
+      0 9px 20px -8px rgba(245, 180, 0, 0.52),
+      0 0 0 2px rgba(255, 210, 74, 0.14);
   }
 }
 
 .m-cta--attention.m-cta--gold {
-  animation: m-cta-attention-soft 2.5s ease-in-out infinite;
+  transform-origin: center center;
+  /* transition на transform мешает бесшовному циклу анимации */
+  transition: none;
+  animation: m-cta-attention-nudge 2s ease-in-out infinite;
 }
 
 .m-cta--attention.m-cta--gold:hover {
   animation: none;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -8px rgba(245, 180, 0, 0.6);
 }
 
 @media (prefers-reduced-motion: reduce) {
