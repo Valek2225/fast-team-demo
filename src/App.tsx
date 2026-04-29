@@ -341,8 +341,6 @@ function TopBar() {
     { href: '#decision', label: 'Решение', accent: true },
     { href: '#metrics', label: 'Метрики' },
     { href: '#competitors', label: 'Конкуренты' },
-    { href: '#data', label: 'Данные' },
-    { href: '#glossary', label: 'Словарь' },
     { href: '/mobile', label: 'Demo Flow', accent: true, external: true },
   ];
   return (
@@ -1840,6 +1838,12 @@ export function App() {
     setLoadStatus({ kind: 'idle' });
   };
 
+  // Сейчас разделы «Данные»/«Словарь» скрыты с сайта, но код оставляем как есть.
+  // Чтобы компиляция не ругалась на неиспользуемые переменные из этих разделов — явный no-op.
+  void loadStatus;
+  void handleLoad;
+  void handleReset;
+
   const intro = `Разводка по стоимости, окупаемости и тому, нужен ли курьер. Цены — РФ, апрель 2026, на базу целевой аудитории ≈ ${formatPeople(m.targetAudience)} (${formatPercent(inputs.audience.targetAgeShare)} MAU Т-Банка попадает в 14–35). Все цифры пересчитываются автоматически — раздел «Данные».`;
 
   return (
@@ -2509,77 +2513,6 @@ export function App() {
               Из 6 кейсов выше выкристаллизовался такой набор. Главное правило: на каждую growth
               метрику — обязательная контр-метрика, чтобы не разогнать DAU ценой токсичности.
             </Text>
-            <DataTable
-              headers={['Стадия', 'Метрика роста', 'Контр-метрика', 'Целевое значение']}
-              align={['left', 'left', 'left', 'right']}
-              rows={[
-                [
-                  'Привлечение',
-                  'CAC через Tinkoff ID канал',
-                  'CAC vs LTV ratio (≥3×)',
-                  '50–80 ₽ / юзер',
-                ],
-                [
-                  'Активация',
-                  'Time to first order (от регистрации до первой покупки)',
-                  'Onboarding drop-off на каждом шаге',
-                  '< 30 минут',
-                ],
-                [
-                  'Активация',
-                  '% юзеров, сделавших 1 заказ за 7 дней',
-                  'Refund rate первого заказа',
-                  '≥ 35%',
-                ],
-                [
-                  'Удержание',
-                  'D7 retention (вернулись через неделю)',
-                  'Push opt-out rate',
-                  '≥ 25% при opt-out < 12%',
-                ],
-                [
-                  'Удержание',
-                  'D30 retention',
-                  '«Чувствую, что Толя давит» (quarterly survey)',
-                  '≥ 18% при negative ≤ 10%',
-                ],
-                [
-                  'Удержание',
-                  'Streak length distribution (% юзеров с серией ≥7)',
-                  'Streak break NPS (отзывы тех, кто потерял огонь)',
-                  '≥ 40% при NPS > 0',
-                ],
-                [
-                  'Engagement',
-                  'Заказов на активного юзера / месяц',
-                  'Session length > 5 мин (для grocery — too long)',
-                  '≥ 2.0 при session ≤ 4 мин',
-                ],
-                [
-                  'Качество',
-                  'Mascot interaction rate (% сессий с тапом по Толе)',
-                  'Mascot fatigue (CSAT по «маскот стал назойливым»)',
-                  '≥ 60% при CSAT ≥ 4.0',
-                ],
-                [
-                  'Семья',
-                  'Семейные пары (родитель + ребёнок одного аккаунта)',
-                  'Parental complaint rate (письма в поддержку про детей)',
-                  '≥ 25% при complaint ≤ 0.5%',
-                ],
-              ]}
-              rowTone={[
-                undefined,
-                'info',
-                'info',
-                'success',
-                'success',
-                'success',
-                'warning',
-                'warning',
-                'warning',
-              ]}
-            />
           </Stack>
 
           <Callout tone="warning" title="Главный анти-паттерн: погоня только за DAU">
@@ -2636,78 +2569,6 @@ export function App() {
 
         <Divider />
 
-        <DataSection
-          inputs={inputs}
-          metrics={m}
-          onLoad={handleLoad}
-          onReset={handleReset}
-          loadStatus={loadStatus}
-        />
-
-        <Divider />
-
-        <Stack gap={20}>
-          <Stack gap={8}>
-            <span className="section-mark" id="glossary">
-              Словарь
-            </span>
-            <H2>Что значат все эти аббревиатуры — на пальцах</H2>
-            <Text tone="secondary">
-              Если в тексте выше встретилось слово, которое не очевидно — этот раздел для команды
-              без технического бекграунда. Каждый термин: что это простыми словами, пример из жизни,
-              как используется в нашем проекте.
-            </Text>
-          </Stack>
-
-          <Stack gap={12}>
-            <div className="category-header">
-              <span className="category-header__tag category-header__tag--tech">
-                Тех / разработка
-              </span>
-              <Text size="small" tone="secondary">
-                Слова из мира кода, мобильных приложений и серверов.
-              </Text>
-            </div>
-            <div className="glossary">
-              {TECH_TERMS.map((t) => (
-                <TermCard key={t.name} term={t} />
-              ))}
-            </div>
-          </Stack>
-
-          <Stack gap={12}>
-            <div className="category-header">
-              <span className="category-header__tag category-header__tag--finance">
-                Финансы / экономика
-              </span>
-              <Text size="small" tone="secondary">
-                Метрики, которыми измеряют успех бизнеса.
-              </Text>
-            </div>
-            <div className="glossary">
-              {FINANCE_TERMS.map((t) => (
-                <TermCard key={t.name} term={t} />
-              ))}
-            </div>
-          </Stack>
-
-          <Stack gap={12}>
-            <div className="category-header">
-              <span className="category-header__tag category-header__tag--marketing">
-                Маркетинг / продукт
-              </span>
-              <Text size="small" tone="secondary">
-                Как меряют поведение пользователей и проверяют гипотезы.
-              </Text>
-            </div>
-            <div className="glossary">
-              {MARKETING_TERMS.map((t) => (
-                <TermCard key={t.name} term={t} />
-              ))}
-            </div>
-          </Stack>
-        </Stack>
-
         <Divider />
 
         <Text size="small" tone="secondary">
@@ -2719,3 +2580,10 @@ export function App() {
     </>
   );
 }
+
+// Подавляем noUnusedLocals для скрытых разделов «Данные»/«Словарь».
+void TermCard;
+void TECH_TERMS;
+void FINANCE_TERMS;
+void MARKETING_TERMS;
+void DataSection;
